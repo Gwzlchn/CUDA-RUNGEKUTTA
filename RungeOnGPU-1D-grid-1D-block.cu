@@ -1,8 +1,10 @@
 #include "common.h"
 #include <cuda_runtime.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <math.h>
 #define PI    3.14159265358979323846 
+#define rd (rand()/(RAND_MAX+1.0))  //此处是关于随机生成正态分布的定义
 
 __device__ const double A=1;
 __device__ const double E0=0.5;
@@ -44,21 +46,42 @@ __device__ const int TOSTOP=10000;
 
 	return;
 }
- 
- 
- 
+
+//区间[min,max]上的均匀分布
+double rand_m(double min, double max)
+{
+    return min+(max-min)*rand()/(RAND_MAX+1.0);
+}
+
+//求均值为miu，方差为sigma的正态分布函数在x处的函数值
+double normal(double x, double miu,double sigma)
+{
+    return 1.0/sqrt(2*pi)/sigma*exp(-1*(x-miu)*(x-miu)/(2*sigma*sigma));
+}
+
+//按照矩形区域在函数值曲线上下位置分布情况得到正态分布函数x值
+double rand_normal_distribution(double miu,double sigma, double min ,double max)
+{
+    double x,y,dScope;
+    do{
+        x=rand_m(min,max);
+        y=normal(x,miu,sigma);
+        dScope=rand_m(0.0,normal(miu,miu,sigma));
+    }while(dScope>y);
+    return x;
+}
+
 void initialData(double *ip, const int size)
 {
     int i;
 
     for(i = 0; i < size; i++)
     {
-        ip[i] = i ;
+        ip[i] = rand_normal_distribution(0.0,1.0,-10.0,10.0);
     }
 	
     return;
 }
-
 
 __device__ double f(double x,double y)
 {
