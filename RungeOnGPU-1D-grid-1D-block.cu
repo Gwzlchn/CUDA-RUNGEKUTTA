@@ -56,7 +56,7 @@ double rand_m(double min, double max)
 //求均值为miu，方差为sigma的正态分布函数在x处的函数值
 double normal(double x, double miu,double sigma)
 {
-    return 1.0/sqrt(2*pi)/sigma*exp(-1*(x-miu)*(x-miu)/(2*sigma*sigma));
+    return 1.0/sqrt(2*PI)/sigma*exp(-1*(x-miu)*(x-miu)/(2*sigma*sigma));
 }
 
 //按照矩形区域在函数值曲线上下位置分布情况得到正态分布函数x值
