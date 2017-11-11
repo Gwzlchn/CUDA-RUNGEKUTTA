@@ -4,12 +4,12 @@
 #include <stdlib.h>
 #include <math.h>
 #define PI    3.14159265358979323846 
-#define rd (rand()/(RAND_MAX+1.0))  //´Ë´¦ÊÇ¹ØÓÚËæ»úÉú³ÉÕıÌ¬·Ö²¼µÄ¶¨Òå
+#define rd (rand()/(RAND_MAX+1.0))  //æ­¤å¤„æ˜¯å…³äºéšæœºç”Ÿæˆæ­£æ€åˆ†å¸ƒçš„å®šä¹‰
 
 __device__ const double A=1;
 __device__ const double E0=0.5;
 
-//²½³¤DX ÖÕµãTIME
+//æ­¥é•¿DX ç»ˆç‚¹TIME
 __device__ const double DX=0.0027;
 __device__ const int TOSTOP=10000;
 
@@ -47,19 +47,19 @@ __device__ const int TOSTOP=10000;
 	return;
 }
 
-//Çø¼ä[min,max]ÉÏµÄ¾ùÔÈ·Ö²¼
+//åŒºé—´[min,max]ä¸Šçš„å‡åŒ€åˆ†å¸ƒ
 double rand_m(double min, double max)
 {
     return min+(max-min)*rand()/(RAND_MAX+1.0);
 }
 
-//Çó¾ùÖµÎªmiu£¬·½²îÎªsigmaµÄÕıÌ¬·Ö²¼º¯ÊıÔÚx´¦µÄº¯ÊıÖµ
+//æ±‚å‡å€¼ä¸ºmiuï¼Œæ–¹å·®ä¸ºsigmaçš„æ­£æ€åˆ†å¸ƒå‡½æ•°åœ¨xå¤„çš„å‡½æ•°å€¼
 double normal(double x, double miu,double sigma)
 {
     return 1.0/sqrt(2*pi)/sigma*exp(-1*(x-miu)*(x-miu)/(2*sigma*sigma));
 }
 
-//°´ÕÕ¾ØĞÎÇøÓòÔÚº¯ÊıÖµÇúÏßÉÏÏÂÎ»ÖÃ·Ö²¼Çé¿öµÃµ½ÕıÌ¬·Ö²¼º¯ÊıxÖµ
+//æŒ‰ç…§çŸ©å½¢åŒºåŸŸåœ¨å‡½æ•°å€¼æ›²çº¿ä¸Šä¸‹ä½ç½®åˆ†å¸ƒæƒ…å†µå¾—åˆ°æ­£æ€åˆ†å¸ƒå‡½æ•°xå€¼
 double rand_normal_distribution(double miu,double sigma, double min ,double max)
 {
     double x,y,dScope;
