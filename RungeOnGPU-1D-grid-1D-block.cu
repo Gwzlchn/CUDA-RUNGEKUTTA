@@ -276,7 +276,7 @@ int main()
 	//Store DATA	 
 	iStart = seconds();
 	StoreData(gpuRef,nx,ny,"gpu.dat");
-	StoreData(h_Random,1,ny,"h_Random.dat");
+	StoreData(h_Random,nx,1,"h_Random.dat");
 	iElaps = seconds() - iStart;
     printf("STORE THE DATA elapsed %lf sec\n",iElaps);
     
