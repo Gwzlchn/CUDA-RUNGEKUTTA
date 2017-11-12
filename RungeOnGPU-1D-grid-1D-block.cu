@@ -195,7 +195,7 @@ __global__ void RungeOnGPU1D(double *MatA,double *Result, int nx, int ny)
 int main()
 {
     FILE* TIME_USED;
-	TIME_USED = fopen("TimeData", "w");
+	TIME_USED = fopen("TimeData.txt", "w");
     if (!TIME_USED)
     {
         perror("cannot open file");
