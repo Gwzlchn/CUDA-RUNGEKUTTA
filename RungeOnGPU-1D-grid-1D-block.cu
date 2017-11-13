@@ -47,18 +47,14 @@ __device__ const int TOSTOP=10000;
 	return;
 }
 
-void initialData(double *ip, const int size)
+//在GPU端用生成正态分布数组
+__device__ void initialData(double *ip, const int size)
 {
-    double *p_d;
-    curandGenerator_t gen;                                          //生成随机数变量
-    cudaMalloc((void **)&p_d, N*sizeof(double));                    //GPU侧声明随机数存储缓冲器的内存空间
-    curandCreateGenerator(&gen, CURAND_RNG_PSEUDO_MRG32K3A);        //步骤1：指定算法
-    curandSetPseudoRandomGeneratorSeed(gen, 11ULL);                 //步骤2：随机数初始化
-    curandGenerateNormalDouble(gen, p_d, N);                        //步骤3：生成随机数，存储到缓冲器中
-    cudaMemcpy(*ip, p_d, N*sizeof(double), cudaMemcpyDeviceToHost); //将随机数传送到主机
-    curandDestroyGenerator(gen);                                    //释放指针
-    cudaFree(p_d);                                                  //释放GPU侧内存空间
-    return;
+    curandGenerator_t gen;                                  //生成随机数变量
+    curandCreateGenerator(&gen, CURAND_RNG_PSEUDO_MRG32K3A);//步骤1：指定算法
+    curandSetPseudoRandomGeneratorSeed(gen, 11ULL);         //步骤2：随机数初始化
+    curandGenerateNormalDouble(gen, ip, size, 0，2);        //步骤3：生成随机数，存储到缓冲器中
+    curandDestroyGenerator(gen);                            //释放指针
 }
 
 __device__ double f(double x,double y)
@@ -210,30 +206,20 @@ int main()
     
     gpuRef = (double *)malloc(nBytes);
     h_Random = (double *)malloc(nBytes);
-
-    // initialize data at host side
-    double iStart = seconds();
-    initialData(h_Random, nxy);
-    double iElaps = seconds() - iStart;
-    printf("initialize matrix elapsed %f sec\n", iElaps);
-	fprintf(TIME_USED,"initialize matrix elapsed %f sec\n", iElaps);
-
-   
-    memset(gpuRef, 0, nBytes);
-
-   
-	
 	
 
     // malloc device global memory
-    double *d_Random, *d_Result;
-    CHECK(cudaMalloc((void **)&d_Random, nBytes));
+    double *d_Result;
+
     
     CHECK(cudaMalloc((void **)&d_Result, nBytes));
-
-    // transfer data from host to device
-    CHECK(cudaMemcpy(d_Random, h_Random, nBytes, cudaMemcpyHostToDevice));
     
+    // initialize data at host side
+    double iStart = seconds();
+    initialData(d_Result, nx);
+    double iElaps = seconds() - iStart;
+    printf("initialize matrix elapsed %f sec\n", iElaps);
+	fprintf(TIME_USED,"initialize matrix elapsed %f sec\n", iElaps);
 
     // invoke kernel at host side
     int dimx = 256;
