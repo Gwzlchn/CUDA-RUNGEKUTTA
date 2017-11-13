@@ -166,6 +166,8 @@ __global__ void RungeOnGPU1D(double *MatA,double *Result, int nx, int ny)
 
 
 
+
+
 int main()
 {
     FILE* TIME_USED;
