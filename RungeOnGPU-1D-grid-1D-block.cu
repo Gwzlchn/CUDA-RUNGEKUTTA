@@ -194,13 +194,23 @@ __global__ void RungeOnGPU1D(double *MatA,double *Result, int nx, int ny)
 
 int main()
 {
-    printf("Starting...\n");
+    FILE* TIME_USED;
+	TIME_USED = fopen("TimeData.txt", "w");
+    if (!TIME_USED)
+    {
+        perror("cannot open file");
+	}
+	
+	
+	printf("Starting...\n");
+	fprintf(TIME_USED,"Starting...\n");
 
     // set up device
     int dev = 0;
     cudaDeviceProp deviceProp;
     CHECK(cudaGetDeviceProperties(&deviceProp, dev));
     printf("Using Device %d: %s\n", dev, deviceProp.name);
+	fprintf(TIME_USED,"Using Device %d: %s\n", dev, deviceProp.name);
     CHECK(cudaSetDevice(dev));
 
     // set up data size of matrix
@@ -214,6 +224,7 @@ int main()
     int nxy = nx * ny;
     int nBytes = nxy * sizeof(double);
     printf("Matrix size: nx %d ny %d\n", nx, ny);
+	fprintf(TIME_USED,"Matrix size: nx %d ny %d\n", nx, ny);
 
     // malloc host memory
     double *h_Random, *gpuRef;
@@ -227,6 +238,7 @@ int main()
     initialData(h_Random, nxy);
     double iElaps = seconds() - iStart;
     printf("initialize matrix elapsed %f sec\n", iElaps);
+	fprintf(TIME_USED,"initialize matrix elapsed %f sec\n", iElaps);
 
    
     memset(gpuRef, 0, nBytes);
@@ -254,10 +266,10 @@ int main()
     RungeOnGPU1D<<<grid, block>>>(d_Random, d_Result, nx, ny);
     CHECK(cudaDeviceSynchronize());
     iElaps = seconds() - iStart;
-    printf("sumMatrixOnGPU1D <<<(%d,%d), (%d,%d)>>> elapsed %f sec\n", grid.x,
-           grid.y,
-           block.x, block.y, iElaps);
-
+    printf("sumMatrixOnGPU1D <<<(%d,%d), (%d,%d)>>> elapsed %f sec\n", 
+			grid.x,grid.y,block.x, block.y, iElaps);
+	fprintf(TIME_USED,"sumMatrixOnGPU1D <<<(%d,%d), (%d,%d)>>> elapsed %f sec\n", 
+			grid.x,grid.y,block.x, block.y, iElaps);
     // check kernel error
     CHECK(cudaGetLastError());
 
@@ -276,9 +288,10 @@ int main()
 	//Store DATA	 
 	iStart = seconds();
 	StoreData(gpuRef,nx,ny,"gpu.dat");
-	StoreData(h_Random,1,ny,"h_Random.dat");
+	StoreData(h_Random,nx,1,"h_Random.dat");
 	iElaps = seconds() - iStart;
     printf("STORE THE DATA elapsed %lf sec\n",iElaps);
+	fprintf(TIME_USED,"STORE THE DATA elapsed %lf sec\n",iElaps);
     
 	
 	
