@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-#include "Random_Distribution.h"
+#include <curand.h>
 #define PI    3.14159265358979323846 
 
 __device__ const double A=1;
@@ -49,13 +49,15 @@ __device__ const int TOSTOP=10000;
 
 void initialData(double *ip, const int size)
 {
-    int i;
-
-    for(i = 0; i < size; i++)
-    {
-        ip[i] = rand_normal_distribution(0.0,1.0,-10.0,10.0);
-    }
-	
+    double *p_d;
+    curandGenerator_t gen;                                          //生成随机数变量
+    cudaMalloc((void **)&p_d, N*sizeof(double));                    //GPU侧声明随机数存储缓冲器的内存空间
+    curandCreateGenerator(&gen, CURAND_RNG_PSEUDO_MRG32K3A);        //步骤1：指定算法
+    curandSetPseudoRandomGeneratorSeed(gen, 11ULL);                 //步骤2：随机数初始化
+    curandGenerateNormalDouble(gen, p_d, N);                        //步骤3：生成随机数，存储到缓冲器中
+    cudaMemcpy(*ip, p_d, N*sizeof(double), cudaMemcpyDeviceToHost); //将随机数传送到主机
+    curandDestroyGenerator(gen);                                    //释放指针
+    cudaFree(p_d);                                                  //释放GPU侧内存空间
     return;
 }
 
