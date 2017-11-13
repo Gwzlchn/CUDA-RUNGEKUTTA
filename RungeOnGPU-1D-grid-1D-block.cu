@@ -53,7 +53,7 @@ __device__ void initialData(double *ip, const int size)
     curandGenerator_t gen;                                  //生成随机数变量
     curandCreateGenerator(&gen, CURAND_RNG_PSEUDO_MRG32K3A);//步骤1：指定算法
     curandSetPseudoRandomGeneratorSeed(gen, 11ULL);         //步骤2：随机数初始化
-    curandGenerateNormalDouble(gen, ip, size, 0，2);        //步骤3：生成随机数，存储到缓冲器中
+    curandGenerateNormalDouble(gen, ip, size, 0, 2);        //步骤3：生成随机数，存储到缓冲器中（第1个数字为均值，第二个为方差）
     curandDestroyGenerator(gen);                            //释放指针
 }
 
