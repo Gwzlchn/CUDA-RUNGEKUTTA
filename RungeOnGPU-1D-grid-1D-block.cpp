@@ -28,10 +28,7 @@ int main()
     int nxy = nx * ny;
     int nBytes = nxy * sizeof(double);
     printf("Matrix size: nx %d ny %d\n", nx, ny);
-	//分配grid,block大小
-	int dimx = 256;
-    dim3 block(dimx, 1);
-    dim3 grid((nx + block.x - 1) / block.x, 1);
+
 	
 	
 	//申请主机内存空间
@@ -43,7 +40,7 @@ int main()
 
     //以随机数填充初值,并完成前几列初始化
     iStart = seconds();
-    InitialMatrix(d_Result,nx,ny,grid,block);
+    InitialMatrix(d_Result,nx,ny);
     iElaps = seconds() - iStart;
     printf("initialize matrix elapsed %f sec\n", iElaps);
 
@@ -51,7 +48,7 @@ int main()
     
 	//在一个GPU上启动核函数,并将值储存
     iStart = seconds();
-	//ComputeOnGPU1(d_Result,nx,ny,grid,block,h_gpuRef);
+	//ComputeOnGPU1(d_Result,nx,ny,h_gpuRef);
     iElaps = seconds() - iStart;
     printf("RungeOnGPU1  elapsed %f sec\n",iElaps);
 

@@ -17,12 +17,12 @@ __device__ const double DX=0.027;
 __device__ const int TOSTOP=1000;
 
 //void InitialRandom(double *ip, const int size);
-void  InitialMatrix(double* d_Result,int nx,int ny,dim3 grid,dim3 block);
+void  InitialMatrix(double* d_Result,int nx,int ny);
 void NormalRandom(double *ip, const int size);
 
 
 
-void ComputeOnGPU1(double* Result,int nx,int ny,dim3 grid,dim3 block,double* h_gpuRef);
+void ComputeOnGPU1(double* Result,int nx,int ny,double* h_gpuRef);
 
 
 

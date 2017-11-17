@@ -27,38 +27,36 @@ __device__ double Px(double x)
 
 //数据初始化应该单独用一个kernel函数，计算fx px的初值
 //待完成。mark一下
+//1118wzl已完成
 
 __global__ void InitialKernel(double* Result,int nx,int ny)
 {
     unsigned int ix = threadIdx.x + blockIdx.x * blockDim.x;
-
     if (ix < nx ){
-
         for (int iy = 0; iy <ny; iy++)
         {
             int idx = iy * nx + ix;
-            
-			if((idx>=1*nx)&&(idx<2*nx))
-				Result[idx] = Px(double(Result[idx-nx]));
-			if((idx>=2*nx)&&(idx<3*nx))
-				Result[idx] = fx(double(Result[idx-2*nx]));
-			
-			
-			if((idx>=3*nx)&&(idx<4*nx)){
-				Result[idx] = Result[idx-3*nx];
+            if((idx>=1*nx)&&(idx<2*nx)){
+				if(Ekall(Result[idx-nx])>=0.0)
+					Result[idx] = Px(double(Result[idx-nx]));
+				else Result[idx] = 0.0;
 			}
-			if((idx>=4*nx)&&(idx<5*nx)){
-				Result[idx] = Result[idx-3*nx];
-			}
-			
 				
-				/*const double dx=0.00001;
-				int i,n=1+(2*PI)/dx;
-				double temp;
-				for (i = 1; i < n; i++){
-					temp=rk4(dx, Result[idx-2*nx] + dx * (i - 1), Result[idx]);
-					Result[idx] = temp;*/
-					
+			if((idx>=2*nx)&&(idx<3*nx)){
+				if(Result[idx-1*nx]>0.0)
+					Result[idx] = fx(double(Result[idx-2*nx]));
+				else Result[idx] = 0.0;
+			}
+				
+			if((idx>=3*nx)&&(idx<4*nx)){
+				if(Result[idx-2*nx]>0.0)
+					Result[idx] = Result[idx-3*nx];
+				else Result[idx] = 0.0;
+			}
+			if((idx>=4*nx)&&(idx<5*nx))
+				Result[idx] = Result[idx-3*nx];
+			if((idx>=5*nx)&&(idx<6*nx))
+				Result[idx] = Result[idx-3*nx];
 		}
 	}
 
@@ -71,7 +69,7 @@ void NormalRandom(double *ip, const int size){
 	curandGenerator_t gen;                                  //生成随机数变量
     curandCreateGenerator(&gen, CURAND_RNG_PSEUDO_MRG32K3A);//步骤1：指定算法
     curandSetPseudoRandomGeneratorSeed(gen, 11ULL);         //步骤2：随机数初始化
-    curandGenerateNormalDouble(gen, ip, size, 0, 2);        //步骤3：生成随机数，存储到缓冲器中（第1个数字为均值，第二个为方差）
+    curandGenerateNormalDouble(gen, ip, size, 0, 1);        //步骤3：生成随机数，存储到缓冲器中（第1个数字为均值，第二个为方差）
     curandDestroyGenerator(gen);                         //释放指针
 	return;
 	
@@ -79,10 +77,14 @@ void NormalRandom(double *ip, const int size){
 }
 
 
-void  InitialMatrix(double* d_Result,int nx,int ny,dim3 grid,dim3 block){
+void  InitialMatrix(double* d_Result,int nx,int ny){
 	NormalRandom(d_Result,nx);
+	//分配grid,block大小
+	int dimx = 256;
+    dim3 block(dimx, 1);
+    dim3 grid((nx + block.x - 1) / block.x, 1);
 	InitialKernel<<<grid,block>>>(d_Result,nx,ny);
-	    CHECK(cudaDeviceSynchronize());
+	CHECK(cudaDeviceSynchronize());
 	CHECK(cudaGetLastError());
 	int nxy = nx * ny;
     int nBytes = nxy * sizeof(double);
@@ -134,35 +136,10 @@ __global__ void ComputeKernel(double* Result,int nx,int ny)
     unsigned int ix = threadIdx.x + blockIdx.x * blockDim.x;
 
     if (ix < nx ){
-
-        for (int iy = 0; iy <ny; iy++)
-        {
-            int idx = iy * nx + ix;
-            
-			if((idx>=1*nx)&&(idx<2*nx))
-				Result[idx] = Px(double(Result[idx-nx]));
-			if((idx>=2*nx)&&(idx<3*nx))
-				Result[idx] = fx(double(Result[idx-2*nx]));
-			
-			
-			if((idx>=3*nx)&&(idx<4*nx)){
-				Result[idx] = Result[idx-3*nx];
-				int i,n=1+(TOSTOP)/DX;
-				for(i=1;i<n;i++)
-					Result[idx]=updateXi(Result[idx],DX);
-			}
-			
-				
-				/*const double dx=0.00001;
-				int i,n=1+(2*PI)/dx;
-				double temp;
-				for (i = 1; i < n; i++){
-					temp=rk4(dx, Result[idx-2*nx] + dx * (i - 1), Result[idx]);
-					Result[idx] = temp;*/
-					
+		
+		return;
+		
 		}
-	}
-
 }
 
 
@@ -170,10 +147,14 @@ __global__ void ComputeKernel(double* Result,int nx,int ny)
 
 
 
- void ComputeOnGPU1(double* Result,int nx,int ny,dim3 grid,dim3 block,double* h_gpuRef){
+
+ void ComputeOnGPU1(double* Result,int nx,int ny,double* h_gpuRef){
 	
 	
-	
+		//分配grid,block大小
+	int dimx = 256;
+    dim3 block(dimx, 1);
+    dim3 grid((nx + block.x - 1) / block.x, 1);
 	ComputeKernel<<<grid,block>>>(Result,nx,ny);
 	 CHECK(cudaDeviceSynchronize());
 	    //如果核函数错误，返回信息
