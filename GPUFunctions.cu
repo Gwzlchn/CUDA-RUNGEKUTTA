@@ -1,5 +1,7 @@
 #include"GPUFunctions.h"
 #include "device_launch_parameters.h"
+#include "HostFunctions.hpp"
+#include "common.h"
 #include<cuda_runtime.h>
 #include<curand.h>
 #include<math.h>
@@ -122,11 +124,23 @@ __global__ void ComputeKernel(double* Result,int nx,int ny)
 
 
 
- void ComputeOnGPU1(double* Result,int nx,int ny,dim3 grid,dim3 block){
+ void ComputeOnGPU1(double* Result,int nx,int ny,dim3 grid,dim3 block,double* h_gpuRef){
 	
 	
 	
 	ComputeKernel<<<grid,block>>>(Result,nx,ny);
+	    //如果核函数错误，返回信息
+    CHECK(cudaGetLastError());
+	 // GPU数据拷贝回主机
+	int nxy = nx * ny;
+    int nBytes = nxy * sizeof(double);
+	CHECK(cudaMemcpy(h_gpuRef, Result, nBytes, cudaMemcpyDeviceToHost));
+	//保存数据
+	double iStart = seconds();
+	StoreData(h_gpuRef,nx,ny,"gpu.dat");
+	//StoreData(h_Random,1,ny,"h_Random.dat");
+	double iElaps = seconds() - iStart;
+    printf("STORE THE DATA elapsed %lf sec\n",iElaps);
 	return;
 }
 

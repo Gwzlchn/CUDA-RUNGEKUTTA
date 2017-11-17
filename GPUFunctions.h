@@ -19,7 +19,7 @@ void NormalRandom(double *ip, const int size);
 
 
 
-void ComputeOnGPU1(double* Result,int nx,int ny,dim3 grid,dim3 block);
+void ComputeOnGPU1(double* Result,int nx,int ny,dim3 grid,dim3 block,double* h_gpuRef);
 
 
 

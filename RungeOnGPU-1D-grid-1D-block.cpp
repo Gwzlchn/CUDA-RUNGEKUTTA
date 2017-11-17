@@ -1,17 +1,11 @@
-#include "common.h"
 #include <cuda_runtime.h>
 #include <cstdio>
 #include <cstdlib>
-#include "HostFunctions.hpp"
+
 #include "GPUFunctions.h"
+#include "common.h"
 
-
-//#include<cutil_math.h>
-
-
-
-//在GPU端用生成正态分布数组
-	
+//计时用变量
 double iStart;
 double iElaps;
 	
@@ -21,91 +15,48 @@ int main()
 {
    printf("Starting...\n");
 
-    // set up device
+    //选择设备
     int dev = 0;
     cudaDeviceProp deviceProp;
     CHECK(cudaGetDeviceProperties(&deviceProp, dev));
     printf("Using Device %d: %s\n", dev, deviceProp.name);
     CHECK(cudaSetDevice(dev));
 
-    // set up data size of matrix
+    // 数据量，nx是粒子数
     int nx = 1 << 5;
     int ny = 1 << 3;
-	
-	
-	
-	
-
     int nxy = nx * ny;
     int nBytes = nxy * sizeof(double);
     printf("Matrix size: nx %d ny %d\n", nx, ny);
 	
+	//申请主机内存空间
 	double *h_gpuRef;
 	h_gpuRef = (double *)malloc(nBytes);
-	//memset(h_gpuRef, 0, nBytes);
-	
-	
-	
+	//申请GPU内存空间
 	double *d_Result;
     CHECK(cudaMalloc((void **)&d_Result, nBytes));
 
-    // initialize data at host side
+    //以随机数填充初值
     iStart = seconds();
     NormalRandom(d_Result, nx);
     iElaps = seconds() - iStart;
     printf("initialize matrix elapsed %f sec\n", iElaps);
 
-   
-
-
-    // invoke kernel at host side
-	
-	
-	
-	
+	//分配grid,block大小
 	int dimx = 256;
     dim3 block(dimx, 1);
     dim3 grid((nx + block.x - 1) / block.x, 1);
     
-
+	//在一个GPU上启动核函数,并将值储存
     iStart = seconds();
-	ComputeOnGPU1(d_Result,nx,ny,grid,block);
-    //RungeOnGPU1D<<<grid, block>>>(d_Result, nx, ny);
+	ComputeOnGPU1(d_Result,nx,ny,grid,block,h_gpuRef);
     CHECK(cudaDeviceSynchronize());
     iElaps = seconds() - iStart;
-    printf("sumMatrixOnGPU1D  elapsed %f sec\n",iElaps);
+    printf("RungeOnGPU1  elapsed %f sec\n",iElaps);
 
-    // check kernel error
-    CHECK(cudaGetLastError());
 
-    // copy kernel result back to host side
-    CHECK(cudaMemcpy(h_gpuRef, d_Result, nBytes, cudaMemcpyDeviceToHost));
-
-    // check device results
-    //checkResult(hostRef, gpuRef, nxy);
-
-	
-	
-	
-	
-	
-
-	//Store DATA	 
-	iStart = seconds();
-	StoreData(h_gpuRef,nx,ny,"gpu.dat");
-	//StoreData(h_Random,1,ny,"h_Random.dat");
-	iElaps = seconds() - iStart;
-    printf("STORE THE DATA elapsed %lf sec\n",iElaps);
-    
-	
-	
-	// free device global memory
+	// 释放GPU内存，释放主机内存
     CHECK(cudaFree(d_Result));
-    
-
-  
-   
-    
     free(h_gpuRef);
 
     // reset device
