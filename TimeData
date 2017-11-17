@@ -1,6 +1,0 @@
-Starting...
-Using Device 0: Tesla K40c
-Matrix size: nx 1024 ny 8
-initialize matrix elapsed 0.005068 sec
-sumMatrixOnGPU1D <<<(4,1), (256,1)>>> elapsed 30.317469 sec
-STORE THE DATA elapsed 0.004193 sec

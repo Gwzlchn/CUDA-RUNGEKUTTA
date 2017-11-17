@@ -3,7 +3,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include "HostFunctions.hpp"
-#include "GPUFunctions.cuh"
+#include "GPUFunctions.h"
 
 
 //#include<cutil_math.h>
@@ -42,7 +42,7 @@ int main()
 	
 	double *h_gpuRef;
 	h_gpuRef = (double *)malloc(nBytes);
-	memset(h_gpuRef, 0, nBytes);
+	//memset(h_gpuRef, 0, nBytes);
 	
 	
 	
@@ -51,7 +51,7 @@ int main()
 
     // initialize data at host side
     iStart = seconds();
-    InitialNormalRandom(d_Result, nx);
+    NormalRandom(d_Result, nx);
     iElaps = seconds() - iStart;
     printf("initialize matrix elapsed %f sec\n", iElaps);
 
@@ -59,17 +59,21 @@ int main()
 
 
     // invoke kernel at host side
-    int dimx = 256;
+	
+	
+	
+	
+	int dimx = 256;
     dim3 block(dimx, 1);
     dim3 grid((nx + block.x - 1) / block.x, 1);
+    
 
     iStart = seconds();
-    RungeOnGPU1D<<<grid, block>>>(d_Result, nx, ny);
+	ComputeOnGPU1(d_Result,nx,ny,grid,block);
+    //RungeOnGPU1D<<<grid, block>>>(d_Result, nx, ny);
     CHECK(cudaDeviceSynchronize());
     iElaps = seconds() - iStart;
-    printf("sumMatrixOnGPU1D <<<(%d,%d), (%d,%d)>>> elapsed %f sec\n", grid.x,
-           grid.y,
-           block.x, block.y, iElaps);
+    printf("sumMatrixOnGPU1D  elapsed %f sec\n",iElaps);
 
     // check kernel error
     CHECK(cudaGetLastError());
