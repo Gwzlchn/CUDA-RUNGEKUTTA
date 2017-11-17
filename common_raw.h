@@ -1,6 +1,5 @@
-//#include <sys/time.h>
-#include<Windows.h>
-#include<time.h>
+#include <sys/time.h>
+
 #ifndef _COMMON_H
 #define _COMMON_H
 
@@ -12,7 +11,6 @@
         fprintf(stderr, "Error: %s:%d, ", __FILE__, __LINE__);                 \
         fprintf(stderr, "code: %d, reason: %s\n", error,                       \
                 cudaGetErrorString(error));                                    \
-        exit(1);                                                               \
     }                                                                          \
 }
 
@@ -65,23 +63,12 @@
     }                                                                          \
 }
 
-
-
 inline double seconds()
 {
-   LARGE_INTEGER  large_interger;
-	//double dff;
-	__int64  c1, c2;
-	QueryPerformanceFrequency(&large_interger);
-	//dff = large_interger.QuadPart;
-	QueryPerformanceCounter(&large_interger);
-	c1 = large_interger.QuadPart;
-	//Sleep(800);
-	//QueryPerformanceCounter(&large_interger);
-	//c2 = large_interger.QuadPart;
-	//printf("�����߾��ȼ�ʱ��Ƶ��%lf\n", dff);
-	//printf("��һ�μ�ʱ��ֵ%I64d �ڶ��μ�ʱ��ֵ%I64d ��ʱ����%I64d\n", c1, c2, c2 - c1);
-    return c1/(1000.0*1000.0) ;////((double)tp.tv_sec + (double)tp.tv_usec * 1.e-6);
+    struct timeval tp;
+    struct timezone tzp;
+    int i = gettimeofday(&tp, &tzp);
+    return ((double)tp.tv_sec + (double)tp.tv_usec * 1.e-6);
 }
 
 #endif // _COMMON_H
