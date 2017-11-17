@@ -37,8 +37,8 @@ int main()
 	//申请GPU内存空间
 	double *d_Result;
     CHECK(cudaMalloc((void **)&d_Result, nBytes));
-
-    //以随机数填充初值,并完成前几列初始化
+	
+    //以随机数填充初值,并启动核函数完成fx,px初始化
     iStart = seconds();
     InitialMatrix(d_Result,nx,ny);
     iElaps = seconds() - iStart;

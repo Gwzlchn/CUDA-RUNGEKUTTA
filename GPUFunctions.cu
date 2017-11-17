@@ -31,23 +31,26 @@ __device__ double Px(double x)
 
 __global__ void InitialKernel(double* Result,int nx,int ny)
 {
+	//第一列已经是随机数了
     unsigned int ix = threadIdx.x + blockIdx.x * blockDim.x;
     if (ix < nx ){
         for (int iy = 0; iy <ny; iy++)
         {
             int idx = iy * nx + ix;
+			//第二列为第一列各自的px初值，如果出现根号下小于零的情况，直接赋值0，计算部分判断简单些（nan判定很烦……）
             if((idx>=1*nx)&&(idx<2*nx)){
 				if(Ekall(Result[idx-nx])>=0.0)
 					Result[idx] = Px(double(Result[idx-nx]));
 				else Result[idx] = 0.0;
 			}
-				
+			//第三列为第一列各自的fx初值，出现小于零情况同理。
 			if((idx>=2*nx)&&(idx<3*nx)){
 				if(Result[idx-1*nx]>0.0)
 					Result[idx] = fx(double(Result[idx-2*nx]));
 				else Result[idx] = 0.0;
 			}
-				
+			
+			//第四五六列为前三列的复制，为了compute函数准备
 			if((idx>=3*nx)&&(idx<4*nx)){
 				if(Result[idx-2*nx]>0.0)
 					Result[idx] = Result[idx-3*nx];
@@ -86,6 +89,10 @@ void  InitialMatrix(double* d_Result,int nx,int ny){
 	InitialKernel<<<grid,block>>>(d_Result,nx,ny);
 	CHECK(cudaDeviceSynchronize());
 	CHECK(cudaGetLastError());
+	
+	
+	
+	//保存数据仅仅为了测试用，写好compute部分以后肯定不用保存这个数据了……
 	int nxy = nx * ny;
     int nBytes = nxy * sizeof(double);
 	double *h_gpuRef;
@@ -94,7 +101,6 @@ void  InitialMatrix(double* d_Result,int nx,int ny){
 	//保存数据
 	double iStart = seconds();
 	StoreData(h_gpuRef,nx,ny,"init.dat");
-	//StoreData(h_Random,1,ny,"h_Random.dat");
 	double iElaps = seconds() - iStart;
     printf("STORE THE DATA elapsed %lf sec\n",iElaps);
 	
@@ -129,6 +135,12 @@ __device__ double updatePxi(double pxi,double fxi)
 
 
 
+
+//Runge_Kutta 方法，待完成-----1118wzl;
+//Runge_Kutta 方法，待完成-----1118wzl;
+//Runge_Kutta 方法，待完成-----1118wzl;
+//Runge_Kutta 方法，待完成-----1118wzl;
+//Runge_Kutta 方法，待完成-----1118wzl;
 
 
 __global__ void ComputeKernel(double* Result,int nx,int ny)
