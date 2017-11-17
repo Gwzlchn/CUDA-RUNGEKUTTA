@@ -31,11 +31,11 @@ __device__ double Px(double x)
 void NormalRandom(double *ip, const int size){
     
 
-	curandGenerator_t gen;                                  //Éú³ÉËæ»úÊı±äÁ¿
-    curandCreateGenerator(&gen, CURAND_RNG_PSEUDO_MRG32K3A);//²½Öè1£ºÖ¸¶¨Ëã·¨
-    curandSetPseudoRandomGeneratorSeed(gen, 11ULL);         //²½Öè2£ºËæ»úÊı³õÊ¼»¯
-    curandGenerateNormalDouble(gen, ip, size, 0, 2);        //²½Öè3£ºÉú³ÉËæ»úÊı£¬´æ´¢µ½»º³åÆ÷ÖĞ£¨µÚ1¸öÊı×ÖÎª¾ùÖµ£¬µÚ¶ş¸öÎª·½²î£©
-    curandDestroyGenerator(gen);                         //ÊÍ·ÅÖ¸Õë
+	curandGenerator_t gen;                                  //ç”Ÿæˆéšæœºæ•°å˜é‡
+    curandCreateGenerator(&gen, CURAND_RNG_PSEUDO_MRG32K3A);//æ­¥éª¤1ï¼šæŒ‡å®šç®—æ³•
+    curandSetPseudoRandomGeneratorSeed(gen, 11ULL);         //æ­¥éª¤2ï¼šéšæœºæ•°åˆå§‹åŒ–
+    curandGenerateNormalDouble(gen, ip, size, 0, 2);        //æ­¥éª¤3ï¼šç”Ÿæˆéšæœºæ•°ï¼Œå­˜å‚¨åˆ°ç¼“å†²å™¨ä¸­ï¼ˆç¬¬1ä¸ªæ•°å­—ä¸ºå‡å€¼ï¼Œç¬¬äºŒä¸ªä¸ºæ–¹å·®ï¼‰
+    curandDestroyGenerator(gen);                         //é‡Šæ”¾æŒ‡é’ˆ
 	return;
 	
 	
