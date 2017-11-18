@@ -73,7 +73,7 @@ void NormalRandom(double *ip, const int size){
     curandCreateGenerator(&gen, CURAND_RNG_PSEUDO_MRG32K3A);//步骤1：指定算法
     curandSetPseudoRandomGeneratorSeed(gen, 11ULL);         //步骤2：随机数初始化
     curandGenerateNormalDouble(gen, ip, size, 0, 1);        //步骤3：生成随机数，存储到缓冲器中（第1个数字为均值，第二个为方差）
-    curandDestroyGenerator(gen);                         //释放指针
+    curandDestroyGenerator(gen);                         	//释放指针
 	return;
 	
 	
@@ -163,15 +163,15 @@ __global__ void ComputeKernel(double* Result,int nx,int ny)
  void ComputeOnGPU1(double* Result,int nx,int ny,double* h_gpuRef){
 	
 	
-		//分配grid,block大小
+	//分配grid,block大小
 	int dimx = 256;
     dim3 block(dimx, 1);
     dim3 grid((nx + block.x - 1) / block.x, 1);
 	ComputeKernel<<<grid,block>>>(Result,nx,ny);
 	 CHECK(cudaDeviceSynchronize());
-	    //如果核函数错误，返回信息
+	//如果核函数错误，返回信息
     CHECK(cudaGetLastError());
-	 // GPU数据拷贝回主机
+	// GPU数据拷贝回主机
 	int nxy = nx * ny;
     int nBytes = nxy * sizeof(double);
 	CHECK(cudaMemcpy(h_gpuRef, Result, nBytes, cudaMemcpyDeviceToHost));
