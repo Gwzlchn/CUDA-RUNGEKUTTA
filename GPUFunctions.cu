@@ -10,7 +10,7 @@
 __device__ double fx(double x)
 {
 
-	return -1.0/(pow(sqrt(pow(x,2.0)+pow(A,2.0)),3.0));
+	return -(x/(pow(sqrt(pow(x,2.0)+pow(A,2.0)),3.0)));
 }
 
 
@@ -58,8 +58,7 @@ __global__ void InitialKernel(double* Result,int nx,int ny)
 			}
 			if((idx>=4*nx)&&(idx<5*nx))
 				Result[idx] = Result[idx-3*nx];
-			if((idx>=5*nx)&&(idx<6*nx))
-				Result[idx] = Result[idx-3*nx];
+			
 		}
 	}
 
@@ -72,7 +71,7 @@ void NormalRandom(double *ip, const int size){
 	curandGenerator_t gen;                                  //生成随机数变量
     curandCreateGenerator(&gen, CURAND_RNG_PSEUDO_MRG32K3A);//步骤1：指定算法
     curandSetPseudoRandomGeneratorSeed(gen, 11ULL);         //步骤2：随机数初始化
-    curandGenerateNormalDouble(gen, ip, size, 0, 1);        //步骤3：生成随机数，存储到缓冲器中（第1个数字为均值，第二个为方差）
+    curandGenerateNormalDouble(gen, ip, size, 0, 0.7);        //步骤3：生成随机数，存储到缓冲器中（第1个数字为均值，第二个为方差）
     curandDestroyGenerator(gen);                         	//释放指针
 	return;
 	
@@ -102,7 +101,7 @@ void  InitialMatrix(double* d_Result,int nx,int ny){
 	double iStart = seconds();
 	StoreData(h_gpuRef,nx,ny,"init.dat");
 	double iElaps = seconds() - iStart;
-    printf("STORE THE DATA elapsed %lf sec\n",iElaps);
+    printf("STORE THE InitialKernel DATA elapsed %lf sec\n",iElaps);
 	
 	
 }
@@ -112,46 +111,50 @@ void  InitialMatrix(double* d_Result,int nx,int ny){
 
 
 
-__device__ double updateXi(double xi,double pxi)
+__device__ void updateXi(double& xi,double& pxi)
 {
-	double K1=pxi;
-	double K2=xi+K1/2.0*DX;
-	double K3=xi+K2/2.0*DX;
-	double K4=xi+K3*DX;
+	//const double DX=0.027;
+	double K1  = pxi;
+	double K11 = fx(xi);
 	
-	return xi+DX*(K1+2*K2+2*K3+K4)/6.0;
+	double K2  = pxi + K11/2.0*DX;
+	double K22 = fx(xi + K1/2.0*DX);
+	
+	double K3  = pxi + K22/2.0*DX;
+	double K33 = fx(xi + K2/2.0*DX);
+	
+	double K4  = pxi+K33*DX;
+	double K44 = fx(xi+K3*DX);
+	
+	xi  = xi  + DX * (K1  + 2*K2  + 2*K3  + K4)/6.0;
+	pxi = pxi + DX * (K11 + K22*2 + K33*2 + K44)/6.0;
+	return;
 }
 
 
-__device__ double updatePxi(double pxi,double fxi)
-{
-	double K1=fxi;
-	double K2=pxi+K1/2.0*DX;
-	double K3=pxi+K2/2.0*DX;
-	double K4=pxi+K3*DX;
-	
-	return pxi+DX*(K1+2*K2+2*K3+K4)/6.0;
-}
 
 
 
 
-//Runge_Kutta 方法，待完成-----1118wzl;
-//Runge_Kutta 方法，待完成-----1118wzl;
-//Runge_Kutta 方法，待完成-----1118wzl;
-//Runge_Kutta 方法，待完成-----1118wzl;
-//Runge_Kutta 方法，待完成-----1118wzl;
+
+
 
 
 __global__ void ComputeKernel(double* Result,int nx,int ny)
 {
     unsigned int ix = threadIdx.x + blockIdx.x * blockDim.x;
-
-    if (ix < nx ){
-		
-		return;
-		
+	unsigned int idxOfXi  = 3 * nx + ix;
+	unsigned int idxOfPxi = 4 * nx + ix;
+	
+	unsigned int Steps = TOSTOP/DX;
+	
+	
+    if(ix<nx && Result[idxOfXi]!=0.0){
+		for(int i=0;i<Steps;i++){
+			updateXi(Result[idxOfXi],Result[idxOfPxi]);
+			
 		}
+	}
 }
 
 
@@ -164,8 +167,8 @@ __global__ void ComputeKernel(double* Result,int nx,int ny)
 	
 	
 	//分配grid,block大小
-	int dimx = 256;
-    dim3 block(dimx, 1);
+	int dimx = 512;
+    dim3 block(dimx);
     dim3 grid((nx + block.x - 1) / block.x, 1);
 	ComputeKernel<<<grid,block>>>(Result,nx,ny);
 	 CHECK(cudaDeviceSynchronize());
@@ -180,7 +183,7 @@ __global__ void ComputeKernel(double* Result,int nx,int ny)
 	StoreData(h_gpuRef,nx,ny,"gpu.dat");
 	//StoreData(h_Random,1,ny,"h_Random.dat");
 	double iElaps = seconds() - iStart;
-    printf("STORE THE DATA elapsed %lf sec\n",iElaps);
+    printf("STORE THE ComputeKernel DATA elapsed %lf sec\n",iElaps);
 	return;
 }
 
