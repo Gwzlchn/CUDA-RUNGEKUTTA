@@ -1,4 +1,4 @@
-#include"GPUFunctions.h"
+﻿#include"GPUFunctions.h"
 #include "device_launch_parameters.h"
 #include "HostFunctions.hpp"
 #include "common.h"
@@ -24,6 +24,20 @@ __device__ double Px(double x)
 {
 	return sqrt(2*Ekall(x));
 }
+
+__device__ double EkallAtStepTwo(double t)
+
+{
+	return A*pow( (sin(omega/(2.0*10*2*PI/omega))) , 2.0) * sin(omega * t);
+}
+
+__device__ double fxAtStepTwo(double x,double time)
+{
+	return fx(x)-EkallAtStepTwo(time);
+}
+
+
+
 
 //数据初始化应该单独用一个kernel函数，计算fx px的初值
 //待完成。mark一下
@@ -113,7 +127,7 @@ void  InitialMatrix(double* d_Result,int nx,int ny){
 
 __device__ void updateXi(double& xi,double& pxi)
 {
-	//const double DX=0.027;
+	
 	double K1  = pxi;
 	double K11 = fx(xi);
 	
@@ -133,6 +147,26 @@ __device__ void updateXi(double& xi,double& pxi)
 
 
 
+__device__ void updateXiAtStepTwo(double& xi,double& pxi,double time)
+{
+	
+	double K1  = pxi;
+	double K11 = fxAtStepTwo(xi,time);
+	
+	double K2  = pxi + K11/2.0*DX;
+	double K22 = fxAtStepTwo(xi + K1/2.0*DX,time+DX/2.0);
+	
+	double K3  = pxi + K22/2.0*DX;
+	double K33 = fxAtStepTwo(xi + K2/2.0*DX,time+DX/2.0);
+	
+	double K4  = pxi+K33*DX;
+	double K44 = fxAtStepTwo(xi + K3*DX,time+DX);
+	
+	xi  = xi  + DX * (K1  + 2*K2  + 2*K3  + K4)/6.0;
+	pxi = pxi + DX * (K11 + K22*2 + K33*2 + K44)/6.0;
+	return;
+}
+
 
 
 
@@ -145,21 +179,41 @@ __global__ void ComputeKernel(double* Result,int nx,int ny)
     unsigned int ix = threadIdx.x + blockIdx.x * blockDim.x;
 	unsigned int idxOfXi  = 3 * nx + ix;
 	unsigned int idxOfPxi = 4 * nx + ix;
-	
-	unsigned int Steps = TOSTOP/DX;
+	unsigned int idxOfXiTwo  = 5 * nx + ix;
+	unsigned int idxOfPxiTwo = 6 * nx + ix;
+
 	
 	
     if(ix<nx && Result[idxOfXi]!=0.0){
-		for(int i=0;i<Steps;i++){
+		for(int i=0;i<STEPSFIRST;i++){
 			updateXi(Result[idxOfXi],Result[idxOfPxi]);
-			
 		}
+		Result[idxOfXiTwo] = Result[idxOfXi];
+		Result[idxOfPxiTwo] = Result[idxOfPxi];
+		for(int i=0;i<STEPSSECOND;i++){
+			updateXiAtStepTwo(Result[idxOfXiTwo],Result[idxOfPxiTwo],i*DX);
+		}
+		if( 0.5 * (pow(Result[idxOfPxiTwo],2.0)) - (1.0 / sqrt( pow(Result[idxOfXiTwo],2.0)+ pow(A,2.0) )) < 0.0)
+			Result[idxOfXiTwo] = Result[idxOfPxiTwo] = -999;
 	}
 }
 
 
 
+void CountZeros(double* h_Result,int nx,int& Zeros, int& nonZeros)
+{
 
+	unsigned int idxOfXiTwo  = 5 * nx ;
+	
+	for(int i=0;i!=nx;i++){
+		if(h_Result[idxOfXiTwo] == 0.0) Zeros++;
+		if(h_Result[idxOfXiTwo] == -999) nonZeros++;
+	}
+	
+	
+	
+	return;
+}
 
 
 
@@ -170,19 +224,31 @@ __global__ void ComputeKernel(double* Result,int nx,int ny)
 	int dimx = 512;
     dim3 block(dimx);
     dim3 grid((nx + block.x - 1) / block.x, 1);
+	
+	double iStart = seconds();
 	ComputeKernel<<<grid,block>>>(Result,nx,ny);
 	 CHECK(cudaDeviceSynchronize());
 	//如果核函数错误，返回信息
     CHECK(cudaGetLastError());
+	double iElaps = seconds() - iStart;
+	printf("RungeOnGPU  elapsed %f sec\n",iElaps);
+	
 	// GPU数据拷贝回主机
 	int nxy = nx * ny;
     int nBytes = nxy * sizeof(double);
 	CHECK(cudaMemcpy(h_gpuRef, Result, nBytes, cudaMemcpyDeviceToHost));
+	
+	int zeros=0,nonzeros=0;
+	CountZeros(h_gpuRef,nx,zeros,nonzeros);
+	printf("The Number of Zeros is %d,\t The Number of NonZeros is %d \n",zeros,nonzeros);
+	double per = (nx - zeros - nonzeros)/(nx - zeros);
+	printf("Percentage is %lf %% \n",per*100.0);
+	
 	//保存数据
-	double iStart = seconds();
-	StoreData(h_gpuRef,nx,ny,"gpu.dat");
+	iStart = seconds();
+	StoreData(h_gpuRef,nx,ny,"gpuStepTwo.dat");
 	//StoreData(h_Random,1,ny,"h_Random.dat");
-	double iElaps = seconds() - iStart;
+	iElaps = seconds() - iStart;
     printf("STORE THE ComputeKernel DATA elapsed %lf sec\n",iElaps);
 	return;
 }
