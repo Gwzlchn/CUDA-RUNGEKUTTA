@@ -8,7 +8,6 @@
 
 #endif // HOSTFUNCTIONS_HPP
 
-
  void StoreData(double *Matrix, const int NX,const int NY,const char name[])
 {
    
@@ -33,3 +32,4 @@
 
 	return;
 }
+

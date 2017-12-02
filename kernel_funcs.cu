@@ -1,70 +1,31 @@
-ï»¿#include"GPUFunctions.h"
-#include "device_launch_parameters.h"
-#include "HostFunctions.hpp"
-#include "common.h"
-#include<cuda_runtime.h>
+#include"kernel_funcs.h"
+#include"device_funcs.cuh"
 #include<curand.h>
-#include<math.h>
-
-
-__device__ double fx(double x)
-{
-
-	return -(x/(pow(sqrt(pow(x,2.0)+pow(A,2.0)),3.0)));
-}
-
-
-__device__ double Ekall(double x)
-{
-
-	return E0+1.0/(sqrt(pow(x,2.0)+pow(A,2.0)));
-}
-
-__device__ double Px(double x)
-{
-	return sqrt(2*Ekall(x));
-}
-
-__device__ double EkallAtStepTwo(double t)
-
-{
-	return A*pow( (sin(omega/(2.0*10*2*PI/omega))) , 2.0) * sin(omega * t);
-}
-
-__device__ double fxAtStepTwo(double x,double time)
-{
-	return fx(x)-EkallAtStepTwo(time);
-}
-
-
-
-
-//æ•°æ®åˆå§‹åŒ–åº”è¯¥å•ç‹¬ç”¨ä¸€ä¸ªkernelå‡½æ•°ï¼Œè®¡ç®—fx pxçš„åˆå€¼
-//å¾…å®Œæˆã€‚markä¸€ä¸‹
-//1118wzlå·²å®Œæˆ
+#include "common.hpp"
+#include"host_funcs.hpp"
 
 __global__ void InitialKernel(double* Result,int nx,int ny)
 {
-	//ç¬¬ä¸€åˆ—å·²ç»æ˜¯éšæœºæ•°äº†
+	//µÚÒ»ÁĞÒÑ¾­ÊÇËæ»úÊıÁË
     unsigned int ix = threadIdx.x + blockIdx.x * blockDim.x;
     if (ix < nx ){
         for (int iy = 0; iy <ny; iy++)
         {
             int idx = iy * nx + ix;
-			//ç¬¬äºŒåˆ—ä¸ºç¬¬ä¸€åˆ—å„è‡ªçš„pxåˆå€¼ï¼Œå¦‚æœå‡ºç°æ ¹å·ä¸‹å°äºé›¶çš„æƒ…å†µï¼Œç›´æ¥èµ‹å€¼0ï¼Œè®¡ç®—éƒ¨åˆ†åˆ¤æ–­ç®€å•äº›ï¼ˆnanåˆ¤å®šå¾ˆçƒ¦â€¦â€¦ï¼‰
+			//µÚ¶şÁĞÎªµÚÒ»ÁĞ¸÷×ÔµÄpx³õÖµ£¬Èç¹û³öÏÖ¸ùºÅÏÂĞ¡ÓÚÁãµÄÇé¿ö£¬Ö±½Ó¸³Öµ0£¬¼ÆËã²¿·ÖÅĞ¶Ï¼òµ¥Ğ©£¨nanÅĞ¶¨ºÜ·³¡­¡­£©
             if((idx>=1*nx)&&(idx<2*nx)){
 				if(Ekall(Result[idx-nx])>=0.0)
 					Result[idx] = Px(double(Result[idx-nx]));
 				else Result[idx] = 0.0;
 			}
-			//ç¬¬ä¸‰åˆ—ä¸ºç¬¬ä¸€åˆ—å„è‡ªçš„fxåˆå€¼ï¼Œå‡ºç°å°äºé›¶æƒ…å†µåŒç†ã€‚
+			//µÚÈıÁĞÎªµÚÒ»ÁĞ¸÷×ÔµÄfx³õÖµ£¬³öÏÖĞ¡ÓÚÁãÇé¿öÍ¬Àí¡£
 			if((idx>=2*nx)&&(idx<3*nx)){
 				if(Result[idx-1*nx]>0.0)
 					Result[idx] = fx(double(Result[idx-2*nx]));
 				else Result[idx] = 0.0;
 			}
 			
-			//ç¬¬å››äº”å…­åˆ—ä¸ºå‰ä¸‰åˆ—çš„å¤åˆ¶ï¼Œä¸ºäº†computeå‡½æ•°å‡†å¤‡
+			//µÚËÄÎåÁùÁĞÎªÇ°ÈıÁĞµÄ¸´ÖÆ£¬ÎªÁËcomputeº¯Êı×¼±¸
 			if((idx>=3*nx)&&(idx<4*nx)){
 				if(Result[idx-2*nx]>0.0)
 					Result[idx] = Result[idx-3*nx];
@@ -79,14 +40,15 @@ __global__ void InitialKernel(double* Result,int nx,int ny)
 }
 
 
+
 void NormalRandom(double *ip, const int size){
     
 
-	curandGenerator_t gen;                                  //ç”Ÿæˆéšæœºæ•°å˜é‡
-    curandCreateGenerator(&gen, CURAND_RNG_PSEUDO_MRG32K3A);//æ­¥éª¤1ï¼šæŒ‡å®šç®—æ³•
-    curandSetPseudoRandomGeneratorSeed(gen, 11ULL);         //æ­¥éª¤2ï¼šéšæœºæ•°åˆå§‹åŒ–
-    curandGenerateNormalDouble(gen, ip, size, 0, 0.7);        //æ­¥éª¤3ï¼šç”Ÿæˆéšæœºæ•°ï¼Œå­˜å‚¨åˆ°ç¼“å†²å™¨ä¸­ï¼ˆç¬¬1ä¸ªæ•°å­—ä¸ºå‡å€¼ï¼Œç¬¬äºŒä¸ªä¸ºæ–¹å·®ï¼‰
-    curandDestroyGenerator(gen);                         	//é‡Šæ”¾æŒ‡é’ˆ
+	curandGenerator_t gen;                                  //Éú³ÉËæ»úÊı±äÁ¿
+    curandCreateGenerator(&gen, CURAND_RNG_PSEUDO_MRG32K3A);//²½Öè1£ºÖ¸¶¨Ëã·¨
+    curandSetPseudoRandomGeneratorSeed(gen, 11ULL);         //²½Öè2£ºËæ»úÊı³õÊ¼»¯
+    curandGenerateNormalDouble(gen, ip, size, 0, 0.7);        //²½Öè3£ºÉú³ÉËæ»úÊı£¬´æ´¢µ½»º³åÆ÷ÖĞ£¨µÚ1¸öÊı×ÖÎª¾ùÖµ£¬µÚ¶ş¸öÎª·½²î£©
+    curandDestroyGenerator(gen);                         	//ÊÍ·ÅÖ¸Õë
 	return;
 	
 	
@@ -95,7 +57,7 @@ void NormalRandom(double *ip, const int size){
 
 void  InitialMatrix(double* d_Result,int nx,int ny){
 	NormalRandom(d_Result,nx);
-	//åˆ†é…grid,blockå¤§å°
+	//·ÖÅägrid,block´óĞ¡
 	int dimx = 256;
     dim3 block(dimx, 1);
     dim3 grid((nx + block.x - 1) / block.x, 1);
@@ -105,13 +67,13 @@ void  InitialMatrix(double* d_Result,int nx,int ny){
 	
 	
 	
-	//ä¿å­˜æ•°æ®ä»…ä»…ä¸ºäº†æµ‹è¯•ç”¨ï¼Œå†™å¥½computeéƒ¨åˆ†ä»¥åè‚¯å®šä¸ç”¨ä¿å­˜è¿™ä¸ªæ•°æ®äº†â€¦â€¦
+	//±£´æÊı¾İ½ö½öÎªÁË²âÊÔÓÃ£¬Ğ´ºÃcompute²¿·ÖÒÔºó¿Ï¶¨²»ÓÃ±£´æÕâ¸öÊı¾İÁË¡­¡­
 	int nxy = nx * ny;
     int nBytes = nxy * sizeof(double);
 	double *h_gpuRef;
 	h_gpuRef = (double *)malloc(nBytes);
 	CHECK(cudaMemcpy(h_gpuRef, d_Result, nBytes, cudaMemcpyDeviceToHost));
-	//ä¿å­˜æ•°æ®
+	//±£´æÊı¾İ
 	double iStart = seconds();
 	StoreData(h_gpuRef,nx,ny,"init.dat");
 	double iElaps = seconds() - iStart;
@@ -119,59 +81,6 @@ void  InitialMatrix(double* d_Result,int nx,int ny){
 	
 	
 }
-
-
-
-
-
-
-__device__ void updateXi(double& xi,double& pxi)
-{
-	
-	double K1  = pxi;
-	double K11 = fx(xi);
-	
-	double K2  = pxi + K11/2.0*DX;
-	double K22 = fx(xi + K1/2.0*DX);
-	
-	double K3  = pxi + K22/2.0*DX;
-	double K33 = fx(xi + K2/2.0*DX);
-	
-	double K4  = pxi+K33*DX;
-	double K44 = fx(xi+K3*DX);
-	
-	xi  = xi  + DX * (K1  + 2*K2  + 2*K3  + K4)/6.0;
-	pxi = pxi + DX * (K11 + K22*2 + K33*2 + K44)/6.0;
-	return;
-}
-
-
-
-__device__ void updateXiAtStepTwo(double& xi,double& pxi,double time)
-{
-	
-	double K1  = pxi;
-	double K11 = fxAtStepTwo(xi,time);
-	
-	double K2  = pxi + K11/2.0*DX;
-	double K22 = fxAtStepTwo(xi + K1/2.0*DX,time+DX/2.0);
-	
-	double K3  = pxi + K22/2.0*DX;
-	double K33 = fxAtStepTwo(xi + K2/2.0*DX,time+DX/2.0);
-	
-	double K4  = pxi+K33*DX;
-	double K44 = fxAtStepTwo(xi + K3*DX,time+DX);
-	
-	xi  = xi  + DX * (K1  + 2*K2  + 2*K3  + K4)/6.0;
-	pxi = pxi + DX * (K11 + K22*2 + K33*2 + K44)/6.0;
-	return;
-}
-
-
-
-
-
-
 
 
 __global__ void ComputeKernel(double* Result,int nx,int ny)
@@ -193,7 +102,8 @@ __global__ void ComputeKernel(double* Result,int nx,int ny)
 		for(int i=0;i<STEPSSECOND;i++){
 			updateXiAtStepTwo(Result[idxOfXiTwo],Result[idxOfPxiTwo],i*DX);
 		}
-		if( 0.5 * (pow(Result[idxOfPxiTwo],2.0)) - (1.0 / sqrt( pow(Result[idxOfXiTwo],2.0)+ pow(A,2.0) )) < 0.0)
+		double TempE=0.5 * (pow(Result[idxOfPxiTwo],2.0)) - (1.0 / sqrt( pow(Result[idxOfXiTwo],2.0)+ pow(A,2.0)));
+		if( TempE < 0.0)
 			Result[idxOfXiTwo] = Result[idxOfPxiTwo] = -999;
 	}
 }
@@ -217,10 +127,14 @@ void CountZeros(double* h_Result,int nx,int& Zeros, int& nonZeros)
 
 
 
+
+
+
+
  void ComputeOnGPU1(double* Result,int nx,int ny,double* h_gpuRef){
 	
 	
-	//åˆ†é…grid,blockå¤§å°
+	//·ÖÅägrid,block´óĞ¡
 	int dimx = 512;
     dim3 block(dimx);
     dim3 grid((nx + block.x - 1) / block.x, 1);
@@ -228,12 +142,12 @@ void CountZeros(double* h_Result,int nx,int& Zeros, int& nonZeros)
 	double iStart = seconds();
 	ComputeKernel<<<grid,block>>>(Result,nx,ny);
 	 CHECK(cudaDeviceSynchronize());
-	//å¦‚æœæ ¸å‡½æ•°é”™è¯¯ï¼Œè¿”å›ä¿¡æ¯
+	//Èç¹ûºËº¯Êı´íÎó£¬·µ»ØĞÅÏ¢
     CHECK(cudaGetLastError());
 	double iElaps = seconds() - iStart;
 	printf("RungeOnGPU  elapsed %f sec\n",iElaps);
 	
-	// GPUæ•°æ®æ‹·è´å›ä¸»æœº
+	// GPUÊı¾İ¿½±´»ØÖ÷»ú
 	int nxy = nx * ny;
     int nBytes = nxy * sizeof(double);
 	CHECK(cudaMemcpy(h_gpuRef, Result, nBytes, cudaMemcpyDeviceToHost));
@@ -244,20 +158,12 @@ void CountZeros(double* h_Result,int nx,int& Zeros, int& nonZeros)
 	double per = (nx - zeros - nonzeros)/(nx - zeros);
 	printf("Percentage is %lf %% \n",per*100.0);
 	
-	//ä¿å­˜æ•°æ®
+	//±£´æÊı¾İ
 	iStart = seconds();
-	StoreData(h_gpuRef,nx,ny,"gpuStepTwo.dat");
+	StoreData(h_gpuRef,nx,ny,"gpuStepTwo1202.dat");
 	//StoreData(h_Random,1,ny,"h_Random.dat");
 	iElaps = seconds() - iStart;
     printf("STORE THE ComputeKernel DATA elapsed %lf sec\n",iElaps);
 	return;
 }
-
-
-
-
-
-
-
-
 

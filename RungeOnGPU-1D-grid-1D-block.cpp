@@ -2,8 +2,8 @@
 #include <cstdio>
 #include <cstdlib>
 
-#include "GPUFunctions.h"
-#include "common.h"
+#include "kernel_funcs.h"
+#include "common.hpp"
 
 //计时用变量
 double iStart;

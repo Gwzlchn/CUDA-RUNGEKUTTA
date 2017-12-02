@@ -1,7 +1,13 @@
-#include <sys/time.h>
+#ifdef _WIN32
+#include<Windows.h>
 
-#ifndef _COMMON_H
-#define _COMMON_H
+#else
+#include <sys/time.h>
+#endif
+
+#include<stdio.h>
+#ifndef COMMON_HPP
+#define COMMON_HPP
 
 #define CHECK(call)                                                            \
 {                                                                              \
@@ -63,6 +69,18 @@
     }                                                                          \
 }
 
+#ifdef _WIN32
+
+inline double seconds()
+{
+   LARGE_INTEGER  large_interger;
+	__int64  c1;
+	QueryPerformanceFrequency(&large_interger);
+	QueryPerformanceCounter(&large_interger);
+	c1 = large_interger.QuadPart;
+    return c1/(1000.0*1000.0) ;
+}
+#else
 inline double seconds()
 {
     struct timeval tp;
@@ -70,5 +88,9 @@ inline double seconds()
     int i = gettimeofday(&tp, &tzp);
     return ((double)tp.tv_sec + (double)tp.tv_usec * 1.e-6);
 }
+#endif
+
+
 
 #endif // _COMMON_H
+
