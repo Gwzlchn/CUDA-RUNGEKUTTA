@@ -6,26 +6,26 @@
 
 __global__ void InitialKernel(double* Result,int nx,int ny)
 {
-	//µÚÒ»ÁĞÒÑ¾­ÊÇËæ»úÊıÁË
+	//ç¬¬ä¸€åˆ—å·²ç»æ˜¯éšæœºæ•°äº†
     unsigned int ix = threadIdx.x + blockIdx.x * blockDim.x;
     if (ix < nx ){
         for (int iy = 0; iy <ny; iy++)
         {
             int idx = iy * nx + ix;
-			//µÚ¶şÁĞÎªµÚÒ»ÁĞ¸÷×ÔµÄpx³õÖµ£¬Èç¹û³öÏÖ¸ùºÅÏÂĞ¡ÓÚÁãµÄÇé¿ö£¬Ö±½Ó¸³Öµ0£¬¼ÆËã²¿·ÖÅĞ¶Ï¼òµ¥Ğ©£¨nanÅĞ¶¨ºÜ·³¡­¡­£©
+			//ç¬¬äºŒåˆ—ä¸ºç¬¬ä¸€åˆ—å„è‡ªçš„pxåˆå€¼ï¼Œå¦‚æœå‡ºç°æ ¹å·ä¸‹å°äºé›¶çš„æƒ…å†µï¼Œç›´æ¥èµ‹å€¼0ï¼Œè®¡ç®—éƒ¨åˆ†åˆ¤æ–­ç®€å•äº›ï¼ˆnanåˆ¤å®šå¾ˆçƒ¦â€¦â€¦ï¼‰
             if((idx>=1*nx)&&(idx<2*nx)){
 				if(Ekall(Result[idx-nx])>=0.0)
 					Result[idx] = Px(double(Result[idx-nx]));
 				else Result[idx] = 0.0;
 			}
-			//µÚÈıÁĞÎªµÚÒ»ÁĞ¸÷×ÔµÄfx³õÖµ£¬³öÏÖĞ¡ÓÚÁãÇé¿öÍ¬Àí¡£
+			//ç¬¬ä¸‰åˆ—ä¸ºç¬¬ä¸€åˆ—å„è‡ªçš„fxåˆå€¼ï¼Œå‡ºç°å°äºé›¶æƒ…å†µåŒç†ã€‚
 			if((idx>=2*nx)&&(idx<3*nx)){
 				if(Result[idx-1*nx]>0.0)
 					Result[idx] = fx(double(Result[idx-2*nx]));
 				else Result[idx] = 0.0;
 			}
 			
-			//µÚËÄÎåÁùÁĞÎªÇ°ÈıÁĞµÄ¸´ÖÆ£¬ÎªÁËcomputeº¯Êı×¼±¸
+			//ç¬¬å››äº”å…­åˆ—ä¸ºå‰ä¸‰åˆ—çš„å¤åˆ¶ï¼Œä¸ºäº†computeå‡½æ•°å‡†å¤‡
 			if((idx>=3*nx)&&(idx<4*nx)){
 				if(Result[idx-2*nx]>0.0)
 					Result[idx] = Result[idx-3*nx];
@@ -44,11 +44,11 @@ __global__ void InitialKernel(double* Result,int nx,int ny)
 void NormalRandom(double *ip, const int size){
     
 
-	curandGenerator_t gen;                                  //Éú³ÉËæ»úÊı±äÁ¿
-    curandCreateGenerator(&gen, CURAND_RNG_PSEUDO_MRG32K3A);//²½Öè1£ºÖ¸¶¨Ëã·¨
-    curandSetPseudoRandomGeneratorSeed(gen, 11ULL);         //²½Öè2£ºËæ»úÊı³õÊ¼»¯
-    curandGenerateNormalDouble(gen, ip, size, 0, 0.7);        //²½Öè3£ºÉú³ÉËæ»úÊı£¬´æ´¢µ½»º³åÆ÷ÖĞ£¨µÚ1¸öÊı×ÖÎª¾ùÖµ£¬µÚ¶ş¸öÎª·½²î£©
-    curandDestroyGenerator(gen);                         	//ÊÍ·ÅÖ¸Õë
+	curandGenerator_t gen;                                  //ç”Ÿæˆéšæœºæ•°å˜é‡
+    curandCreateGenerator(&gen, CURAND_RNG_PSEUDO_MRG32K3A);//æ­¥éª¤1ï¼šæŒ‡å®šç®—æ³•
+    curandSetPseudoRandomGeneratorSeed(gen, 11ULL);         //æ­¥éª¤2ï¼šéšæœºæ•°åˆå§‹åŒ–
+    curandGenerateNormalDouble(gen, ip, size, 0, 0.7);        //æ­¥éª¤3ï¼šç”Ÿæˆéšæœºæ•°ï¼Œå­˜å‚¨åˆ°ç¼“å†²å™¨ä¸­ï¼ˆç¬¬1ä¸ªæ•°å­—ä¸ºå‡å€¼ï¼Œç¬¬äºŒä¸ªä¸ºæ–¹å·®ï¼‰
+    curandDestroyGenerator(gen);                         	//é‡Šæ”¾æŒ‡é’ˆ
 	return;
 	
 	
@@ -57,7 +57,7 @@ void NormalRandom(double *ip, const int size){
 
 void  InitialMatrix(double* d_Result,int nx,int ny){
 	NormalRandom(d_Result,nx);
-	//·ÖÅägrid,block´óĞ¡
+	//åˆ†é…grid,blockå¤§å°
 	int dimx = 256;
     dim3 block(dimx, 1);
     dim3 grid((nx + block.x - 1) / block.x, 1);
@@ -67,13 +67,13 @@ void  InitialMatrix(double* d_Result,int nx,int ny){
 	
 	
 	
-	//±£´æÊı¾İ½ö½öÎªÁË²âÊÔÓÃ£¬Ğ´ºÃcompute²¿·ÖÒÔºó¿Ï¶¨²»ÓÃ±£´æÕâ¸öÊı¾İÁË¡­¡­
+	//ä¿å­˜æ•°æ®ä»…ä»…ä¸ºäº†æµ‹è¯•ç”¨ï¼Œå†™å¥½computeéƒ¨åˆ†ä»¥åè‚¯å®šä¸ç”¨ä¿å­˜è¿™ä¸ªæ•°æ®äº†â€¦â€¦
 	int nxy = nx * ny;
     int nBytes = nxy * sizeof(double);
 	double *h_gpuRef;
 	h_gpuRef = (double *)malloc(nBytes);
 	CHECK(cudaMemcpy(h_gpuRef, d_Result, nBytes, cudaMemcpyDeviceToHost));
-	//±£´æÊı¾İ
+	//ä¿å­˜æ•°æ®
 	double iStart = seconds();
 	StoreData(h_gpuRef,nx,ny,"init.dat");
 	double iElaps = seconds() - iStart;
@@ -155,7 +155,7 @@ int CountTooBig(double* h_Result,int nx)
  void ComputeOnGPU1(double* Result,int nx,int ny,double* h_gpuRef){
 	
 	
-	//·ÖÅägrid,block´óĞ¡
+	//åˆ†é…grid,blockå¤§å°
 	int dimx = 512;
     dim3 block(dimx);
     dim3 grid((nx + block.x - 1) / block.x, 1);
@@ -163,12 +163,12 @@ int CountTooBig(double* h_Result,int nx)
 	double iStart = seconds();
 	ComputeKernel<<<grid,block>>>(Result,nx,ny);
 	 CHECK(cudaDeviceSynchronize());
-	//Èç¹ûºËº¯Êı´íÎó£¬·µ»ØĞÅÏ¢
+	//å¦‚æœæ ¸å‡½æ•°é”™è¯¯ï¼Œè¿”å›ä¿¡æ¯
     CHECK(cudaGetLastError());
 	double iElaps = seconds() - iStart;
 	printf("RungeOnGPU  elapsed %f sec\n",iElaps);
 	
-	// GPUÊı¾İ¿½±´»ØÖ÷»ú
+	// GPUæ•°æ®æ‹·è´å›ä¸»æœº
 	int nxy = nx * ny;
     int nBytes = nxy * sizeof(double);
 	CHECK(cudaMemcpy(h_gpuRef, Result, nBytes, cudaMemcpyDeviceToHost));
@@ -180,7 +180,7 @@ int CountTooBig(double* h_Result,int nx)
 	double per = (nx - zeros - nonzeros)/(nx - zeros);
 	printf("Percentage is %lf  \n",per);
 	
-	//±£´æÊı¾İ
+	//ä¿å­˜æ•°æ®
 	iStart = seconds();
 	StoreData(h_gpuRef,nx,ny,"gpuStepTwo1202.dat");
 	//StoreData(h_Random,1,ny,"h_Random.dat");
