@@ -90,40 +90,61 @@ __global__ void ComputeKernel(double* Result,int nx,int ny)
 	unsigned int idxOfPxi = 4 * nx + ix;
 	unsigned int idxOfXiTwo  = 5 * nx + ix;
 	unsigned int idxOfPxiTwo = 6 * nx + ix;
+	unsigned int idxOfTemp = 7 * nx + ix;
 
-	
-	
+
     if(ix<nx && Result[idxOfXi]!=0.0){
 		for(int i=0;i<STEPSFIRST;i++){
 			updateXi(Result[idxOfXi],Result[idxOfPxi]);
 		}
 		Result[idxOfXiTwo] = Result[idxOfXi];
 		Result[idxOfPxiTwo] = Result[idxOfPxi];
+		
 		for(int i=0;i<STEPSSECOND;i++){
 			updateXiAtStepTwo(Result[idxOfXiTwo],Result[idxOfPxiTwo],i*DX);
 		}
+		
 		double TempE=0.5 * (pow(Result[idxOfPxiTwo],2.0)) - (1.0 / sqrt( pow(Result[idxOfXiTwo],2.0)+ pow(A,2.0)));
-		if( TempE < 0.0)
-			Result[idxOfXiTwo] = Result[idxOfPxiTwo] = -999;
+		if( TempE <= 0.0)
+			Result[idxOfTemp]=-999;
 	}
 }
 
 
 
-void CountZeros(double* h_Result,int nx,int& Zeros, int& nonZeros)
+int CountZeros(double* h_Result,int nx)
 {
 
-	unsigned int idxOfXiTwo  = 5 * nx ;
-	
-	for(int i=0;i!=nx;i++){
-		if(h_Result[idxOfXiTwo] == 0.0) Zeros++;
-		if(h_Result[idxOfXiTwo] == -999) nonZeros++;
+	unsigned int idxOfXi  = nx ;
+	unsigned int idxOfTemp = 7 * nx ;
+	int count=0;
+	for(int i=0;i<nx;i++){
+		if(h_Result[idxOfXi+i] == 0.0f) count++;
+		//if(h_Result[idxOfTemp+i] == -999) nonZeros++;
 	}
 	
 	
 	
-	return;
+	return count;
 }
+
+int CountTooBig(double* h_Result,int nx)
+{
+
+	unsigned int idxOfXi  = nx ;
+	unsigned int idxOfTemp = 7 * nx ;
+	int count=0;
+	for(int i=0;i<nx;i++){
+		//if(h_Result[idxOfXi+i] == 0.0) count++;
+		if(h_Result[idxOfTemp+i] == -999) count++;
+	}
+	
+	
+	
+	return count;
+}
+
+
 
 
 
@@ -153,10 +174,11 @@ void CountZeros(double* h_Result,int nx,int& Zeros, int& nonZeros)
 	CHECK(cudaMemcpy(h_gpuRef, Result, nBytes, cudaMemcpyDeviceToHost));
 	
 	int zeros=0,nonzeros=0;
-	CountZeros(h_gpuRef,nx,zeros,nonzeros);
+	zeros = CountZeros(h_gpuRef,nx);
+	nonzeros = CountTooBig(h_gpuRef,nx);
 	printf("The Number of Zeros is %d,\t The Number of NonZeros is %d \n",zeros,nonzeros);
 	double per = (nx - zeros - nonzeros)/(nx - zeros);
-	printf("Percentage is %lf %% \n",per*100.0);
+	printf("Percentage is %lf  \n",per);
 	
 	//±£´æÊý¾Ý
 	iStart = seconds();

@@ -6,13 +6,13 @@
 
 
 __device__ const double PI=3.14159265358979323846; 
-__device__ const double A=1;
+__device__ const double A=1.0;
 __device__ const double E0=-0.5;
 __device__ const double omega=0.057;
 //步长DX 终点TIME
-__device__ const double T0 = 2*PI/omega;
+__device__ const double T0 = 2.0*PI/omega;
 __device__ const int 	STEPS=40000;
-__device__ const double DX=10*T0/STEPS;
+__device__ const double DX=10.0*T0/STEPS;
 __device__ const int 	STEPSFIRST=10000;
 __device__ const int	STEPSSECOND=40000;
 
@@ -49,7 +49,7 @@ __device__ double Px(double x)
 __device__ double EkallAtStepTwo(double t)
 
 {
-	return A*pow( (sin(omega/(2.0*10*2*PI/omega))) , 2.0) * sin(omega * t);
+	return A*pow( (sin(omega/2.0/10.0*t)) , 2.0) * sin(omega * t);
 }
 
 __device__ double fxAtStepTwo(double x,double time)
