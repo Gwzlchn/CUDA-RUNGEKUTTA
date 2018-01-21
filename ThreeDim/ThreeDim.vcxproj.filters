@@ -12,10 +12,22 @@
     <ClInclude Include="include\nucleus.hpp">
       <Filter>inlcude</Filter>
     </ClInclude>
+    <ClInclude Include="include\common.hpp">
+      <Filter>inlcude</Filter>
+    </ClInclude>
+    <ClInclude Include="include\global_funcs.h">
+      <Filter>inlcude</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\PrintStruct.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <CudaCompile Include="src\global_funcs.cu">
+      <Filter>src</Filter>
+    </CudaCompile>
   </ItemGroup>
 </Project>

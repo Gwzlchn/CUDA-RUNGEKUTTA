@@ -19,7 +19,14 @@ int main()
 
 	long pairs = 10000;
 	long long nBytes = pairs * sizeof(nuclei);
-	printf("Use %lld Bytes", nBytes);
+	printf("Use %lld Bytes %lfMB\n", nBytes, nBytes / double(1024 * 1024));
+
+	Start = seconds();
+	
+
+
+
+
 
 
 }
