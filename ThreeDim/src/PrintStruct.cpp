@@ -1,4 +1,4 @@
-#include "../include/nucleus.hpp"
+﻿#include "../include/nucleus.hpp"
 #include <cstdio>
 
 void PrintStruct(nuclei* ToSaveNuclei,long long n,const char* FileName)
