@@ -2,7 +2,7 @@
 #define GLOBAL_FUNS_H
 #include "nucleus.hpp"
 #include <math.h>	//可以使用M_PI
-#include <curand.h>
+
 
 //生成双精度正态分布随机数
 //参数:	Array:双精度数组	Size:数组长度	Mean:均值(0)	Stddev:方差(0.7)
