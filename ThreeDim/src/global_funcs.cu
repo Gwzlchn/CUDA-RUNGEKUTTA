@@ -1,26 +1,34 @@
 ﻿#include "../include/global_funcs.h"
 
-//生成双精度正态分布随机数
-//参数:	Array:双精度数组	Size:数组长度	Mean:均值(0)	Stddev:方差(0.7)
-void NormalRandomArray(double* Array, const long Size, double Mean = 0, double Stddev=0.7)
-{
-	curandGenerator_t gen;											//生成随机数变量
-	curandCreateGenerator(&gen, CURAND_RNG_PSEUDO_MRG32K3A);		//指定算法
-	curandSetPseudoRandomGeneratorSeed(gen, 11ULL);					//随机数初始化
-	curandGenerateNormalDouble(gen, Array, Size, Mean, Stddev);		//生成随机数，存储到缓冲器中
-	curandDestroyGenerator(gen);                         			//释放指针
-	return;
-}
-
-//生成双精度双正态分布随机数
-//参数:	Array:双精度数组	Size:数组长度	Nudis:核间距(2)	Stddev:方差(0.7)
-void DoubleNormalRandomArray(double* Array, const long Size, double Nudis = 2, double Stddev = 0.7)
+//生成双精度01均匀分布随机数
+//参数:	Array:双精度数组	Size:数组长度
+void UniformRandomArray(double* Array, const long Size)
 {
 	curandGenerator_t gen;											//生成随机数变量
 	curandCreateGenerator(&gen, CURAND_RNG_PSEUDO_MRG32K3A);		//指定算法
 	curandSetPseudoRandomGeneratorSeed(gen, 11ULL);					//随机数初始化
 	curandGenerateUniformDouble(gen, Array, Size);					//生成0-1均匀分布随机数，存储到缓冲器中
 	curandDestroyGenerator(gen);                         			//释放指针
+	return;
+}
+
+//生成双精度正态分布随机数
+//参数:	Array:双精度数组	Size:数组长度	Mean:均值(0)	Stddev:方差(0.7)
+void NormalRandomArray(double* Array, const long Size, double Mean, double Stddev)
+{
+	curandGenerator_t gen;											//生成随机数变量
+	curandCreateGenerator(&gen, CURAND_RNG_PSEUDO_MRG32K3A);		//指定算法
+	curandSetPseudoRandomGeneratorSeed(gen, 11ULL);					//随机数初始化
+	curandGenerateNormalDouble(gen, Array, Size, Mean, Stddev);		//生成正态分布随机数，存储到缓冲器中
+	curandDestroyGenerator(gen);                         			//释放指针
+	return;
+}
+
+//生成双精度双正态分布随机数
+//参数:	Array:双精度数组	Size:数组长度	Nudis:核间距(2)	Stddev:方差(0.7)
+void DoubleNormalRandomArray(double* Array, const long Size, double Nudis, double Stddev)
+{
+	UniformRandomArray(Array, Size);
 	return;
 }
 
