@@ -1,16 +1,10 @@
 ﻿#include "../include/global_funcs.h"
-<<<<<<< HEAD
+#include <curand.h>
+#include "device_launch_parameters.h"
 
 //生成双精度01均匀分布随机数
 //参数:	Array:双精度数组	Size:数组长度
 void UniformRandomArray(double* Array, const long Size)
-=======
-#include <curand.h>
-#include "device_launch_parameters.h"
-//生成双精度正态分布随机数
-//参数:	Array:双精度数组	Size:数组长度	Mean:均值(0)	Stddev:方差(0.7)
-void NormalRandomArray(double* Array, const long Size, double Mean , double Stddev)
->>>>>>> e1de4ff2101798b443729f530ddcb7b63c762570
 {
 	curandGenerator_t gen;											//生成随机数变量
 	curandCreateGenerator(&gen, CURAND_RNG_PSEUDO_MRG32K3A);		//指定算法
@@ -20,15 +14,9 @@ void NormalRandomArray(double* Array, const long Size, double Mean , double Stdd
 	return;
 }
 
-<<<<<<< HEAD
 //生成双精度正态分布随机数
 //参数:	Array:双精度数组	Size:数组长度	Mean:均值(0)	Stddev:方差(0.7)
-void NormalRandomArray(double* Array, const long Size, double Mean, double Stddev)
-=======
-//生成双精度双正态分布随机数
-//参数:	Array:双精度数组	Size:数组长度	Nudis:核间距(2)	Stddev:方差(0.7)
-void DoubleNormalRandomArray(double* Array, const long Size, double Nudis , double Stddev )
->>>>>>> e1de4ff2101798b443729f530ddcb7b63c762570
+void NormalRandomArray(double* Array, const long Size, double Mean , double Stddev)
 {
 	curandGenerator_t gen;											//生成随机数变量
 	curandCreateGenerator(&gen, CURAND_RNG_PSEUDO_MRG32K3A);		//指定算法
