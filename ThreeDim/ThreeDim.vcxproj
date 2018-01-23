@@ -16,10 +16,12 @@
     <ClInclude Include="include\nucleus.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="include\device_compute_funcs.cuh" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="src\PrintStruct.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <CudaCompile Include="src\device_compute_funcs.cu" />
     <CudaCompile Include="src\global_funcs.cu" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
