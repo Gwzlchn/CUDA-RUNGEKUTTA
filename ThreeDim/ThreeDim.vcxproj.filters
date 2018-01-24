@@ -21,7 +21,7 @@
     <ClInclude Include="include\sci_const.cuh">
       <Filter>inlcude</Filter>
     </ClInclude>
-    <ClInclude Include="Random.hpp">
+    <ClInclude Include="include\Random.hpp">
       <Filter>inlcude</Filter>
     </ClInclude>
   </ItemGroup>
@@ -36,9 +36,6 @@
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="src\global_funcs.cu">
-      <Filter>src</Filter>
-    </CudaCompile>
-    <CudaCompile Include="src\device_compute_funcs.cu">
       <Filter>src</Filter>
     </CudaCompile>
   </ItemGroup>

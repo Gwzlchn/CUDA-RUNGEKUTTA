@@ -1,61 +1,63 @@
-#ifndef RANDOM_H
+ï»¿#ifndef RANDOM_H
 #define RANDOM_H
 
 #include <math.h>
 #include <curand.h>
+#include "device_launch_parameters.h"
+#include "cuda_runtime.h"
 
 #include "nucleus.hpp"
-#include "device_launch_parameters.h"
+
 #include "sci_const.cuh"
 
-//Éú³ÉË«¾«¶È01¾ùÔÈ·Ö²¼Ëæ»úÊı
-//²ÎÊı:	Array:Ë«¾«¶ÈÊı×é	Size:Êı×é³¤¶È
+//ç”ŸæˆåŒç²¾åº¦01å‡åŒ€åˆ†å¸ƒéšæœºæ•°
+//å‚æ•°:	Array:åŒç²¾åº¦æ•°ç»„	Size:æ•°ç»„é•¿åº¦
 void UniformRandomArrayD(double* Array, const long Size);
 
-//Éú³ÉË«¾«¶ÈÕıÌ¬·Ö²¼Ëæ»úÊı
-//²ÎÊı:	Array:Ë«¾«¶ÈÊı×é	Size:Êı×é³¤¶È	Mean:¾ùÖµ(0)	Stddev:·½²î(0.7)
+//ç”ŸæˆåŒç²¾åº¦æ­£æ€åˆ†å¸ƒéšæœºæ•°
+//å‚æ•°:	Array:åŒç²¾åº¦æ•°ç»„	Size:æ•°ç»„é•¿åº¦	Mean:å‡å€¼(0)	Stddev:æ–¹å·®(0.7)
 void NormalRandomArrayD(double* Array, const long Size, double Mean = 0, double Stddev = 0.7);
 
-//Éú³ÉË«¾«¶ÈË«ÕıÌ¬·Ö²¼Ëæ»úÊı
-//²ÎÊı:	Array1:Ë«¾«¶ÈÊı×é1	Array2:Ë«¾«¶ÈÊı×é2	Array3:Ë«¾«¶ÈÊı×é3	Array2:Ë«¾«¶ÈÊı×é4	
-//Size:Êı×é³¤¶È	Nudis:ºË¼ä¾à(2)	Stddev:·½²î(0.7)
+//ç”ŸæˆåŒç²¾åº¦åŒæ­£æ€åˆ†å¸ƒéšæœºæ•°
+//å‚æ•°:	Array1:åŒç²¾åº¦æ•°ç»„1	Array2:åŒç²¾åº¦æ•°ç»„2	Array3:åŒç²¾åº¦æ•°ç»„3	Array2:åŒç²¾åº¦æ•°ç»„4	
+//Size:æ•°ç»„é•¿åº¦	Nudis:æ ¸é—´è·(2)	Stddev:æ–¹å·®(0.7)
 __global__ void DoubleNormalRandomArrayD(double* Array1, double* Array2, double* Array3, double* Array4,
 	const long Size, double Nudis = 2, double Stddev = 0.7);
 
-//ÓÃÓÚË«ºËÁ£×ÓµÄËæ»úÊı»¯
-//²ÎÊı:	Array:Á£×ÓÊı×é	Size:Êı×é³¤¶È Angle:Æ«ÒÆ½Ç(0)
+//ç”¨äºåŒæ ¸ç²’å­çš„éšæœºæ•°åŒ–
+//å‚æ•°:	Array:ç²’å­æ•°ç»„	Size:æ•°ç»„é•¿åº¦ Angle:åç§»è§’(0)
 void NucleiRandomD(nuclei* Array, const long Size, double Angle = 0);
 
 
 
 
-//Éú³ÉË«¾«¶È01¾ùÔÈ·Ö²¼Ëæ»úÊı
-//²ÎÊı:	Array:Ë«¾«¶ÈÊı×é	Size:Êı×é³¤¶È
+//ç”ŸæˆåŒç²¾åº¦01å‡åŒ€åˆ†å¸ƒéšæœºæ•°
+//å‚æ•°:	Array:åŒç²¾åº¦æ•°ç»„	Size:æ•°ç»„é•¿åº¦
 void UniformRandomArrayD(double* Array, const long Size)
 {
-	curandGenerator_t gen;											//Éú³ÉËæ»úÊı±äÁ¿
-	curandCreateGenerator(&gen, CURAND_RNG_PSEUDO_MRG32K3A);		//Ö¸¶¨Ëã·¨
-	curandSetPseudoRandomGeneratorSeed(gen, 11ULL);					//Ëæ»úÊı³õÊ¼»¯
-	curandGenerateUniformDouble(gen, Array, Size);					//Éú³É0-1¾ùÔÈ·Ö²¼Ëæ»úÊı£¬´æ´¢µ½»º³åÆ÷ÖĞ
-	curandDestroyGenerator(gen);                         			//ÊÍ·ÅÖ¸Õë
+	curandGenerator_t gen;											//ç”Ÿæˆéšæœºæ•°å˜é‡
+	curandCreateGenerator(&gen, CURAND_RNG_PSEUDO_MRG32K3A);		//æŒ‡å®šç®—æ³•
+	curandSetPseudoRandomGeneratorSeed(gen, 11ULL);					//éšæœºæ•°åˆå§‹åŒ–
+	curandGenerateUniformDouble(gen, Array, Size);					//ç”Ÿæˆ0-1å‡åŒ€åˆ†å¸ƒéšæœºæ•°ï¼Œå­˜å‚¨åˆ°ç¼“å†²å™¨ä¸­
+	curandDestroyGenerator(gen);                         			//é‡Šæ”¾æŒ‡é’ˆ
 	return;
 }
 
-//Éú³ÉË«¾«¶ÈÕıÌ¬·Ö²¼Ëæ»úÊı
-//²ÎÊı:	Array:Ë«¾«¶ÈÊı×é	Size:Êı×é³¤¶È	Mean:¾ùÖµ(0)	Stddev:·½²î(0.7)
+//ç”ŸæˆåŒç²¾åº¦æ­£æ€åˆ†å¸ƒéšæœºæ•°
+//å‚æ•°:	Array:åŒç²¾åº¦æ•°ç»„	Size:æ•°ç»„é•¿åº¦	Mean:å‡å€¼(0)	Stddev:æ–¹å·®(0.7)
 void NormalRandomArrayD(double* Array, const long Size, double Mean, double Stddev)
 {
-	curandGenerator_t gen;											//Éú³ÉËæ»úÊı±äÁ¿
-	curandCreateGenerator(&gen, CURAND_RNG_PSEUDO_MRG32K3A);		//Ö¸¶¨Ëã·¨
-	curandSetPseudoRandomGeneratorSeed(gen, 11ULL);					//Ëæ»úÊı³õÊ¼»¯
-	curandGenerateNormalDouble(gen, Array, Size, Mean, Stddev);		//Éú³ÉÕıÌ¬·Ö²¼Ëæ»úÊı£¬´æ´¢µ½»º³åÆ÷ÖĞ
-	curandDestroyGenerator(gen);                         			//ÊÍ·ÅÖ¸Õë
+	curandGenerator_t gen;											//ç”Ÿæˆéšæœºæ•°å˜é‡
+	curandCreateGenerator(&gen, CURAND_RNG_PSEUDO_MRG32K3A);		//æŒ‡å®šç®—æ³•
+	curandSetPseudoRandomGeneratorSeed(gen, 11ULL);					//éšæœºæ•°åˆå§‹åŒ–
+	curandGenerateNormalDouble(gen, Array, Size, Mean, Stddev);		//ç”Ÿæˆæ­£æ€åˆ†å¸ƒéšæœºæ•°ï¼Œå­˜å‚¨åˆ°ç¼“å†²å™¨ä¸­
+	curandDestroyGenerator(gen);                         			//é‡Šæ”¾æŒ‡é’ˆ
 	return;
 }
 
-//Éú³ÉË«¾«¶ÈË«ÕıÌ¬·Ö²¼Ëæ»úÊı
-//²ÎÊı:	Array1:Ë«¾«¶ÈÊı×é1	Array2:Ë«¾«¶ÈÊı×é2	Array3:Ë«¾«¶ÈÊı×é3	Array2:Ë«¾«¶ÈÊı×é4	
-//Size:Êı×é³¤¶È	Nudis:ºË¼ä¾à(2)	Stddev:·½²î(0.7)
+//ç”ŸæˆåŒç²¾åº¦åŒæ­£æ€åˆ†å¸ƒéšæœºæ•°
+//å‚æ•°:	Array1:åŒç²¾åº¦æ•°ç»„1	Array2:åŒç²¾åº¦æ•°ç»„2	Array3:åŒç²¾åº¦æ•°ç»„3	Array2:åŒç²¾åº¦æ•°ç»„4	
+//Size:æ•°ç»„é•¿åº¦	Nudis:æ ¸é—´è·(2)	Stddev:æ–¹å·®(0.7)
 __global__ void DoubleNormalRandomArrayD(double* Array1, double* Array2, double* Array3, double* Array4,
 	const long Size, double Nudis, double Stddev)
 {
@@ -80,8 +82,8 @@ __global__ void DoubleNormalRandomArrayD(double* Array1, double* Array2, double*
 	return;
 }
 
-//ÓÃÓÚË«ºËÁ£×ÓµÄËæ»úÊı»¯
-//²ÎÊı:	Array:Á£×ÓÊı×é	Size:Êı×é³¤¶È Angle:Æ«ÒÆ½Ç
+//ç”¨äºåŒæ ¸ç²’å­çš„éšæœºæ•°åŒ–
+//å‚æ•°:	Array:ç²’å­æ•°ç»„	Size:æ•°ç»„é•¿åº¦ Angle:åç§»è§’
 void NucleiRandomD(nuclei* Array, const long Size, double Angle)
 {
 	int i(0);
@@ -102,7 +104,7 @@ void NucleiRandomD(nuclei* Array, const long Size, double Angle)
 
 		int threadsPerBlock = 256;
 		int threadsPerGrid = (2 * Size + threadsPerBlock - 1) / threadsPerBlock;
-		DoubleNormalRandomArrayD << <threadsPerGrid, threadsPerBlock >> >(DTempArr1, DTempArr2, DTempArr3, DTempArr4, 2 * Size);
+		DoubleNormalRandomArrayD <<< threadsPerGrid, threadsPerBlock >>>(DTempArr1, DTempArr2, DTempArr3, DTempArr4, 2 * Size);
 		while (i<Size && (i + j)<2 * Size)
 		{
 			if (DTempArr1[i + j] == -99)

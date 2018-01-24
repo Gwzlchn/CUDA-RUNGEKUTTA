@@ -14,8 +14,8 @@
     <ClInclude Include="include\common.hpp" />
     <ClInclude Include="include\global_funcs.h" />
     <ClInclude Include="include\nucleus.hpp" />
+    <ClInclude Include="include\Random.hpp" />
     <ClInclude Include="include\sci_const.cuh" />
-    <ClInclude Include="Random.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="include\device_compute_funcs.cuh" />
@@ -23,7 +23,6 @@
     <ClCompile Include="src\PrintStruct.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <CudaCompile Include="src\device_compute_funcs.cu" />
     <CudaCompile Include="src\global_funcs.cu" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

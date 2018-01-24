@@ -42,8 +42,8 @@ __device__  nucleus fx_first_nucleus(const nucleus& first, const nucleus& second
 			/ sqrt(pow((pow((first.z - nuclear_spacing / 2.0*cos(PI*rotation)), 2) + pow((first.x - nuclear_spacing / 2.0 * sin(PI*rotation)), 2) + first.y*first.y + elec_elec*elec_elec), 3)) -
 		(first.x + nuclear_spacing / 2.0 * sin(PI*rotation))
 			/ sqrt(pow((pow((first.z + nuclear_spacing / 2.0*cos(PI*rotation)), 2) + pow((first.x + nuclear_spacing / 2.0 * sin(PI*rotation)), 2) + first.y*first.y + elec_elec*elec_elec), 3));
-	fx_first.y = (first.y-second.y)/sqrt(pow((nucleus_distance(first,second)+elec_nucl*elec_nucl),3)-
-			first.y/sqrt(pow((first.z-nuclear_spacing/2.0*cos(PI*rotation)),2)-pow((first.x-nuclear_spacing/2.0*sin(PI*rotation)),2)+))
+	fx_first.y = (first.y - second.y) / sqrt(pow((nucleus_distance(first, second) + elec_nucl*elec_nucl), 3) -
+		first.y / sqrt(pow((first.z - nuclear_spacing / 2.0*cos(PI*rotation)), 2) - pow((first.x - nuclear_spacing / 2.0*sin(PI*rotation)), 2) + 1));
 
 
 
@@ -70,6 +70,6 @@ void update_step_one(nucleus* step_one_fir, nucleus* step_one_sec)
 	//step_one_fir->x
 
 }
-__device__ void update_step_two(nucleus* step_two_fir, nucleus* step_two_sec)
+//__device__ void update_step_two(nucleus* step_two_fir, nucleus* step_two_sec)
 
 
