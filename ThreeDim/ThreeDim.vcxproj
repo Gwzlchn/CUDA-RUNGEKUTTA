@@ -15,6 +15,7 @@
     <ClInclude Include="include\global_funcs.h" />
     <ClInclude Include="include\nucleus.hpp" />
     <ClInclude Include="include\sci_const.cuh" />
+    <ClInclude Include="Random.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="include\device_compute_funcs.cuh" />

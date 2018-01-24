@@ -21,6 +21,9 @@
     <ClInclude Include="include\sci_const.cuh">
       <Filter>inlcude</Filter>
     </ClInclude>
+    <ClInclude Include="Random.hpp">
+      <Filter>inlcude</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\PrintStruct.cpp">

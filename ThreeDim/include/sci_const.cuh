@@ -1,8 +1,8 @@
-﻿#pragma once
+﻿
 #ifndef SCI_CONST_CUH
 #define SCI_CONST_CUH
+
 #include <crt/host_defines.h>
-//这个文件放科学常数
 
 
 __global__ double rotation = 0.0;//转轴角度，对应之前的kk
