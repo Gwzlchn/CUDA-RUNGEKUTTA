@@ -1,8 +1,11 @@
 ﻿#ifndef GLOBAL_FUNS_H
 #define GLOBAL_FUNS_H
-#include "nucleus.hpp"
-#include <math.h>	//可以使用M_PI
 
+#include <math.h>
+#include <curand.h>
+
+#include "nucleus.hpp"
+#include "device_launch_parameters.h"
 
 //生成双精度01均匀分布随机数
 //参数:	Array:双精度数组	Size:数组长度
