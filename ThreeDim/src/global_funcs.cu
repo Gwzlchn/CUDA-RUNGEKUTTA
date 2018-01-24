@@ -108,5 +108,8 @@ void InitialNuclei(nuclei* randomed_nuclei, const long raw_count, long & left)
 void FirstStep(nuclei* inited_nuclei, const long n)
 {
 	unsigned int ix = threadIdx.x + blockIdx.x * blockDim.x;
-
+	if(ix<n)
+	{
+		
+	}
 }
