@@ -8,6 +8,7 @@
 #include <curand_kernel.h>
 #include <cmath>
 #include <vector_types.h>
+#include <cuda_runtime.h>
 
 //生成双精度01均匀分布随机数
 //参数:	Array:双精度数组	Size:数组长度
@@ -173,5 +174,5 @@ void NucleiRandomD(nuclei* Array, const long Size)
 
 	int threadsPerBlock = 256;
 	int threadsPerGrid = (2 * Size + threadsPerBlock - 1) / threadsPerBlock;
-	DoubleNormalRandomArrayD <<<threadsPerGrid, threadsPerBlock >>> (Array, A1, A2, A3, A4, Ekall, Size);
+	DoubleNormalRandomArrayD <<< threadsPerGrid, threadsPerBlock >>> (Array, A1, A2, A3, A4, Ekall, Size);
 }
