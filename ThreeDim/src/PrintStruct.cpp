@@ -17,7 +17,7 @@ void PrintStruct(nuclei* ToSaveNuclei, long long n, const char* FileName,int cho
 		perror("cannot open file");
 	}
 
-	for (auto i = 0; i < n; i++)
+	for (long  i = 0; i < n; i++)
 	{
 
 		fprintf(init, "%-.10lf\t%-.10lf\t%-.10lf\t%-.10lf\t%-.10lf\t%-.10lf\t%-.10lf\t%-.10lf\t%-.10lf\t%-.10lf\t%-.10lf\t%-.10lf\t",
@@ -40,7 +40,7 @@ void PrintStruct(nuclei* ToSaveNuclei, long long n, const char* FileName,int cho
 		perror("cannot open file");
 	}
 
-	for (auto i = 0; i < n; i++)
+	for (long  i = 0; i < n; i++)
 	{
 
 		fprintf(one, "%-.10lf\t%-.10lf\t%-.10lf\t%-.10lf\t%-.10lf\t%-.10lf\t%-.10lf\t%-.10lf\t%-.10lf\t%-.10lf\t%-.10lf\t%-.10lf\t",
@@ -63,7 +63,7 @@ void PrintStruct(nuclei* ToSaveNuclei, long long n, const char* FileName,int cho
 		perror("cannot open file");
 	}
 
-	for (auto i = 0; i < n; i++)
+	for (long  i = 0; i < n; i++)
 	{
 
 		fprintf(two, "%-.10lf\t%-.10lf\t%-.10lf\t%-.10lf\t%-.10lf\t%-.10lf\t%-.10lf\t%-.10lf\t%-.10lf\t%-.10lf\t%-.10lf\t%-.10lf\t",
