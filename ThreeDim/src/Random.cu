@@ -117,9 +117,9 @@
 //}
 
 //生成双精度双正态分布随机数
-__global__ void DoubleNormalRandomArrayD(nuclei* Array, double A1, double A2, double A3, double A4, double Ekall, const long Size)
+__global__ void DoubleNormalRandomArrayD(nuclei* Array, const long Size)
 {
-
+	double A1, A2, A3, A4, Ekall;
 	int i = threadIdx.x;
 	double temp1 = 1;
 	double temp2 = 1;
@@ -165,14 +165,7 @@ __global__ void DoubleNormalRandomArrayD(nuclei* Array, double A1, double A2, do
 //用于双核粒子的随机数化
 void NucleiRandomD(nuclei* Array, const long Size)
 {
-	double A1, A2, A3, A4, Ekall;
-	cudaMalloc((void **)(&A1), 8);
-	cudaMalloc((void **)(&A2), 8);
-	cudaMalloc((void **)(&A3), 8);
-	cudaMalloc((void **)(&A4), 8);
-	cudaMalloc((void **)(&Ekall), 8);
-
 	int threadsPerBlock = 256;
 	int threadsPerGrid = (2 * Size + threadsPerBlock - 1) / threadsPerBlock;
-	DoubleNormalRandomArrayD <<<threadsPerGrid, threadsPerBlock >>> (Array, A1, A2, A3, A4, Ekall, Size);
+	DoubleNormalRandomArrayD <<<threadsPerGrid, threadsPerBlock >>> (Array, Size);
 }

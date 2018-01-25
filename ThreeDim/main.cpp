@@ -1,7 +1,8 @@
 ﻿#include "./include/nucleus.hpp"
 #include "./include/PrintStruct.h"
 #include "./include/common.hpp"
-#include "./include/Random.h"
+#include "./include/device_compute_funcs.h"
+//#include "./include/Random.h"
 #include <cuda_runtime.h>
 #include <cstdio>
 #include <cstdlib>

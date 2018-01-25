@@ -147,3 +147,56 @@ void update_step_one(nucleus& step_one_fir, nucleus& step_one_sec)
 }
 //__device__ void update_step_two(nucleus* step_two_fir, nucleus* step_two_sec)
 
+//生成双精度双正态分布随机数
+__global__ void DoubleNormalRandomArrayD(nuclei* Array, const long Size)
+{
+	double A1, A2, A3, A4, Ekall;
+	int i = threadIdx.x;
+	double temp1 = 1;
+	double temp2 = 1;
+	curandState s;
+
+	Ekall = -1;
+
+	while (Ekall < 0)
+	{
+		A2 = A4 = 2;
+
+		while (A2 > temp1 && A4 > temp2)
+		{
+			A1 = curand_uniform_double(&s);
+			A2 = curand_uniform_double(&s);
+			A3 = curand_uniform_double(&s);
+			A4 = curand_uniform_double(&s);
+
+			A1 = (A1 - 0.5) * 20;
+			A3 = (A3 - 0.5) * 20;
+
+			temp1 = exp((-pow((A1 - nuclear_spacing / 2.0), nuclear_spacing / 2.0)) /
+				(nuclear_spacing / 2.0 * pow(stddev, nuclear_spacing / 2.0)))
+				+ exp((-pow((A1 + nuclear_spacing / 2.0), nuclear_spacing / 2.0)) /
+				(nuclear_spacing / 2.0 * pow(stddev, nuclear_spacing / 2.0)));
+			temp2 = exp((-pow((A3 - nuclear_spacing / 2.0), nuclear_spacing / 2.0)) /
+				(nuclear_spacing / 2.0 * pow(stddev, nuclear_spacing / 2.0)))
+				+ exp((-pow((A3 + nuclear_spacing / 2.0), nuclear_spacing / 2.0)) /
+				(nuclear_spacing / 2.0 * pow(stddev, nuclear_spacing / 2.0)));
+		}
+
+		Array[i].first.x = A1 * sin(rotation*PI);
+		Array[i].first.y = 0;
+		Array[i].first.z = A1 * cos(rotation*PI);
+		Array[i].second.x = A3 * sin(rotation*PI);
+		Array[i].second.y = 0;
+		Array[i].second.z = A3 * cos(rotation*PI);
+		Ekall = E_kall(Array[i].first, Array[i].second);
+	}
+	return;
+}
+
+//用于双核粒子的随机数化
+extern "C" void NucleiRandomD(nuclei* Array, const long Size)
+{
+	int threadsPerBlock = 256;
+	int threadsPerGrid = (2 * Size + threadsPerBlock - 1) / threadsPerBlock;
+	DoubleNormalRandomArrayD << <threadsPerGrid, threadsPerBlock >> > (Array, Size);
+}

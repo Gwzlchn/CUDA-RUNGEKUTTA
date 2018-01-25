@@ -27,6 +27,8 @@ __device__ nucleus fx_second_nucleus(const nucleus& first, const nucleus& second
 __device__ void update_step_one(nucleus* step_one_fir, nucleus* step_one_sec);
 __device__ void update_step_two(nucleus* step_two_fir, nucleus* step_two_sec);
 
+//用于双核粒子的随机数化
+extern "C" void NucleiRandomD(nuclei* Array, const long Size);
 #endif //DEVICE_COMPUTE_FUNCS_CUH
 
 
