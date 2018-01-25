@@ -21,7 +21,7 @@
     <ClInclude Include="include\sci_const.cuh">
       <Filter>inlcude</Filter>
     </ClInclude>
-    <ClInclude Include="include\Random.hpp">
+    <ClInclude Include="include\Random.h">
       <Filter>inlcude</Filter>
     </ClInclude>
   </ItemGroup>
@@ -33,5 +33,10 @@
     <ClCompile Include="include\PrintStruct.hpp">
       <Filter>inlcude</Filter>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <CudaCompile Include="src\Random.cu">
+      <Filter>src</Filter>
+    </CudaCompile>
   </ItemGroup>
 </Project>
