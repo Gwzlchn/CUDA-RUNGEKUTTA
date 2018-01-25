@@ -1,7 +1,12 @@
 ﻿#pragma comment(lib, "cudart.lib")
 #pragma comment(lib, "curand.lib")
 #include "../include/Random.h"
+#include <math.h>
+#include <curand.h>
 
+#include "device_launch_parameters.h"
+#include "cuda_runtime.h"
+#include "../include/sci_const.h"
 //生成双精度01均匀分布随机数
 //参数:	Array:双精度数组	Size:数组长度
 void UniformRandomArrayD(double* Array, const long Size)

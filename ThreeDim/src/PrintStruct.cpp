@@ -1,4 +1,5 @@
-﻿
+﻿#include <cstdio>
+#include <cstring>
 #include "../include/PrintStruct.h"
 void PrintStruct(nuclei* ToSaveNuclei, long long n, const char* FileName, int choose)
 {

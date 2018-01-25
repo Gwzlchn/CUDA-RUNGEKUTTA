@@ -1,7 +1,6 @@
 ﻿#pragma once
 #include "nucleus.hpp"
-#include <cstdio>
-#include <cstring>
+
 
 
 //分三个文件保存,用最后一个整形变量选择文件名 

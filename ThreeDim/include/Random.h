@@ -1,13 +1,10 @@
-﻿#ifndef RANDOM_H
+﻿#
+#ifndef RANDOM_H
 #define RANDOM_H
 
-#include <math.h>
-#include <curand.h>
 
-#include "device_launch_parameters.h"
-#include "cuda_runtime.h"
 #include "nucleus.hpp"
-#include "sci_const.h"
+
 
 //生成双精度01均匀分布随机数
 //参数:	Array:双精度数组	Size:数组长度

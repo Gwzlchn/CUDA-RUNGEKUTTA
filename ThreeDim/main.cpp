@@ -4,6 +4,7 @@
 #include "./include/Random.h"
 #include <cuda_runtime.h>
 #include <cstdio>
+#include<cstdlib>
 
 ////生成双精度01均匀分布随机数
 ////参数:	Array:双精度数组	Size:数组长度
@@ -41,7 +42,7 @@ int main()
 	cudaMalloc((void **)(&test), nBytes);
 	host = (nuclei*)malloc(nBytes);
 	
-	NucleiRandomD(test, pairs, rotation);
+	NucleiRandomD(test, pairs);
 	cudaMemcpy(host, test, nBytes, cudaMemcpyDeviceToHost);
 	PrintStruct(host, pairs, 0);
 
