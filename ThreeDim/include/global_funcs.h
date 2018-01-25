@@ -1,5 +1,5 @@
-﻿#ifndef GLOBAL_FUNS_H
-#define GLOBAL_FUNS_H
+﻿#ifndef GLOBAL_FUNCS_H
+#define GLOBAL_FUNCS_H
 
 #include <math.h>
 

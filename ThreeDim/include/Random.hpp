@@ -95,7 +95,7 @@ void NucleiRandomD(nuclei* Array, const long Size, double Angle)
 	cudaMalloc((void**)&DTempArr3, DoubleSize);
 	cudaMalloc((void**)&DTempArr4, DoubleSize);
 
-	while (i<Size)
+	while (i < Size)
 	{
 		UniformRandomArrayD(DTempArr1, 2 * Size);
 		UniformRandomArrayD(DTempArr2, 2 * Size);
@@ -104,8 +104,8 @@ void NucleiRandomD(nuclei* Array, const long Size, double Angle)
 
 		int threadsPerBlock = 256;
 		int threadsPerGrid = (2 * Size + threadsPerBlock - 1) / threadsPerBlock;
-		DoubleNormalRandomArrayD <<<threadsPerGrid, threadsPerBlock>>>(DTempArr1, DTempArr2, DTempArr3, DTempArr4, 2 * Size);
-		while (i<Size && (i + j)<2 * Size)
+		DoubleNormalRandomArrayD <<< threadsPerGrid, threadsPerBlock >> > (DTempArr1, DTempArr2, DTempArr3, DTempArr4, 2 * Size);
+		while (i < Size && (i + j) < 2 * Size)
 		{
 			if (DTempArr1[i + j] == -99)
 			{
@@ -122,3 +122,4 @@ void NucleiRandomD(nuclei* Array, const long Size, double Angle)
 			}
 		}
 	}
+}
