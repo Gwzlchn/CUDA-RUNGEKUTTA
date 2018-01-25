@@ -13,12 +13,12 @@
   <ItemGroup>
     <ClInclude Include="include\common.hpp" />
     <ClInclude Include="include\nucleus.hpp" />
+    <ClInclude Include="include\PrintStruct.h" />
     <ClInclude Include="include\Random.h" />
     <ClInclude Include="include\sci_const.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="include\device_compute_funcs.cuh" />
-    <ClCompile Include="include\PrintStruct.h" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="src\PrintStruct.cpp" />
   </ItemGroup>

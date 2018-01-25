@@ -21,15 +21,15 @@
     <ClInclude Include="include\sci_const.h">
       <Filter>inlcude</Filter>
     </ClInclude>
+    <ClInclude Include="include\PrintStruct.h">
+      <Filter>inlcude</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="include\device_compute_funcs.cuh">
       <Filter>inlcude</Filter>
     </ClCompile>
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="include\PrintStruct.h">
-      <Filter>inlcude</Filter>
-    </ClCompile>
     <ClCompile Include="src\PrintStruct.cpp">
       <Filter>src</Filter>
     </ClCompile>

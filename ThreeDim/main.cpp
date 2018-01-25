@@ -1,5 +1,5 @@
 ﻿#include "./include/nucleus.hpp"
-//#include "./include/PrintStruct.h"
+#include "./include/PrintStruct.h"
 #include "./include/common.hpp"
 #include "./include/Random.h"
 #include <cuda_runtime.h>
@@ -44,7 +44,7 @@ int main()
 	
 	NucleiRandomD(test, pairs);
 	cudaMemcpy(host, test, nBytes, cudaMemcpyDeviceToHost);
-	PrintStruct(host, pairs, 0);
+	PrintStruct(host, pairs,"testOne", 0);
 
 	return 0;
 }

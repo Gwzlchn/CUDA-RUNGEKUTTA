@@ -11,7 +11,7 @@
 #ifndef PRINTSTRUCT_HPP
 #define PRINTSTRUCT_HPP
 
-
+void PrintStruct(nuclei* ToSaveNuclei, long long n, const char* FileName,int choose);
 
 #endif //PRINTSTRUCT_HPP
 
