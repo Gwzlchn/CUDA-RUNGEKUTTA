@@ -4,6 +4,7 @@
 
 #include <crt/host_defines.h>
 
+__device__ double stddev = 0.0;//方差
 
 __device__ double rotation = 0.0;//转轴角度，对应之前的kk
 

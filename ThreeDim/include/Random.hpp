@@ -3,11 +3,10 @@
 
 #include <math.h>
 #include <curand.h>
+
 #include "device_launch_parameters.h"
 #include "cuda_runtime.h"
-
 #include "nucleus.hpp"
-
 #include "sci_const.cuh"
 
 //生成双精度01均匀分布随机数
@@ -20,14 +19,15 @@ void NormalRandomArrayD(double* Array, const long Size, double Mean = 0, double 
 
 //生成双精度双正态分布随机数
 //参数:	Array1:双精度数组1	Array2:双精度数组2	Array3:双精度数组3	Array2:双精度数组4	
-//Size:数组长度	Nudis:核间距(2)	Stddev:方差(0.7)
+//Size:数组长度	Nudis:半核间距(2)	Stddev:方差(0.7)
 __global__ void DoubleNormalRandomArrayD(double* Array1, double* Array2, double* Array3, double* Array4,
 	const long Size, double Nudis = 2, double Stddev = 0.7);
 
 //用于双核粒子的随机数化
-//参数:	Array:粒子数组	Size:数组长度 Angle:偏移角(0)
+//参数:	Array:粒子数组	Size:数组长度	Angle:偏移角(0)
 void NucleiRandomD(nuclei* Array, const long Size, double Angle = 0);
 
+#endif //RANDOM_H
 
 
 
@@ -57,7 +57,7 @@ void NormalRandomArrayD(double* Array, const long Size, double Mean, double Stdd
 
 //生成双精度双正态分布随机数
 //参数:	Array1:双精度数组1	Array2:双精度数组2	Array3:双精度数组3	Array2:双精度数组4	
-//Size:数组长度	Nudis:核间距(2)	Stddev:方差(0.7)
+//Size:数组长度	Nudis:半核间距(2)	Stddev:方差(0.7)
 __global__ void DoubleNormalRandomArrayD(double* Array1, double* Array2, double* Array3, double* Array4,
 	const long Size, double Nudis, double Stddev)
 {
@@ -104,7 +104,7 @@ void NucleiRandomD(nuclei* Array, const long Size, double Angle)
 
 		int threadsPerBlock = 256;
 		int threadsPerGrid = (2 * Size + threadsPerBlock - 1) / threadsPerBlock;
-		DoubleNormalRandomArrayD <<< threadsPerGrid, threadsPerBlock >>>(DTempArr1, DTempArr2, DTempArr3, DTempArr4, 2 * Size);
+		DoubleNormalRandomArrayD <<<threadsPerGrid, threadsPerBlock>>>(DTempArr1, DTempArr2, DTempArr3, DTempArr4, 2 * Size);
 		while (i<Size && (i + j)<2 * Size)
 		{
 			if (DTempArr1[i + j] == -99)
@@ -112,15 +112,14 @@ void NucleiRandomD(nuclei* Array, const long Size, double Angle)
 				j++;
 			}
 			else {
-				Array[i].init_first.x = DTempArr1[i + j] * sin(Angle*PI);
-				Array[i].init_first.y = 0;
-				Array[i].init_first.z = DTempArr1[i + j] * cos(Angle*PI);
-				Array[i].init_second.x = DTempArr3[i + j] * sin(Angle*PI);
-				Array[i].init_second.y = 0;
-				Array[i].init_second.z = DTempArr3[i + j] * cos(Angle*PI);
+				Array[i].first.x = DTempArr1[i + j] * sin(Angle*PI);
+				Array[i].first.y = 0;
+				Array[i].first.z = DTempArr1[i + j] * cos(Angle*PI);
+				Array[i].second.x = DTempArr3[i + j] * sin(Angle*PI);
+				Array[i].second.y = 0;
+				Array[i].second.z = DTempArr3[i + j] * cos(Angle*PI);
 				i++;
 			}
 		}
 	}
 }
-#endif //RANDOM_H
