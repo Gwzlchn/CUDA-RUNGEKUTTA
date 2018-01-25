@@ -84,7 +84,7 @@ __global__ void DoubleNormalRandomArrayD(double* Array1, double* Array2, double*
 
 //用于双核粒子的随机数化
 //参数:	Array:粒子数组	Size:数组长度 Angle:偏移角
-void NucleiRandomD(nuclei* Array, const long Size, double Angle)
+extern "C" void NucleiRandomD(nuclei* Array, const long Size, double Angle)
 {
 	int i(0);
 	int j(0);
@@ -104,7 +104,7 @@ void NucleiRandomD(nuclei* Array, const long Size, double Angle)
 
 		int threadsPerBlock = 256;
 		int threadsPerGrid = (2 * Size + threadsPerBlock - 1) / threadsPerBlock;
-		DoubleNormalRandomArrayD <<< threadsPerGrid, threadsPerBlock >> > (DTempArr1, DTempArr2, DTempArr3, DTempArr4, 2 * Size);
+		DoubleNormalRandomArrayD <<<threadsPerGrid, threadsPerBlock >>> (DTempArr1, DTempArr2, DTempArr3, DTempArr4, 2 * Size);
 		while (i < Size && (i + j) < 2 * Size)
 		{
 			if (DTempArr1[i + j] == -99)

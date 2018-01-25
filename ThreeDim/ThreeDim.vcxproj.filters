@@ -26,12 +26,12 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp" />
     <ClCompile Include="include\device_compute_funcs.cuh">
       <Filter>inlcude</Filter>
     </ClCompile>
     <ClCompile Include="include\PrintStruct.hpp">
       <Filter>inlcude</Filter>
     </ClCompile>
+    <ClCompile Include="main.cpp" />
   </ItemGroup>
 </Project>

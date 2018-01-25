@@ -3,8 +3,8 @@
 #include "./include/common.hpp"
 #include "./include/Random.hpp"
 #include <cuda_runtime.h>
-#include <cstdio>
-
+#include <stdio.h>
+extern "C" void NucleiRandomD(nuclei* Array, const long Size, double Angle);
 int main()
 {
 	//计时
