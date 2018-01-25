@@ -1,5 +1,5 @@
 ﻿#include "./include/nucleus.hpp"
-#include "./include/PrintStruct.h"
+//#include "./include/PrintStruct.h"
 #include "./include/common.hpp"
 #include "./include/Random.h"
 #include <cuda_runtime.h>

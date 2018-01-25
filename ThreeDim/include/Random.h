@@ -18,4 +18,6 @@ void UniformRandomArrayD(double* Array, const long Size);
 //参数:	Array:粒子数组	Size:数组长度	Angle:偏移角(0)
 void NucleiRandomD(nuclei* Array, const long Size);
 
+void PrintStruct(nuclei* ToSaveNuclei, long long n, const char* FileName);
+
 #endif //RANDOM_H
