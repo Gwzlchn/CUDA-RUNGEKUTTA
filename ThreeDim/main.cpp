@@ -1,8 +1,8 @@
 ﻿#include "./include/nucleus.hpp"
-#include "./src/PrintStruct.cpp"
+//#include "./include/PrintStruct.hpp"
 #include "./include/common.hpp"
 #include <cuda_runtime.h>
-
+#include <cstdio>
 int main()
 {
 	//计时

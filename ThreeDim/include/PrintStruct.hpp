@@ -1,4 +1,5 @@
-﻿#include "../include/nucleus.hpp"
+﻿#pragma once
+#include "nucleus.hpp"
 #include <cstdio>
 #include <cstring>
 
@@ -8,8 +9,14 @@
 //第一步数据 "one_" + 文件名
 //第二步数据 "two_" + 文件名
 
+#ifndef PRINTSTRUCT_HPP
+#define PRINTSTRUCT_HPP
 
-void PrintStruct(nuclei* ToSaveNuclei,long long n,const char* FileName)
+void PrintStruct(nuclei* ToSaveNuclei, long long n, const char* FileName);
+
+#endif //PRINTSTRUCT_HPP
+
+void PrintStruct(nuclei* ToSaveNuclei, long long n, const char* FileName)
 {
 	//仅初始化的
 	char init_file_name[6] = "init_";

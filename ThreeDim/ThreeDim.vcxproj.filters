@@ -26,17 +26,12 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\PrintStruct.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="include\device_compute_funcs.cuh">
       <Filter>inlcude</Filter>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <CudaCompile Include="src\global_funcs.cu">
-      <Filter>src</Filter>
-    </CudaCompile>
+    <ClCompile Include="include\PrintStruct.hpp">
+      <Filter>inlcude</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

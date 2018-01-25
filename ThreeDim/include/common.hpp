@@ -5,7 +5,7 @@
 #include <sys/time.h>
 #endif
 
-#include<stdio.h>
+
 #ifndef COMMON_HPP
 #define COMMON_HPP
 
