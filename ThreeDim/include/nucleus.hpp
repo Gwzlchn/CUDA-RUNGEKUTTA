@@ -13,17 +13,23 @@ struct nucleus{
 	double pz;
 };
 
+
+
+
 struct  nuclei{
-	//初始化
-	nucleus init_first;
-	nucleus init_second;
-	//第一步完事
-	nucleus step_one_first;
-	nucleus step_one_second;
-	//第二步完事
-	nucleus step_two_first;
-	nucleus step_two_second;
-	
+	////初始化
+	//nucleus init_first;
+	//nucleus init_second;
+	////第一步完事
+	//nucleus step_one_first;
+	//nucleus step_one_second;
+	////第二步完事
+	//nucleus step_two_first;
+	//nucleus step_two_second;
+	//
+	nucleus first;
+	nucleus second;
+
 };
 
 
