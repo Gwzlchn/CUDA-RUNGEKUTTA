@@ -1,6 +1,7 @@
 ﻿#include "./include/nucleus.hpp"
-//#include "./include/PrintStruct.hpp"
+#include "./include/PrintStruct.hpp"
 #include "./include/common.hpp"
+#include "./include/Random.hpp"
 #include <cuda_runtime.h>
 #include <cstdio>
 int main()
@@ -20,9 +21,22 @@ int main()
 	long pairs = 10000;
 	long long nBytes = pairs * sizeof(nuclei);
 	printf("Use %lld Bytes %lfMB\n", nBytes, nBytes / double(1024 * 1024));
-
+	nuclei* test;
+	nuclei* host;
 	Start = seconds();
+	cudaMalloc((void **)(&test), nBytes);
+	host = (nuclei*)malloc(nBytes);
 	
+	NucleiRandomD(test, pairs, rotation);
+	cudaMemcpy(host, test, nBytes, cudaMemcpyDeviceToHost);
+	PrintStruct(host, pairs, 0);
+
+	return 0;
+	
+
+
+
+
 
 
 

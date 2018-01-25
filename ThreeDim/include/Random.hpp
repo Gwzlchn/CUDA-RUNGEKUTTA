@@ -29,6 +29,8 @@ __global__ void DoubleNormalRandomArrayD(double* Array1, double* Array2, double*
 void NucleiRandomD(nuclei* Array, const long Size, double Angle = 0);
 
 
+#endif //RANDOM_H
+
 
 
 //生成双精度01均匀分布随机数
@@ -124,4 +126,3 @@ void NucleiRandomD(nuclei* Array, const long Size, double Angle)
 	}
 
 }
-#endif //RANDOM_H
