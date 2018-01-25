@@ -59,6 +59,28 @@ __global__ void DoubleNormalRandomArrayD(double* Array1, double* Array2, double*
 	return;
 }
 
+//线性传参
+__global__ void LinearTransmissionD(nuclei* Array, double* DTempArr1, double* DTempArr3, const long Size, int& i, int& j)
+{
+	while (i < Size && (i + j) < 2 * Size)
+	{
+		if (DTempArr1[i + j] == -99)
+		{
+			j++;
+		}
+		else {
+			Array[i].first.x = DTempArr1[i + j] * sin(rotation*PI);
+			Array[i].first.y = 0;
+			Array[i].first.z = DTempArr1[i + j] * cos(rotation*PI);
+			Array[i].second.x = DTempArr3[i + j] * sin(rotation*PI);
+			Array[i].second.y = 0;
+			Array[i].second.z = DTempArr3[i + j] * cos(rotation*PI);
+			i++;
+		}
+	}
+	return;
+}
+
 //用于双核粒子的随机数化
 //参数:	Array:粒子数组	Size:数组长度 Angle:偏移角
 void NucleiRandomD(nuclei* Array, const long Size)
@@ -82,22 +104,7 @@ void NucleiRandomD(nuclei* Array, const long Size)
 		int threadsPerBlock = 256;
 		int threadsPerGrid = (2 * Size + threadsPerBlock - 1) / threadsPerBlock;
 		DoubleNormalRandomArrayD <<<threadsPerGrid, threadsPerBlock >>> (DTempArr1, DTempArr2, DTempArr3, DTempArr4, 2 * Size);
-		while (i < Size && (i + j) < 2 * Size)
-		{
-			if (DTempArr1[i + j] == -99)
-			{
-				j++;
-			}
-			else {
-				Array[i].first.x = DTempArr1[i + j] * sin(rotation*PI);
-				Array[i].first.y = 0;
-				Array[i].first.z = DTempArr1[i + j] * cos(rotation*PI);
-				Array[i].second.x = DTempArr3[i + j] * sin(rotation*PI);
-				Array[i].second.y = 0;
-				Array[i].second.z = DTempArr3[i + j] * cos(rotation*PI);
-				i++;
-			}
-		}
+		LinearTransmissionD <<<1,1>>>(Array, DTempArr1, DTempArr3, Size, i, j);
 	}
 }
 
