@@ -4,6 +4,7 @@
 #include "./include/Random.hpp"
 #include <cuda_runtime.h>
 #include <cstdio>
+
 int main()
 {
 	//计时

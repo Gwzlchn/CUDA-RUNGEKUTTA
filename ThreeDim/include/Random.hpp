@@ -29,8 +29,6 @@ void NucleiRandomD(nuclei* Array, const long Size, double Angle = 0);
 
 #endif //RANDOM_H
 
-#endif //RANDOM_H
-
 
 
 //生成双精度01均匀分布随机数
@@ -124,8 +122,3 @@ void NucleiRandomD(nuclei* Array, const long Size, double Angle)
 			}
 		}
 	}
-<<<<<<< HEAD
-=======
-
->>>>>>> 7ae03049cff80087cba0daa528367f7f8a32f998
-}
