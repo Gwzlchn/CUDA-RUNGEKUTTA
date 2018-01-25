@@ -112,15 +112,16 @@ void NucleiRandomD(nuclei* Array, const long Size, double Angle)
 				j++;
 			}
 			else {
-				Array[i].init_first.x = DTempArr1[i + j] * sin(Angle*PI);
-				Array[i].init_first.y = 0;
-				Array[i].init_first.z = DTempArr1[i + j] * cos(Angle*PI);
-				Array[i].init_second.x = DTempArr3[i + j] * sin(Angle*PI);
-				Array[i].init_second.y = 0;
-				Array[i].init_second.z = DTempArr3[i + j] * cos(Angle*PI);
+				Array[i].first.x = DTempArr1[i + j] * sin(Angle*PI);
+				Array[i].first.y = 0;
+				Array[i].first.z = DTempArr1[i + j] * cos(Angle*PI);
+				Array[i].second.x = DTempArr3[i + j] * sin(Angle*PI);
+				Array[i].second.y = 0;
+				Array[i].second.z = DTempArr3[i + j] * cos(Angle*PI);
 				i++;
 			}
 		}
 	}
+
 }
 #endif //RANDOM_H
