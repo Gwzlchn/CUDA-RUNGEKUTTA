@@ -1,36 +1,36 @@
-#pragma comment(lib, "cudart.lib")
+ï»¿#pragma comment(lib, "cudart.lib")
 #pragma comment(lib, "curand.lib")
 #include "../include/Random.h"
 
-//Éú³ÉË«¾«¶È01¾ùÔÈ·Ö²¼Ëæ»úÊı
-//²ÎÊı:	Array:Ë«¾«¶ÈÊı×é	Size:Êı×é³¤¶È
+//ç”ŸæˆåŒç²¾åº¦01å‡åŒ€åˆ†å¸ƒéšæœºæ•°
+//å‚æ•°:	Array:åŒç²¾åº¦æ•°ç»„	Size:æ•°ç»„é•¿åº¦
 void UniformRandomArrayD(double* Array, const long Size)
 {
-	curandGenerator_t gen;											//Éú³ÉËæ»úÊı±äÁ¿
-	curandCreateGenerator(&gen, CURAND_RNG_PSEUDO_MRG32K3A);		//Ö¸¶¨Ëã·¨
-	curandSetPseudoRandomGeneratorSeed(gen, 11ULL);					//Ëæ»úÊı³õÊ¼»¯
-	curandGenerateUniformDouble(gen, Array, Size);					//Éú³É0-1¾ùÔÈ·Ö²¼Ëæ»úÊı£¬´æ´¢µ½»º³åÆ÷ÖĞ
-	curandDestroyGenerator(gen);                         			//ÊÍ·ÅÖ¸Õë
+	curandGenerator_t gen;											//ç”Ÿæˆéšæœºæ•°å˜é‡
+	curandCreateGenerator(&gen, CURAND_RNG_PSEUDO_MRG32K3A);		//æŒ‡å®šç®—æ³•
+	curandSetPseudoRandomGeneratorSeed(gen, 11ULL);					//éšæœºæ•°åˆå§‹åŒ–
+	curandGenerateUniformDouble(gen, Array, Size);					//ç”Ÿæˆ0-1å‡åŒ€åˆ†å¸ƒéšæœºæ•°ï¼Œå­˜å‚¨åˆ°ç¼“å†²å™¨ä¸­
+	curandDestroyGenerator(gen);                         			//é‡Šæ”¾æŒ‡é’ˆ
 	return;
 }
 
-//Éú³ÉË«¾«¶ÈÕıÌ¬·Ö²¼Ëæ»úÊı
-//²ÎÊı:	Array:Ë«¾«¶ÈÊı×é	Size:Êı×é³¤¶È	Mean:¾ùÖµ(0)	Stddev:·½²î(0.7)
+//ç”ŸæˆåŒç²¾åº¦æ­£æ€åˆ†å¸ƒéšæœºæ•°
+//å‚æ•°:	Array:åŒç²¾åº¦æ•°ç»„	Size:æ•°ç»„é•¿åº¦	Mean:å‡å€¼(0)	Stddev:æ–¹å·®(0.7)
 void NormalRandomArrayD(double* Array, const long Size, double Mean, double Stddev)
 {
-	curandGenerator_t gen;											//Éú³ÉËæ»úÊı±äÁ¿
-	curandCreateGenerator(&gen, CURAND_RNG_PSEUDO_MRG32K3A);		//Ö¸¶¨Ëã·¨
-	curandSetPseudoRandomGeneratorSeed(gen, 11ULL);					//Ëæ»úÊı³õÊ¼»¯
-	curandGenerateNormalDouble(gen, Array, Size, Mean, Stddev);		//Éú³ÉÕıÌ¬·Ö²¼Ëæ»úÊı£¬´æ´¢µ½»º³åÆ÷ÖĞ
-	curandDestroyGenerator(gen);                         			//ÊÍ·ÅÖ¸Õë
+	curandGenerator_t gen;											//ç”Ÿæˆéšæœºæ•°å˜é‡
+	curandCreateGenerator(&gen, CURAND_RNG_PSEUDO_MRG32K3A);		//æŒ‡å®šç®—æ³•
+	curandSetPseudoRandomGeneratorSeed(gen, 11ULL);					//éšæœºæ•°åˆå§‹åŒ–
+	curandGenerateNormalDouble(gen, Array, Size, Mean, Stddev);		//ç”Ÿæˆæ­£æ€åˆ†å¸ƒéšæœºæ•°ï¼Œå­˜å‚¨åˆ°ç¼“å†²å™¨ä¸­
+	curandDestroyGenerator(gen);                         			//é‡Šæ”¾æŒ‡é’ˆ
 	return;
 }
 
-//Éú³ÉË«¾«¶ÈË«ÕıÌ¬·Ö²¼Ëæ»úÊı
-//²ÎÊı:	Array1:Ë«¾«¶ÈÊı×é1	Array2:Ë«¾«¶ÈÊı×é2	Array3:Ë«¾«¶ÈÊı×é3	Array2:Ë«¾«¶ÈÊı×é4	
-//Size:Êı×é³¤¶È	Nudis:°ëºË¼ä¾à(2)	Stddev:·½²î(0.7)
+//ç”ŸæˆåŒç²¾åº¦åŒæ­£æ€åˆ†å¸ƒéšæœºæ•°
+//å‚æ•°:	Array1:åŒç²¾åº¦æ•°ç»„1	Array2:åŒç²¾åº¦æ•°ç»„2	Array3:åŒç²¾åº¦æ•°ç»„3	Array2:åŒç²¾åº¦æ•°ç»„4	
+//Size:æ•°ç»„é•¿åº¦	Nudis:åŠæ ¸é—´è·(2)	Stddev:æ–¹å·®(0.7)
 __global__ void DoubleNormalRandomArrayD(double* Array1, double* Array2, double* Array3, double* Array4,
-	const long Size, double Nudis = 2, double Stddev = 0.7)
+	const long Size )
 {
 	int i = threadIdx.x;
 	double temp1 = 1;
@@ -40,10 +40,10 @@ __global__ void DoubleNormalRandomArrayD(double* Array1, double* Array2, double*
 	Array1[i] = (Array1[i] - 0.5) * 20;
 	Array3[i] = (Array3[i] - 0.5) * 20;
 
-	temp1 = exp((-pow((Array1[i] - Nudis), Nudis)) / (Nudis * pow(Stddev, Nudis)))
-		+ exp((-pow((Array1[i] + Nudis), Nudis)) / (Nudis * pow(Stddev, Nudis)));
-	temp2 = exp((-pow((Array3[i] - Nudis), Nudis)) / (Nudis * pow(Stddev, Nudis)))
-		+ exp((-pow((Array3[i] + Nudis), Nudis)) / (Nudis * pow(Stddev, Nudis)));
+	temp1 = exp((-pow((Array1[i] - nuclear_spacing/2.0), nuclear_spacing/2.0)) / (nuclear_spacing/2.0 * pow(stddev, nuclear_spacing/2.0)))
+		+ exp((-pow((Array1[i] + nuclear_spacing/2.0), nuclear_spacing/2.0)) / (nuclear_spacing/2.0 * pow(stddev, nuclear_spacing/2.0)));
+	temp2 = exp((-pow((Array3[i] - nuclear_spacing/2.0), nuclear_spacing/2.0)) / (nuclear_spacing/2.0 * pow(stddev, nuclear_spacing/2.0)))
+		+ exp((-pow((Array3[i] + nuclear_spacing/2.0), nuclear_spacing/2.0)) / (nuclear_spacing/2.0 * pow(stddev, nuclear_spacing/2.0)));
 
 	if (Array2[i] > temp1 && Array4[i] > temp2)
 	{
@@ -53,9 +53,9 @@ __global__ void DoubleNormalRandomArrayD(double* Array1, double* Array2, double*
 	return;
 }
 
-//ÓÃÓÚË«ºËÁ£×ÓµÄËæ»úÊı»¯
-//²ÎÊı:	Array:Á£×ÓÊı×é	Size:Êı×é³¤¶È Angle:Æ«ÒÆ½Ç
-extern "C" void NucleiRandomD(nuclei* Array, const long Size, double Angle)
+//ç”¨äºåŒæ ¸ç²’å­çš„éšæœºæ•°åŒ–
+//å‚æ•°:	Array:ç²’å­æ•°ç»„	Size:æ•°ç»„é•¿åº¦ Angle:åç§»è§’
+void NucleiRandomD(nuclei* Array, const long Size)
 {
 	int i(0);
 	int j(0);
@@ -75,7 +75,7 @@ extern "C" void NucleiRandomD(nuclei* Array, const long Size, double Angle)
 
 		int threadsPerBlock = 256;
 		int threadsPerGrid = (2 * Size + threadsPerBlock - 1) / threadsPerBlock;
-		DoubleNormalRandomArrayD << <threadsPerGrid, threadsPerBlock >> > (DTempArr1, DTempArr2, DTempArr3, DTempArr4, 2 * Size);
+		DoubleNormalRandomArrayD <<<threadsPerGrid, threadsPerBlock >>> (DTempArr1, DTempArr2, DTempArr3, DTempArr4, 2 * Size);
 		while (i < Size && (i + j) < 2 * Size)
 		{
 			if (DTempArr1[i + j] == -99)
@@ -83,12 +83,12 @@ extern "C" void NucleiRandomD(nuclei* Array, const long Size, double Angle)
 				j++;
 			}
 			else {
-				Array[i].first.x = DTempArr1[i + j] * sin(Angle*PI);
+				Array[i].first.x = DTempArr1[i + j] * sin(rotation*PI);
 				Array[i].first.y = 0;
-				Array[i].first.z = DTempArr1[i + j] * cos(Angle*PI);
-				Array[i].second.x = DTempArr3[i + j] * sin(Angle*PI);
+				Array[i].first.z = DTempArr1[i + j] * cos(rotation*PI);
+				Array[i].second.x = DTempArr3[i + j] * sin(rotation*PI);
 				Array[i].second.y = 0;
-				Array[i].second.z = DTempArr3[i + j] * cos(Angle*PI);
+				Array[i].second.z = DTempArr3[i + j] * cos(rotation*PI);
 				i++;
 			}
 		}

@@ -1,10 +1,10 @@
 ﻿#ifndef DEVICE_COMPUTE_FUNCS_CUH
 #define DEVICE_COMPUTE_FUNCS_CUH
 
-#include "sci_const.cuh"
+#include "sci_const.h"
 #include "nucleus.hpp"
 
-#include <thrust/device_vector.h>
+#include <cmath>
 
 
 

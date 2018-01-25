@@ -5,7 +5,7 @@
 
 #include "nucleus.hpp"
 #include "device_launch_parameters.h"
-#include "sci_const.cuh"
+#include "sci_const.h"
 #include "Random.h"
 
 void NormalRandom(nuclei* raw_nuclei, const long n);
