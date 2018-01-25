@@ -26,11 +26,14 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="include\device_compute_funcs.cuh">
-      <Filter>inlcude</Filter>
-    </ClCompile>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="src\PrintStruct.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="include\device_compute_funcs.h">
+      <Filter>inlcude</Filter>
+    </ClCompile>
+    <ClCompile Include="src\device_compute_funcs.cu">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>

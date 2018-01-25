@@ -1,6 +1,13 @@
 ﻿#pragma comment(lib, "cudart.lib")
 #pragma comment(lib, "curand.lib")
 #include "../include/Random.h"
+#include "../include/sci_const.h"
+#include "../include/device_compute_funcs.h"
+
+#include <curand.h>
+#include <curand_kernel.h>
+#include <cmath>
+#include <vector_types.h>
 
 //生成双精度01均匀分布随机数
 //参数:	Array:双精度数组	Size:数组长度
