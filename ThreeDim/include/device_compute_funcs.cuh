@@ -7,6 +7,10 @@
 #include <thrust/device_vector.h>
 
 
+
+
+//计算总动能
+__device__ double E_kall(const nucleus& first, const nucleus& second);
 //两核之间距离的平方
 //返回（x1-x2)^2 +（y1-y2)^2 +（z1-z2)^2
 __device__  double nucleus_distance(const nucleus& first, const nucleus& second);
@@ -16,13 +20,30 @@ __device__ nucleus fx_first_nucleus(const nucleus& first, const nucleus& second)
 //第二个核，三个坐标的二阶导
 __device__ nucleus fx_second_nucleus(const nucleus& first, const nucleus& second);
 
+
+
 __device__ void update_step_one(nucleus* step_one_fir, nucleus* step_one_sec);
 __device__ void update_step_two(nucleus* step_two_fir, nucleus* step_two_sec);
 
 #endif //DEVICE_COMPUTE_FUNCS_CUH
 
 
-
+__device__ double E_kall(const nucleus& first, const nucleus& second)
+{
+	return E_total - (-1.0/sqrt(pow((first.z-nuclear_spacing/2.0*cos(PI*rotation)),2)+
+								pow((first.x-nuclear_spacing-2.0*sin(PI*rotation)),2)+
+								first.y*first.y+elec_elec*elec_elec))-
+					(-1.0/sqrt(pow((second.z-nuclear_spacing/2.0*cos(PI*rotation)),2)+
+								pow((second.x-nuclear_spacing/2.0*sin(PI*rotation)),2)+
+								second.y*second.y+elec_elec*elec_elec))
+					-(1.0/sqrt(nucleus_distance(first,second)+elec_nucl*elec_nucl))-
+					(-1.0/sqrt(pow((first.z+nuclear_spacing/2.0*cos(PI*rotation)),2)+
+								pow((first.x+nuclear_spacing/2.0*sin(PI*rotation)),2)+
+								first.y*first.y+elec_elec*elec_elec))-
+					(-1.0/sqrt(pow((second.z+nuclear_spacing/2.0*cos(PI*rotation)),2)+
+								pow((second.x+nuclear_spacing/2.0*sin(PI*rotation)),2)+
+								second.y*second.y + elec_elec*elec_elec));
+}
 
 
 __device__  double nucleus_distance(const nucleus& first, const nucleus& second)
@@ -70,7 +91,7 @@ __device__  nucleus fx_first_nucleus(const nucleus& first, const nucleus& second
 						pow((first.x + nuclear_spacing / 2.0 * sin(PI*rotation)), 2) +
 						first.y*first.y + elec_elec*elec_elec), 3));
 
-	
+	fx_first.px = fx_first.py = fx_first.pz = 0;
 	return fx_first;
 }
 __device__  nucleus fx_second_nucleus(const nucleus& first, const nucleus& second)
@@ -108,15 +129,14 @@ __device__  nucleus fx_second_nucleus(const nucleus& first, const nucleus& secon
 			/ sqrt(pow((pow((second.z + nuclear_spacing / 2.0 * cos(PI*rotation)), 2) +
 						pow((second.x + nuclear_spacing / 2.0 * sin(PI*rotation)), 2) +
 						second.y*second.y + elec_elec*elec_elec), 3));
-
+	fx_second.px = fx_second.py = fx_second.pz = 0;
 	return fx_second;
 }
 
 
-void update_step_one(nucleus* step_one_fir, nucleus* step_one_sec)
+void update_step_one(nucleus& step_one_fir, nucleus& step_one_sec)
 {
-	thrust::host_vector<nucleus> K1;
-	//step_one_fir->x
+	
 
 }
 //__device__ void update_step_two(nucleus* step_two_fir, nucleus* step_two_sec)
