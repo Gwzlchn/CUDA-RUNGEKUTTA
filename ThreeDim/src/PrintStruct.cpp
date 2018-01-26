@@ -21,7 +21,7 @@ void PrintStruct(nuclei* ToSaveNuclei, long long n, const char* FileName, int ch
 	{
 		case 0:
 		{
-			char init_file_name[17] = ".\TestData\init_";
+			char init_file_name[19] = ".\\TestData\\init_";
 			///*strcat((char*)(FileName), tmpBuf);
 			strcat(init_file_name, FileName);
 			strcat(init_file_name, str);
@@ -31,7 +31,7 @@ void PrintStruct(nuclei* ToSaveNuclei, long long n, const char* FileName, int ch
 		}
 		case 1:
 		{
-			char step_one_file_name[22] = ".\TestData\step_one_";
+			char step_one_file_name[24] = ".\\TestData\\step_one_";
 			strcat(step_one_file_name, FileName);
 			strcat(step_one_file_name, str);
 			strcat(step_one_file_name, ".dat");
@@ -40,7 +40,7 @@ void PrintStruct(nuclei* ToSaveNuclei, long long n, const char* FileName, int ch
 		}
 		case 2:
 		{
-			char step_two_file_name[22] = ".\TestData\step_two_";
+			char step_two_file_name[24] = ".\\TestData\\step_two_";
 			strcat(step_two_file_name, FileName);
 			strcat(step_two_file_name, str);
 			strcat(step_two_file_name, ".dat");
