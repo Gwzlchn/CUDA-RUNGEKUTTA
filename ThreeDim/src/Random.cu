@@ -84,9 +84,29 @@ void compute_on_gpu_one(const long pairs)
 	cudaMalloc((void **)(&test), nBytes);
 	host = (nuclei*)malloc(nBytes);
 
+	cudaEvent_t start, stop;
+	cudaEventCreate(&start);
+	cudaEventCreate(&stop);
+	cudaEventRecord(start, 0);
+
 	NucleiRandomD(test, pairs);
+
+	cudaEventRecord(stop, 0);
+	cudaEventSynchronize(start);
+	cudaEventSynchronize(stop);
+	float costtime;
+	cudaEventElapsedTime(&costtime, start, stop);
+
 	cudaMemcpy(host, test, nBytes, cudaMemcpyDeviceToHost);
 	PrintStruct(host, pairs, "testOne.dat", 0);
+
+	FILE* init = fopen("testOne.dat", "a");
+	if (!init)
+	{
+		perror("cannot open file");
+	}
+	fprintf(init,"%10f",costtime);
+	fclose(init);
 }
 
 //生成双精度01均匀分布随机数

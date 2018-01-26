@@ -85,10 +85,8 @@ void PrintStruct(nuclei* ToSaveNuclei, long long n, const char* FileName,int cho
 		fprintf(two, "\n");
 	}
 	fclose(two);
-	break; }
-
-
-
+	break; 
+	}
 	}
 	//仅初始化的
 
