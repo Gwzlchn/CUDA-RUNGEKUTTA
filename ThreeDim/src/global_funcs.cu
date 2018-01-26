@@ -13,6 +13,160 @@
 #include <vector_types.h>
 #include <cuda_runtime.h>
 
+//生成双精度双正态分布随机数
+__global__ void DoubleNormalRandomArrayD(nuclei* Array, const long Size)
+{
+	double A1, A2, A3, A4;
+	double Ekall = -1;
+	double temp1 = 1;
+	double temp2 = 1;
+
+	int i = threadIdx.x + blockIdx.x * blockDim.x;
+	
+	curandState s;
+	int seed = -i;
+	curand_init(seed, 0, 0, &s);
+	
+	while (Ekall < 0)
+	{
+		A2 = A4 = 2;
+
+		while (A2 > temp1 && A4 > temp2)
+		{
+			A1 = curand_uniform_double(&s);
+			A2 = curand_uniform_double(&s);
+			A3 = curand_uniform_double(&s);
+			A4 = curand_uniform_double(&s);
+			
+			A1 = (A1 - 0.5) * 20;
+			A3 = (A3 - 0.5) * 20;
+
+			temp1 = exp((-pow((A1 - mean), 2)) / (mean * stddev * stddev))
+				+ exp((-pow((A1 + mean), 2)) / (mean * stddev * stddev));
+			temp2 = exp((-pow((A3 - mean), 2)) / (mean * stddev * stddev))
+				+ exp((-pow((A3 + mean), 2)) / (mean * stddev * stddev));
+		}
+		//printf("%lf\t%lf\n", A1,A3);
+	
+		Array[i].first.x = A1 * sin(rotation*PI);
+		Array[i].first.y = 0;
+		Array[i].first.z = A1 * cos(rotation*PI);
+
+		Array[i].second.x = A3 * sin(rotation*PI);
+		Array[i].second.y = 0;
+		Array[i].second.z = A3 * cos(rotation*PI);
+
+		Ekall = E_kall(Array[i].first, Array[i].second);
+		
+		//printf("%lf\n", Ekall);
+	}
+	px_py_pz_distribution(Array[i].first, Array[i].second,Ekall,i);
+	return;
+}
+
+//用于双核粒子的随机数化
+void NucleiRandomD(nuclei* Array, const long Size)
+{
+	int dimx = 512;
+	dim3 block(dimx);
+	dim3 grid((Size + block.x - 1) / block.x, 1);
+	DoubleNormalRandomArrayD << < grid, block >> > (Array, Size);
+}
+
+__global__ void first_step_on_gpu(nuclei* first_arr, const long Size)
+{
+	int i = threadIdx.x + blockIdx.x * blockDim.x;
+}
+
+__global__ void second_step_on_gpu(nuclei* first_arr, const long Size)
+{
+	
+}
+
+void NucleiFisrtStep(nuclei* first_array, const long size)
+{
+	int dimx = 512;
+	dim3 block(dimx);
+	dim3 grid((size + block.x - 1) / block.x, 1);
+	first_step_on_gpu <<< grid, block >>> (first_array, size);
+}
+
+void NucleiSecondStep(nuclei* second_array, const long size)
+{
+	int dimx = 512;
+	dim3 block(dimx);
+	dim3 grid((size + block.x - 1) / block.x, 1);
+	second_step_on_gpu <<< grid, block >>> (second_array, size);
+}
+
+void compute_on_gpu_one(const long pairs,const char* file_name)
+{
+	long long nBytes = pairs * sizeof(nuclei);
+	printf("Use %lld Bytes %lfMB\n", nBytes, nBytes / double(1024 * 1024));
+	nuclei *gpu_init,*gpu_first,*gpu_second;
+	nuclei *host_init,*host_first,*host_second;
+	host_init = host_first = host_second = (nuclei*)malloc(nBytes);
+
+
+
+	//初始化！
+	//申请init空间
+	double start = seconds();
+	CHECK(cudaMalloc((void **)(&gpu_init), nBytes));
+	//计算
+	NucleiRandomD(gpu_init, pairs);
+
+	//把值赋给第一步(也申请了第一步的空间)
+	CHECK(cudaMalloc((void **)(&gpu_first), nBytes));
+	CHECK(cudaMemcpy(gpu_first, gpu_init, nBytes, cudaMemcpyDeviceToDevice));
+	//拷回并保存
+	CHECK(cudaMemcpy(host_init, gpu_init, nBytes, cudaMemcpyDeviceToHost));
+	PrintStruct(host_init, pairs, file_name, 0);
+	//释放init空间
+	CHECK(cudaFree(gpu_init));
+	double elapse = seconds();
+	printf("Inition compltete %lf\n", elapse - start);
+	//初始化完成！
+
+
+	//第一步计算
+	//first空间在之前申请过了
+	 start = seconds();
+	//计算
+	NucleiFisrtStep(gpu_first, pairs);
+
+	//把值赋给第二步(也申请了第二步的空间)
+	CHECK(cudaMalloc((void **)(&gpu_second), nBytes));
+	CHECK(cudaMemcpy(gpu_second, gpu_first, nBytes, cudaMemcpyDeviceToDevice));
+	//拷回并保存
+	CHECK(cudaMemcpy(host_first, gpu_first, nBytes, cudaMemcpyDeviceToHost));
+	PrintStruct(host_first, pairs, file_name, 1);
+	//释放first空间
+	CHECK(cudaFree(gpu_first));
+	 elapse = seconds();
+	printf("FirstStep compltete %lf\n", elapse - start);
+	//第一步完成！
+
+
+	//第二步计算
+	start = seconds();
+	//计算
+	NucleiSecondStep(gpu_second, pairs);
+	
+	//拷回并保存
+	CHECK(cudaMemcpy(host_second, gpu_second, nBytes, cudaMemcpyDeviceToHost));
+	PrintStruct(host_second, pairs, file_name , 2);
+	//释放first空间
+	CHECK(cudaFree(gpu_second));
+	elapse = seconds();
+	printf("SecondStep compltete %lf\n", elapse - start);
+	// 第二步完成！
+	
+
+
+	return;
+}
+
 //生成双精度01均匀分布随机数
 //参数:	Array:双精度数组	Size:数组长度
 //void UniformRandomArrayD(double* Array, const long Size)
@@ -118,165 +272,3 @@
 //		LinearTransmissionD <<<1,1>>>(Array, DTempArr1, DTempArr3, Size, i, j);
 //	}
 //}
-
-//生成双精度双正态分布随机数
-
-
-__global__ void DoubleNormalRandomArrayD(nuclei* Array, const long Size)
-{
-	double A1, A2, A3, A4;
-	double Ekall = -1;
-	double temp1 = 1;
-	double temp2 = 1;
-
-	int i = threadIdx.x + blockIdx.x * blockDim.x;
-	
-	curandState s;
-	int seed = -i;
-	curand_init(seed, 0, 0, &s);
-	
-	while (Ekall < 0)
-	{
-		A2 = A4 = 2;
-
-		while (A2 > temp1 && A4 > temp2)
-		{
-			A1 = curand_uniform_double(&s);
-			A2 = curand_uniform_double(&s);
-			A3 = curand_uniform_double(&s);
-			A4 = curand_uniform_double(&s);
-			
-			A1 = (A1 - 0.5) * 20;
-			A3 = (A3 - 0.5) * 20;
-
-			temp1 = exp((-pow((A1 - mean), 2)) / (mean * stddev * stddev))
-				+ exp((-pow((A1 + mean), 2)) / (mean * stddev * stddev));
-			temp2 = exp((-pow((A3 - mean), 2)) / (mean * stddev * stddev))
-				+ exp((-pow((A3 + mean), 2)) / (mean * stddev * stddev));
-		}
-		//printf("%lf\t%lf\n", A1,A3);
-	
-		Array[i].first.x = A1 * sin(rotation*PI);
-		Array[i].first.y = 0;
-		Array[i].first.z = A1 * cos(rotation*PI);
-
-		Array[i].second.x = A3 * sin(rotation*PI);
-		Array[i].second.y = 0;
-		Array[i].second.z = A3 * cos(rotation*PI);
-
-		Ekall = E_kall(Array[i].first, Array[i].second);
-		
-		//printf("%lf\n", Ekall);
-	}
-	px_py_pz_distribution(Array[i].first, Array[i].second,Ekall,i);
-	return;
-}
-
-__global__ void first_step_on_gpu(nuclei* first_arr, const long Size)
-{
-	int i = threadIdx.x + blockIdx.x * blockDim.x;
-	for()
-}
-
-
-__global__ void second_step_on_gpu(nuclei* first_arr, const long Size)
-{
-	
-}
-
-//用于双核粒子的随机数化
-void NucleiRandomD(nuclei* Array, const long Size)
-{
-	int dimx = 512;
-	dim3 block(dimx);
-	dim3 grid((Size + block.x - 1) / block.x, 1);
-	DoubleNormalRandomArrayD <<< grid, block >>> (Array, Size);
-}
-
-
-void NucleiFisrtStep(nuclei* first_array, const long size)
-{
-	int dimx = 512;
-	dim3 block(dimx);
-	dim3 grid((size + block.x - 1) / block.x, 1);
-	first_step_on_gpu <<< grid, block >>> (first_array, size);
-}
-
-
-
-
-void NucleiSecondStep(nuclei* second_array, const long size)
-{
-	int dimx = 512;
-	dim3 block(dimx);
-	dim3 grid((size + block.x - 1) / block.x, 1);
-	second_step_on_gpu <<< grid, block >>> (second_array, size);
-}
-
-void compute_on_gpu_one(const long pairs,const char* file_name)
-{
-	long long nBytes = pairs * sizeof(nuclei);
-	printf("Use %lld Bytes %lfMB\n", nBytes, nBytes / double(1024 * 1024));
-	nuclei *gpu_init,*gpu_first,*gpu_second;
-	nuclei *host_init,*host_first,*host_second;
-	host_init = host_first = host_second = (nuclei*)malloc(nBytes);
-
-
-
-	//初始化！
-	//申请init空间
-	double start = seconds();
-	CHECK(cudaMalloc((void **)(&gpu_init), nBytes));
-	//计算
-	NucleiRandomD(gpu_init, pairs);
-
-	//把值赋给第一步(也申请了第一步的空间)
-	CHECK(cudaMalloc((void **)(&gpu_first), nBytes));
-	CHECK(cudaMemcpy(gpu_first, gpu_init, nBytes, cudaMemcpyDeviceToDevice));
-	//拷回并保存
-	CHECK(cudaMemcpy(host_init, gpu_init, nBytes, cudaMemcpyDeviceToHost));
-	PrintStruct(host_init, pairs, file_name, 0);
-	//释放init空间
-	CHECK(cudaFree(gpu_init));
-	double elapse = seconds();
-	printf("Inition compltete %lf\n", elapse - start);
-	//初始化完成！
-
-
-	//第一步计算
-	//first空间在之前申请过了
-	 start = seconds();
-	//计算
-	NucleiFisrtStep(gpu_first, pairs);
-
-	//把值赋给第二步(也申请了第二步的空间)
-	CHECK(cudaMalloc((void **)(&gpu_second), nBytes));
-	CHECK(cudaMemcpy(gpu_second, gpu_first, nBytes, cudaMemcpyDeviceToDevice));
-	//拷回并保存
-	CHECK(cudaMemcpy(host_first, gpu_first, nBytes, cudaMemcpyDeviceToHost));
-	PrintStruct(host_first, pairs, file_name, 1);
-	//释放first空间
-	CHECK(cudaFree(gpu_first));
-	 elapse = seconds();
-	printf("FirstStep compltete %lf\n", elapse - start);
-	//第一步完成！
-
-
-	//第二步计算
-	start = seconds();
-	//计算
-	NucleiSecondStep(gpu_second, pairs);
-	
-	//拷回并保存
-	CHECK(cudaMemcpy(host_second, gpu_second, nBytes, cudaMemcpyDeviceToHost));
-	PrintStruct(host_second, pairs, file_name , 2);
-	//释放first空间
-	CHECK(cudaFree(gpu_second));
-	elapse = seconds();
-	printf("SecondStep compltete %lf\n", elapse - start);
-	// 第二步完成！
-	
-
-
-	return;
-}
