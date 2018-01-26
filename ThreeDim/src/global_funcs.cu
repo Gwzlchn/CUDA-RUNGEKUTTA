@@ -124,64 +124,77 @@
 
 __global__ void DoubleNormalRandomArrayD(nuclei* Array, const long Size)
 {
+	
 	double A1, A2, A3, A4;
 	double Ekall = -1;
 	double temp1 = 1;
 	double temp2 = 1;
 
 	int i = threadIdx.x + blockIdx.x * blockDim.x;
-	
-	curandState s;
-	int seed = -i;
-	curand_init(seed, 0, 0, &s);
-	
-	while (Ekall < 0)
+	if (i < Size)
 	{
-		A2 = A4 = 2;
+		curandState s;
+		int seed = -i;
+		curand_init(seed, 0, 0, &s);
 
-		while (A2 > temp1 && A4 > temp2)
+		while (Ekall < 0)
 		{
-			A1 = curand_uniform_double(&s);
-			A2 = curand_uniform_double(&s);
-			A3 = curand_uniform_double(&s);
-			A4 = curand_uniform_double(&s);
-			
-			A1 = (A1 - 0.5) * 20;
-			A3 = (A3 - 0.5) * 20;
+			A2 = A4 = 2;
 
-			temp1 = exp((-pow((A1 - mean), 2)) / (mean * stddev * stddev))
-				+ exp((-pow((A1 + mean), 2)) / (mean * stddev * stddev));
-			temp2 = exp((-pow((A3 - mean), 2)) / (mean * stddev * stddev))
-				+ exp((-pow((A3 + mean), 2)) / (mean * stddev * stddev));
+			while (A2 > temp1 && A4 > temp2)
+			{
+				A1 = curand_uniform_double(&s);
+				A2 = curand_uniform_double(&s);
+				A3 = curand_uniform_double(&s);
+				A4 = curand_uniform_double(&s);
+
+				A1 = (A1 - 0.5) * 20;
+				A3 = (A3 - 0.5) * 20;
+
+				temp1 = exp((-pow((A1 - mean), 2)) / (mean * stddev * stddev))
+					+ exp((-pow((A1 + mean), 2)) / (mean * stddev * stddev));
+				temp2 = exp((-pow((A3 - mean), 2)) / (mean * stddev * stddev))
+					+ exp((-pow((A3 + mean), 2)) / (mean * stddev * stddev));
+			}
+			//printf("%lf\t%lf\n", A1,A3);
+
+			Array[i].first.x = A1 * sin(rotation*PI);
+			Array[i].first.y = 0;
+			Array[i].first.z = A1 * cos(rotation*PI);
+
+			Array[i].second.x = A3 * sin(rotation*PI);
+			Array[i].second.y = 0;
+			Array[i].second.z = A3 * cos(rotation*PI);
+
+			Ekall = E_kall(Array[i].first, Array[i].second);
+
+			//printf("%lf\n", Ekall);
 		}
-		//printf("%lf\t%lf\n", A1,A3);
-	
-		Array[i].first.x = A1 * sin(rotation*PI);
-		Array[i].first.y = 0;
-		Array[i].first.z = A1 * cos(rotation*PI);
-
-		Array[i].second.x = A3 * sin(rotation*PI);
-		Array[i].second.y = 0;
-		Array[i].second.z = A3 * cos(rotation*PI);
-
-		Ekall = E_kall(Array[i].first, Array[i].second);
-		
-		//printf("%lf\n", Ekall);
+		px_py_pz_distribution(Array[i].first, Array[i].second, Ekall, i);
 	}
-	px_py_pz_distribution(Array[i].first, Array[i].second,Ekall,i);
 	return;
 }
 
-__global__ void first_step_on_gpu(nuclei* first_arr, const long Size)
+__global__ void first_step_on_gpu(nuclei* first_arr, const long size)
 {
-	int i = threadIdx.x + blockIdx.x * blockDim.x;
-	for()
+	int idx = threadIdx.x + blockIdx.x * blockDim.x;
+	if(idx<size)
+	{
+		for (int i = 0; i < one_steps; i++)
+			update_step_one(first_arr[idx].first, first_arr[idx].second);
+	}
+	
 }
 
 
-__global__ void second_step_on_gpu(nuclei* first_arr, const long Size)
+__global__ void second_step_on_gpu(nuclei* second_arr, const long size)
 {
-	
+	int idx = threadIdx.x + blockIdx.x * blockDim.x;
+	if (idx<size)
+	{
+		for (int i = 0; i < two_steps; i++)
+			update_step_two(second_arr[idx].first, second_arr[idx].second);
+	}
 }
 
 //用于双核粒子的随机数化
@@ -212,6 +225,8 @@ void NucleiSecondStep(nuclei* second_array, const long size)
 	dim3 grid((size + block.x - 1) / block.x, 1);
 	second_step_on_gpu <<< grid, block >>> (second_array, size);
 }
+
+
 
 void compute_on_gpu_one(const long pairs,const char* file_name)
 {

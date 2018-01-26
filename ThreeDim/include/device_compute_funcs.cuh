@@ -28,8 +28,8 @@ __device__ nucleus fx_first_nucleus(const nucleus& first, const nucleus& second)
 __device__ nucleus fx_second_nucleus(const nucleus& first, const nucleus& second);
 
 //用于双核粒子的随机数化
-__device__ void update_step_one(nucleus* step_one_fir, nucleus* step_one_sec);
-__device__ void update_step_two(nucleus* step_two_fir, nucleus* step_two_sec);
+__device__ void update_step_one(nucleus& step_one_fir, nucleus& step_one_sec);
+__device__ void update_step_two(nucleus& step_two_fir, nucleus& step_two_sec);
 
 #endif //DEVICE_COMPUTE_FUNCS_CUH
 
@@ -52,8 +52,6 @@ __device__ double E_kall(const nucleus& first, const nucleus& second)
 
 __device__ void px_py_pz_distribution(nucleus& first, nucleus& second,double ekall,int i)
 {
-
-
 
 	//double ekall = E_kall(first, second);
 	curandStatePhilox4_32_10_t s;
@@ -168,5 +166,15 @@ __device__  nucleus fx_second_nucleus(const nucleus& first, const nucleus& secon
 			second.y*second.y + elec_elec*elec_elec), 3));
 	fx_second.px = fx_second.py = fx_second.pz = 0;
 	return fx_second;
+}
+
+__device__ void update_step_one(nucleus& step_one_fir, nucleus& step_one_sec)
+{
+
+}
+
+__device__ void update_step_two(nucleus& step_two_fir, nucleus& step_two_sec)
+{
+
 }
 
