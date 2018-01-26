@@ -36,4 +36,9 @@ void compute_on_gpu_one(const long pairs);
 
 void NucleiRandomD(nuclei* Array, const long Size);
 
+void NucleiFisrtStep(nuclei* first_array, const long size);
+
+
+void NucleiSecondStep(nuclei* second_array, const long size);
+
 #endif //GLOBAL_FUNCS_H

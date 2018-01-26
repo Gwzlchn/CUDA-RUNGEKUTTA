@@ -23,7 +23,7 @@
     <ClCompile Include="src\PrintStruct.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <CudaCompile Include="src\Random.cu" />
+    <CudaCompile Include="src\global_funcs.cu" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{9405CFF2-EFBB-4A51-81F3-F6F0EB3DEB56}</ProjectGuid>

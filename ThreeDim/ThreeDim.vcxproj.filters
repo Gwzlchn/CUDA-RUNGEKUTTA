@@ -35,7 +35,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <CudaCompile Include="src\Random.cu">
+    <CudaCompile Include="src\global_funcs.cu">
       <Filter>src</Filter>
     </CudaCompile>
   </ItemGroup>
