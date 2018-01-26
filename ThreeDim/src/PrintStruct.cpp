@@ -52,7 +52,7 @@ void PrintStruct(nuclei* ToSaveNuclei, long long n, const char* FileName, int ch
 		);
 		fprintf(file, "\n");
 	}
-	fprintf(file, "%10f\n", time);
+	
 
 	fclose(file);
 
