@@ -8,33 +8,42 @@
 
 void PrintStruct(nuclei* ToSaveNuclei, long long n, const char* FileName, int choose)
 {
-	//time_t t = time(0);
-	//char tmpBuf[BUFLEN];
-	//strftime(tmpBuf, BUFLEN, "%Y%m%d%H%M", localtime(&t)); //format date and time. 
+	//format date and time. 
+	struct tm *ptr;
+	time_t lt;
+	char str[9];
+	lt = time(NULL);
+	ptr = localtime(&lt);
+	strftime(str, 9, "%m%d%H%M", ptr);
 
 	FILE* file;
-
 	switch (choose)
 	{
 		case 0:
 		{
-			char init_file_name[6] = "init_";
+			char init_file_name[17] = ".\TestData\init_";
 			///*strcat((char*)(FileName), tmpBuf);
 			strcat(init_file_name, FileName);
+			strcat(init_file_name, str);
+			strcat(init_file_name, ".dat");
 			file = fopen(init_file_name, "w");
 			break; 
 		}
 		case 1:
 		{
-			char step_one_file_name[11] = "step_one_";
+			char step_one_file_name[22] = ".\TestData\step_one_";
 			strcat(step_one_file_name, FileName);
+			strcat(step_one_file_name, str);
+			strcat(step_one_file_name, ".dat");
 			file = fopen(step_one_file_name, "w");
 			break;  
 		}
 		case 2:
 		{
-			char step_two_file_name[11] = "step_two_";
+			char step_two_file_name[22] = ".\TestData\step_two_";
 			strcat(step_two_file_name, FileName);
+			strcat(step_two_file_name, str);
+			strcat(step_two_file_name, ".dat");
 			file = fopen(step_two_file_name, "w");
 			break;
 		}
