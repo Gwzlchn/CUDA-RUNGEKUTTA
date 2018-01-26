@@ -17,8 +17,8 @@ void PrintStruct(nuclei* ToSaveNuclei, long long n, const char* FileName,int cho
 	{
 	case 0:
 	{char init_file_name[6] = "init_";
-	/*strcat((char*)(FileName), tmpBuf);
-	strcat(init_file_name, FileName);*/
+	///*strcat((char*)(FileName), tmpBuf);
+	strcat(init_file_name, FileName);
 	
 	FILE* init = fopen(init_file_name, "w");
 	if (!init)

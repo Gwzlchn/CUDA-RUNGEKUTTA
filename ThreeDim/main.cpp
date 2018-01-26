@@ -1,8 +1,7 @@
-﻿#include "./include/nucleus.hpp"
-#include "./include/PrintStruct.h"
+﻿
 #include "./include/common.hpp"
-//#include "./include/device_compute_funcs.h"
-#include "./include/Random.h"
+#include "./include/global_funcs.h"
+
 #include <cuda_runtime.h>
 #include <cstdio>
 #include <cstdlib>
@@ -34,18 +33,11 @@ int main()
 	printf("Using Device %d: %s\n", dev, deviceProp.name);
 	CHECK(cudaSetDevice(dev));
 
-	long pairs = 1000000;
-	long long nBytes = pairs * sizeof(nuclei);
-	printf("Use %lld Bytes %lfMB\n", nBytes, nBytes / double(1024 * 1024));
-	nuclei* test;
-	nuclei* host;
-	Start = seconds();
-	cudaMalloc((void **)(&test), nBytes);
-	host = (nuclei*)malloc(nBytes);
+	long pairs = 100;
 	
-	NucleiRandomD(test, pairs);
-	cudaMemcpy(host, test, nBytes, cudaMemcpyDeviceToHost);
-	PrintStruct(host, pairs,"testOne.dat", 0);
+	
+	compute_on_gpu_one(pairs);
+
 
 	return 0;
 }

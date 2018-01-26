@@ -17,7 +17,7 @@
 //计算总动能
 __device__ double E_kall(const nucleus& first, const nucleus& second);
 //Px Py Pz
-__device__ void px_py_pz_distribution(nucleus& first, nucleus& second);
+__device__ void px_py_pz_distribution(nucleus& first, nucleus& second, double ekall, int i);
 //两核之间距离的平方
 //返回（x1-x2)^2 +（y1-y2)^2 +（z1-z2)^2
 __device__  double nucleus_distance(const nucleus& first, const nucleus& second);
@@ -56,28 +56,34 @@ __device__ double E_kall(const nucleus& first, const nucleus& second)
 								second.y*second.y + elec_elec*elec_elec));
 }
 
-__device__ void px_py_pz_distribution(nucleus& first, nucleus& second)
+__device__ void px_py_pz_distribution(nucleus& first, nucleus& second,double ekall,int i)
 {
-	double ekall = E_kall(first, second);
+
+
+
+	//double ekall = E_kall(first, second);
 	curandStatePhilox4_32_10_t s;
-	unsigned long long seed = 1;
+	//unsigned long long seed = threadIdx.x;
 	// seed a random number generator 
-	curand_init(seed, 0, 0, &s);
-	double2 random12 = curand_uniform2_double(&s);
-	double2 random34 = curand_uniform2_double(&s);
+	curand_init(i, 0, 0, &s);
+
+	double random1 = curand_uniform_double(&s);
+	double random2 = curand_uniform_double(&s);
+	double random3 = curand_uniform_double(&s);
+	double random4 = curand_uniform_double(&s);
 	double random5 = curand_uniform_double(&s);
 
-	double theta1 = random12.x*PI;
-	double theta2 = random12.y*PI;
-	double phi1 = random34.x * 2 * PI;
-	double phi2 = random34.y * 2 * PI;
+	double theta1 = random1 * PI;
+	double theta2 = random2 * PI;
+	double phi1 = random3 * 2 * PI;
+	double phi2 = random4 * 2 * PI;
 
-	first.px = sqrt(2.0*ekall*random5)*sin(theta1)*cos(phi1);
-	first.py = sqrt(2.0*ekall*random5)*sin(theta1)*cos(phi1);
+	first.px = sqrt(2.0*ekall*random5)*cos(theta1)*sin(phi1);
+	first.py = sqrt(2.0*ekall*random5)*sin(theta1)*sin(phi1);
 	first.pz = sqrt(2.0*ekall*random5)*cos(phi1);
 
-	second.px = sqrt(2.0*ekall*(1 - random5))*sin(theta2)*cos(phi2);
-	second.py = sqrt(2.0*ekall*(1 - random5))*sin(theta2)*cos(phi2);
+	second.px = sqrt(2.0*ekall*(1 - random5))*cos(theta2)*sin(phi2);
+	second.py = sqrt(2.0*ekall*(1 - random5))*sin(theta2)*sin(phi2);
 	second.pz = sqrt(2.0*ekall*(1 - random5))*cos(phi2);
 
 
