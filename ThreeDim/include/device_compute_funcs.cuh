@@ -1,43 +1,37 @@
-﻿#pragma once
-
-#ifndef DEVICE_COMPUTE_FUNCS_CUH
+﻿#ifndef DEVICE_COMPUTE_FUNCS_CUH
 #define DEVICE_COMPUTE_FUNCS_CUH
+
 #include <curand.h>
 #include <curand_kernel.h>
 #include <cmath>
 #include <vector_types.h>
+
 #include "../include/sci_const.h"
 //#include "../include/device_compute_funcs.cuh"
-
 #include "../include/nucleus.hpp"
 //#include <crt/host_defines.h>
 
-
-
 //计算总动能
 __device__ double E_kall(const nucleus& first, const nucleus& second);
+
 //Px Py Pz
 __device__ void px_py_pz_distribution(nucleus& first, nucleus& second, double ekall, int i);
+
 //两核之间距离的平方
 //返回（x1-x2)^2 +（y1-y2)^2 +（z1-z2)^2
 __device__  double nucleus_distance(const nucleus& first, const nucleus& second);
 
 //第一个核，三个坐标的二阶导
 __device__ nucleus fx_first_nucleus(const nucleus& first, const nucleus& second);
+
 //第二个核，三个坐标的二阶导
 __device__ nucleus fx_second_nucleus(const nucleus& first, const nucleus& second);
 
-
-
+//用于双核粒子的随机数化
 __device__ void update_step_one(nucleus* step_one_fir, nucleus* step_one_sec);
 __device__ void update_step_two(nucleus* step_two_fir, nucleus* step_two_sec);
 
-//用于双核粒子的随机数化
-
 #endif //DEVICE_COMPUTE_FUNCS_CUH
-
-
-
 
 __device__ double E_kall(const nucleus& first, const nucleus& second)
 {
@@ -85,9 +79,6 @@ __device__ void px_py_pz_distribution(nucleus& first, nucleus& second,double eka
 	second.px = sqrt(2.0*ekall*(1 - random5))*cos(theta2)*sin(phi2);
 	second.py = sqrt(2.0*ekall*(1 - random5))*sin(theta2)*sin(phi2);
 	second.pz = sqrt(2.0*ekall*(1 - random5))*cos(phi2);
-
-
-
 }
 
 
@@ -139,6 +130,7 @@ __device__  nucleus fx_first_nucleus(const nucleus& first, const nucleus& second
 	fx_first.px = fx_first.py = fx_first.pz = 0;
 	return fx_first;
 }
+
 __device__  nucleus fx_second_nucleus(const nucleus& first, const nucleus& second)
 {
 	nucleus fx_second;

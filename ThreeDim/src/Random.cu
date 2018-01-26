@@ -13,6 +13,82 @@
 #include <vector_types.h>
 #include <cuda_runtime.h>
 
+//生成双精度双正态分布随机数
+__global__ void DoubleNormalRandomArrayD(nuclei* Array, const long Size)
+{
+	double A1, A2, A3, A4;
+	double Ekall = -1;
+	double temp1 = 1;
+	double temp2 = 1;
+
+	int i = threadIdx.x + blockIdx.x * blockDim.x;
+	
+	curandState s;
+	int seed = -i;
+	curand_init(seed, 0, 0, &s);
+	
+	while (Ekall < 0)
+	{
+		A2 = A4 = 2;
+
+		while (A2 > temp1 && A4 > temp2)
+		{
+			A1 = curand_uniform_double(&s);
+			A2 = curand_uniform_double(&s);
+			A3 = curand_uniform_double(&s);
+			A4 = curand_uniform_double(&s);
+			
+			A1 = (A1 - 0.5) * 20;
+			A3 = (A3 - 0.5) * 20;
+
+			temp1 = exp((-pow((A1 - mean), 2)) / (mean * stddev * stddev))
+				+ exp((-pow((A1 + mean), 2)) / (mean * stddev * stddev));
+			temp2 = exp((-pow((A3 - mean), 2)) / (mean * stddev * stddev))
+				+ exp((-pow((A3 + mean), 2)) / (mean * stddev * stddev));
+		}
+		//printf("%lf\t%lf\n", A1,A3);
+	
+		Array[i].first.x = A1 * sin(rotation*PI);
+		Array[i].first.y = 0;
+		Array[i].first.z = A1 * cos(rotation*PI);
+
+		Array[i].second.x = A3 * sin(rotation*PI);
+		Array[i].second.y = 0;
+		Array[i].second.z = A3 * cos(rotation*PI);
+
+		Ekall = E_kall(Array[i].first, Array[i].second);
+		
+		//printf("%lf\n", Ekall);
+	}
+	px_py_pz_distribution(Array[i].first, Array[i].second,Ekall,i);
+	return;
+}
+
+//用于双核粒子的随机数化
+void NucleiRandomD(nuclei* Array, const long Size)
+{
+	int dimx = 512;
+	dim3 block(dimx);
+	dim3 grid((Size + block.x - 1) / block.x, 1);
+	DoubleNormalRandomArrayD <<< grid, block >>> (Array, Size);
+}
+
+void compute_on_gpu_one(const long pairs)
+{
+	long long nBytes = pairs * sizeof(nuclei);
+	printf("Use %lld Bytes %lfMB\n", nBytes, nBytes / double(1024 * 1024));
+
+	nuclei* test;
+	nuclei* host;
+	double Start = seconds();
+	cudaMalloc((void **)(&test), nBytes);
+	host = (nuclei*)malloc(nBytes);
+
+	NucleiRandomD(test, pairs);
+	cudaMemcpy(host, test, nBytes, cudaMemcpyDeviceToHost);
+	PrintStruct(host, pairs, "testOne.dat", 0);
+}
+
 //生成双精度01均匀分布随机数
 //参数:	Array:双精度数组	Size:数组长度
 //void UniformRandomArrayD(double* Array, const long Size)
@@ -118,78 +194,3 @@
 //		LinearTransmissionD <<<1,1>>>(Array, DTempArr1, DTempArr3, Size, i, j);
 //	}
 //}
-
-//生成双精度双正态分布随机数
-__global__ void DoubleNormalRandomArrayD(nuclei* Array, const long Size)
-{
-	double A1, A2, A3, A4;
-	double Ekall = -1;
-	double temp1 = 1;
-	double temp2 = 1;
-
-	int i = threadIdx.x + blockIdx.x * blockDim.x;
-	
-	curandState s;
-	int seed = -i;
-	curand_init(seed, 0, 0, &s);
-	
-	while (Ekall < 0)
-	{
-		A2 = A4 = 2;
-
-		while (A2 > temp1 && A4 > temp2)
-		{
-			A1 = curand_uniform_double(&s);
-			A2 = curand_uniform_double(&s);
-			A3 = curand_uniform_double(&s);
-			A4 = curand_uniform_double(&s);
-			
-			A1 = (A1 - 0.5) * 20;
-			A3 = (A3 - 0.5) * 20;
-
-			temp1 = exp((-pow((A1 - mean), 2)) / (mean * stddev * stddev))
-				+ exp((-pow((A1 + mean), 2)) / (mean * stddev * stddev));
-			temp2 = exp((-pow((A3 - mean), 2)) / (mean * stddev * stddev))
-				+ exp((-pow((A3 + mean), 2)) / (mean * stddev * stddev));
-		}
-		//printf("%lf\t%lf\n", A1,A3);
-	
-		Array[i].first.x = A1 * sin(rotation*PI);
-		Array[i].first.y = 0;
-		Array[i].first.z = A1 * cos(rotation*PI);
-
-		Array[i].second.x = A3 * sin(rotation*PI);
-		Array[i].second.y = 0;
-		Array[i].second.z = A3 * cos(rotation*PI);
-
-		Ekall = E_kall(Array[i].first, Array[i].second);
-		
-		//printf("%lf\n", Ekall);
-	}
-	px_py_pz_distribution(Array[i].first, Array[i].second,Ekall,i);
-	return;
-}
-
-void compute_on_gpu_one(const long pairs)
-{
-	long long nBytes = pairs * sizeof(nuclei);
-	printf("Use %lld Bytes %lfMB\n", nBytes, nBytes / double(1024 * 1024));
-	nuclei* test;
-	nuclei* host;
-	double Start = seconds();
-	cudaMalloc((void **)(&test), nBytes);
-	host = (nuclei*)malloc(nBytes);
-
-	NucleiRandomD(test, pairs);
-	cudaMemcpy(host, test, nBytes, cudaMemcpyDeviceToHost);
-	PrintStruct(host, pairs, "testOne.dat", 0);
-}
-
-//用于双核粒子的随机数化
-void NucleiRandomD(nuclei* Array, const long Size)
-{
-	int dimx = 512;
-	dim3 block(dimx);
-	dim3 grid((Size + block.x - 1) / block.x, 1);
-	DoubleNormalRandomArrayD <<< grid, block >>> (Array, Size);
-}

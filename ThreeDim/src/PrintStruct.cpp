@@ -92,13 +92,5 @@ void PrintStruct(nuclei* ToSaveNuclei, long long n, const char* FileName,int cho
 	}
 	//仅初始化的
 
-
-
-
-
-
-
-
-
 	return;
 }
