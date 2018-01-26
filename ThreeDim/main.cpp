@@ -34,7 +34,7 @@ int main()
 	printf("Using Device %d: %s\n", dev, deviceProp.name);
 	CHECK(cudaSetDevice(dev));
 
-	long pairs = 10000;
+	long pairs = 1000000;
 	long long nBytes = pairs * sizeof(nuclei);
 	printf("Use %lld Bytes %lfMB\n", nBytes, nBytes / double(1024 * 1024));
 	nuclei* test;

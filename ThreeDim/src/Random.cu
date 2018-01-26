@@ -139,7 +139,7 @@ __global__ void DoubleNormalRandomArrayD(nuclei* Array, const long Size)
 			A2 = curand_uniform_double(&s);
 			A3 = curand_uniform_double(&s);
 			A4 = curand_uniform_double(&s);
-			//printf("%lf\n", A1);
+			//
 			A1 = (A1 - 0.5) * 20;
 			A3 = (A3 - 0.5) * 20;
 
@@ -152,14 +152,18 @@ __global__ void DoubleNormalRandomArrayD(nuclei* Array, const long Size)
 				+ exp((-pow((A3 + nuclear_spacing / 2.0), nuclear_spacing / 2.0)) /
 				(nuclear_spacing / 2.0 * pow(stddev, nuclear_spacing / 2.0)));
 		}
-
+		//printf("%lf\t%lf\n", A1,A3);
+	
 		Array[i].first.x = A1 * sin(rotation*PI);
 		Array[i].first.y = 0;
 		Array[i].first.z = A1 * cos(rotation*PI);
+
 		Array[i].second.x = A3 * sin(rotation*PI);
 		Array[i].second.y = 0;
 		Array[i].second.z = A3 * cos(rotation*PI);
+
 		Ekall = E_kall(Array[i].first, Array[i].second);
+		//printf("%lf\n", Ekall);
 	}
 	return;
 }
@@ -167,7 +171,8 @@ __global__ void DoubleNormalRandomArrayD(nuclei* Array, const long Size)
 //用于双核粒子的随机数化
 void NucleiRandomD(nuclei* Array, const long Size)
 {
-	int threadsPerBlock = 256;
-	int threadsPerGrid = (2 * Size + threadsPerBlock - 1) / threadsPerBlock;
-	DoubleNormalRandomArrayD <<< threadsPerGrid, threadsPerBlock >>> (Array, Size);
+	int dimx = 512;
+	dim3 block(dimx);
+	dim3 grid((Size + block.x - 1) / block.x, 1);
+	DoubleNormalRandomArrayD <<< grid, block >>> (Array, Size);
 }
