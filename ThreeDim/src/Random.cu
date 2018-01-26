@@ -98,15 +98,7 @@ void compute_on_gpu_one(const long pairs)
 	cudaEventElapsedTime(&costtime, start, stop);
 
 	cudaMemcpy(host, test, nBytes, cudaMemcpyDeviceToHost);
-	PrintStruct(host, pairs, "testOne.dat", 0);
-
-	FILE* init = fopen("testOne.dat", "a");
-	if (!init)
-	{
-		perror("cannot open file");
-	}
-	fprintf(init,"%10f",costtime);
-	fclose(init);
+	PrintStruct(host, pairs, "testOne.dat", costtime,0);
 }
 
 //生成双精度01均匀分布随机数

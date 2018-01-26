@@ -8,7 +8,7 @@
 
 #include "nucleus.hpp"
 
-void PrintStruct(nuclei* ToSaveNuclei, long long n, const char* FileName,int choose);
+void PrintStruct(nuclei* ToSaveNuclei, long long n, const char* FileName,float time,int choose);
 
 #endif //PRINTSTRUCT_HPP
 
