@@ -14,7 +14,7 @@
     <ClInclude Include="include\common.hpp" />
     <ClInclude Include="include\nucleus.hpp" />
     <ClInclude Include="include\PrintStruct.h" />
-    <ClInclude Include="include\Random.h" />
+    <ClInclude Include="include\global_funcs.h" />
     <ClInclude Include="include\sci_const.h" />
   </ItemGroup>
   <ItemGroup>

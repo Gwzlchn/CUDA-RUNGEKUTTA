@@ -3,14 +3,23 @@
 #include "../include/PrintStruct.h"
 #include <cstdio>
 #include <cstring>
+#include <ctime>
+#define BUFLEN 255   
 
 void PrintStruct(nuclei* ToSaveNuclei, long long n, const char* FileName,int choose)
 {
+	
+	//time_t t = time(0);
+	//char tmpBuf[BUFLEN];
+	//strftime(tmpBuf, BUFLEN, "%Y%m%d%H%M", localtime(&t)); //format date and time. 
+
 	switch (choose)
 	{
 	case 0:
 	{char init_file_name[6] = "init_";
+	///*strcat((char*)(FileName), tmpBuf);
 	strcat(init_file_name, FileName);
+	
 	FILE* init = fopen(init_file_name, "w");
 	if (!init)
 	{

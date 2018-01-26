@@ -21,7 +21,7 @@
     <ClInclude Include="include\PrintStruct.h">
       <Filter>inlcude</Filter>
     </ClInclude>
-    <ClInclude Include="include\Random.h">
+    <ClInclude Include="include\global_funcs.h">
       <Filter>inlcude</Filter>
     </ClInclude>
   </ItemGroup>
