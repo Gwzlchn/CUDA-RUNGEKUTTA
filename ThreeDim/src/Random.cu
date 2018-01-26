@@ -4,6 +4,7 @@
 #include "../include/sci_const.h"
 #include "../include/device_compute_funcs.cuh"
 
+#include <stdio.h>
 #include <curand.h>
 #include <curand_kernel.h>
 #include <cmath>
@@ -137,7 +138,7 @@ __global__ void DoubleNormalRandomArrayD(nuclei* Array, const long Size)
 			A2 = curand_uniform_double(&s);
 			A3 = curand_uniform_double(&s);
 			A4 = curand_uniform_double(&s);
-
+			printf("%lf\n", A1);
 			A1 = (A1 - 0.5) * 20;
 			A3 = (A3 - 0.5) * 20;
 
@@ -157,7 +158,7 @@ __global__ void DoubleNormalRandomArrayD(nuclei* Array, const long Size)
 		Array[i].second.x = A3 * sin(rotation*PI);
 		Array[i].second.y = 0;
 		Array[i].second.z = A3 * cos(rotation*PI);
-		//Ekall = E_kall(Array[i].first, Array[i].second);
+		Ekall = E_kall(Array[i].first, Array[i].second);
 	}
 	return;
 }
