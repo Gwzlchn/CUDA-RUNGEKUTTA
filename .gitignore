@@ -267,3 +267,6 @@ __pycache__/
 *.lib
 *.exp
 /ThreeDim/init_
+*.exe
+*.exp
+*.lib
