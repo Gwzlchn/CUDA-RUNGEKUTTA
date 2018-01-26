@@ -3,7 +3,7 @@
 #include "../include/Random.h"
 #include "../include/sci_const.h"
 #include "../include/device_compute_funcs.cuh"
-
+#include "device_launch_parameters.h"
 #include <stdio.h>
 #include <curand.h>
 #include <curand_kernel.h>
@@ -121,11 +121,12 @@
 __global__ void DoubleNormalRandomArrayD(nuclei* Array, const long Size)
 {
 	double A1, A2, A3, A4, Ekall;
-	int i = threadIdx.x;
+	int i = threadIdx.x + blockIdx.x * blockDim.x;
 	double temp1 = 1;
 	double temp2 = 1;
 	curandState s;
-
+	int seed = i;
+	curand_init(seed, 0, 0, &s);
 	Ekall = -1;
 
 	while (Ekall < 0)
@@ -138,7 +139,7 @@ __global__ void DoubleNormalRandomArrayD(nuclei* Array, const long Size)
 			A2 = curand_uniform_double(&s);
 			A3 = curand_uniform_double(&s);
 			A4 = curand_uniform_double(&s);
-			printf("%lf\n", A1);
+			//printf("%lf\n", A1);
 			A1 = (A1 - 0.5) * 20;
 			A3 = (A3 - 0.5) * 20;
 

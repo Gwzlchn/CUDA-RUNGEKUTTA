@@ -45,7 +45,7 @@ int main()
 	
 	NucleiRandomD(test, pairs);
 	cudaMemcpy(host, test, nBytes, cudaMemcpyDeviceToHost);
-	PrintStruct(host, pairs,"testOne", 0);
+	PrintStruct(host, pairs,"testOne.dat", 0);
 
 	return 0;
 }
