@@ -174,7 +174,8 @@ __global__ void DoubleNormalRandomArrayD(nuclei* Array, const long Size)
 
 __global__ void first_step_on_gpu(nuclei* first_arr, const long Size)
 {
-	
+	int i = threadIdx.x + blockIdx.x * blockDim.x;
+	for()
 }
 
 

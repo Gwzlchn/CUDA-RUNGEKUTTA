@@ -6,7 +6,7 @@
 #include <ctime>
 #define BUFLEN 255   
 
-void PrintStruct(nuclei* ToSaveNuclei, long long n, const char* FileName, float time, int choose)
+void PrintStruct(nuclei* ToSaveNuclei, long long n, const char* FileName, int choose)
 {
 	//time_t t = time(0);
 	//char tmpBuf[BUFLEN];
