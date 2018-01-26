@@ -15,13 +15,13 @@
     <ClInclude Include="include\common.hpp">
       <Filter>inlcude</Filter>
     </ClInclude>
-    <ClInclude Include="include\Random.h">
-      <Filter>inlcude</Filter>
-    </ClInclude>
     <ClInclude Include="include\sci_const.h">
       <Filter>inlcude</Filter>
     </ClInclude>
     <ClInclude Include="include\PrintStruct.h">
+      <Filter>inlcude</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Random.h">
       <Filter>inlcude</Filter>
     </ClInclude>
   </ItemGroup>
@@ -30,11 +30,8 @@
     <ClCompile Include="src\PrintStruct.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="include\device_compute_funcs.h">
+    <ClCompile Include="include\device_compute_funcs.cuh">
       <Filter>inlcude</Filter>
-    </ClCompile>
-    <ClCompile Include="src\device_compute_funcs.cu">
-      <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

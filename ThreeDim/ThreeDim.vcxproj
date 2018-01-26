@@ -18,10 +18,9 @@
     <ClInclude Include="include\sci_const.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="include\device_compute_funcs.h" />
+    <ClCompile Include="include\device_compute_funcs.cuh" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="src\PrintStruct.cpp" />
-    <ClCompile Include="src\device_compute_funcs.cu" />
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="src\Random.cu" />

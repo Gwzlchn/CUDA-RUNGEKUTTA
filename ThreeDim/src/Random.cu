@@ -2,7 +2,7 @@
 #pragma comment(lib, "curand.lib")
 #include "../include/Random.h"
 #include "../include/sci_const.h"
-#include "../include/device_compute_funcs.h"
+#include "../include/device_compute_funcs.cuh"
 
 #include <curand.h>
 #include <curand_kernel.h>
@@ -157,7 +157,7 @@ __global__ void DoubleNormalRandomArrayD(nuclei* Array, const long Size)
 		Array[i].second.x = A3 * sin(rotation*PI);
 		Array[i].second.y = 0;
 		Array[i].second.z = A3 * cos(rotation*PI);
-		Ekall = E_kall(Array[i].first, Array[i].second);
+		//Ekall = E_kall(Array[i].first, Array[i].second);
 	}
 	return;
 }
@@ -167,5 +167,5 @@ void NucleiRandomD(nuclei* Array, const long Size)
 {
 	int threadsPerBlock = 256;
 	int threadsPerGrid = (2 * Size + threadsPerBlock - 1) / threadsPerBlock;
-	DoubleNormalRandomArrayD <<<threadsPerGrid, threadsPerBlock >>> (Array, Size);
+	DoubleNormalRandomArrayD <<< threadsPerGrid, threadsPerBlock >>> (Array, Size);
 }
