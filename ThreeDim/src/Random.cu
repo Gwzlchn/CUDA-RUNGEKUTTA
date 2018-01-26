@@ -157,7 +157,7 @@ __global__ void DoubleNormalRandomArrayD(nuclei* Array, const long Size)
 		Array[i].second.x = A3 * sin(rotation*PI);
 		Array[i].second.y = 0;
 		Array[i].second.z = A3 * cos(rotation*PI);
-		//Ekall = E_kall(Array[i].first, Array[i].second);
+		Ekall = E_kall(Array[i].first, Array[i].second);
 	}
 	return;
 }

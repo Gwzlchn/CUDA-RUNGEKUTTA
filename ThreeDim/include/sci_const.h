@@ -1,6 +1,6 @@
 ﻿
-#ifndef SCI_CONST_CUH
-#define SCI_CONST_CUH
+#ifndef SCI_CONST_H
+#define SCI_CONST_H
 
 #include <crt/host_defines.h>
 

@@ -10,7 +10,7 @@
 //#include "../include/device_compute_funcs.cuh"
 
 #include "../include/nucleus.hpp"
-#include <crt/host_defines.h>
+//#include <crt/host_defines.h>
 
 
 
