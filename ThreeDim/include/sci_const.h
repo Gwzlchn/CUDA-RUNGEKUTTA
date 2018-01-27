@@ -21,8 +21,10 @@ __device__ double elec_nucl = 0.1;	//电子与核之间参数，对应之前A1
 
 __device__ double elec_elec = 1.25;	//电子与电子之间参数。对应之前A
 
-__device__ double E_total = -1.0165 - 1.0 / 4.0;	//两个电子总能量 对应之前 E0
+
 //!!注意这个4.0应该是R,但windows不支持。服务器可以
+__device__ double E_total = -1.0165 - 1.0 / 4.0;	//两个电子总能量 对应之前 E0
+
 
 
 //龙哥库塔用到变量

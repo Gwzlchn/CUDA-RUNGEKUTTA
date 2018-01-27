@@ -3,7 +3,7 @@
 
 #include "nucleus.hpp"
 
-void compute_on_gpu_one(const long pairs,const char* file_name);
+void compute_on_gpu_one(const long pairs);
 
 void NucleiRandomD(nuclei* Array, const long Size);
 
