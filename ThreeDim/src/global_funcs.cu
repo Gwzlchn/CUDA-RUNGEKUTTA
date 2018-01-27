@@ -178,6 +178,7 @@ __global__ void DoubleNormalRandomArrayD(nuclei* Array, const long Size)
 __global__ void first_step_on_gpu(nuclei* first_arr, const long size)
 {
 	int idx = threadIdx.x + blockIdx.x * blockDim.x;
+	printf("%p\n", &first_arr);
 	if(idx<size)
 	{
 		for (int i = 0; i < one_steps; i++)
@@ -211,10 +212,16 @@ void NucleiRandomD(nuclei* Array, const long Size)
 
 void NucleiFisrtStep(nuclei* first_array, const long size)
 {
-	int dimx = 512;
+	int dimx = 32;
 	dim3 block(dimx);
 	dim3 grid((size + block.x - 1) / block.x, 1);
 	first_step_on_gpu <<< grid, block >>> (first_array, size);
+	cudaError_t cudaStatus = cudaGetLastError();
+	if (cudaStatus != cudaSuccess)
+	{
+		fprintf(stderr, "addKernel launch failed: %s\n", cudaGetErrorString(cudaStatus));
+		return;
+	}
 	//cudaDeviceSynchronize();
 	printf("123\n");
 }
@@ -253,8 +260,8 @@ void compute_on_gpu_one(const long pairs)
 	NucleiRandomD(gpu_init, pairs);
 
 	//把值赋给第一步(也申请了第一步的空间)
-	CHECK(cudaMalloc((void **)(&gpu_first), nBytes));
-	CHECK(cudaMemcpy(gpu_first, gpu_init, nBytes, cudaMemcpyDeviceToDevice));
+	/*CHECK(cudaMalloc((void **)(&gpu_first), nBytes));
+	CHECK(cudaMemcpy(gpu_first, gpu_init, nBytes, cudaMemcpyDeviceToDevice));*/
 	//拷回并保存
 	CHECK(cudaMemcpy(host_init, gpu_init, nBytes, cudaMemcpyDeviceToHost));
 	CHECK(cudaDeviceSynchronize());
@@ -270,14 +277,14 @@ void compute_on_gpu_one(const long pairs)
 	//first空间在之前申请过了
 	 start = seconds();
 	//计算
-	NucleiFisrtStep(gpu_first, pairs);
+	NucleiFisrtStep(gpu_init, pairs);
 	CHECK(cudaDeviceSynchronize());
 
 	//把值赋给第二步(也申请了第二步的空间)
-	CHECK(cudaMalloc((void **)(&gpu_second), nBytes));
-	CHECK(cudaMemcpy(gpu_second, gpu_first, nBytes, cudaMemcpyDeviceToDevice));
+	/*CHECK(cudaMalloc((void **)(&gpu_second), nBytes));
+	CHECK(cudaMemcpy(gpu_second, gpu_first, nBytes, cudaMemcpyDeviceToDevice));*/
 	//拷回并保存
-	CHECK(cudaMemcpy(host_first, gpu_first, nBytes, cudaMemcpyDeviceToHost));
+	CHECK(cudaMemcpy(host_first, gpu_init, nBytes, cudaMemcpyDeviceToHost));
 	PrintStruct(host_first, pairs, "undefined", 1);
 	//释放first空间
 	//CHECK(cudaFree(gpu_first));
