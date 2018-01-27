@@ -277,20 +277,22 @@ void compute_on_gpu_one(const long pairs,const char* file_name)
 	//第一步完成！
 
 
-	//第二步计算
-	start = seconds();
-	//计算
-	NucleiSecondStep(gpu_second, pairs);
-	
-	//拷回并保存
-	CHECK(cudaMemcpy(host_second, gpu_second, nBytes, cudaMemcpyDeviceToHost));
-	PrintStruct(host_second, pairs, file_name , 2);
-	//释放first空间
-	CHECK(cudaFree(gpu_second));
-	elapse = seconds();
-	printf("SecondStep compltete %lf\n", elapse - start);
-	// 第二步完成！
-	
+	////第二步计算
+	//start = seconds();
+	////计算
+	//NucleiSecondStep(gpu_second, pairs);
+
+	////拷回并保存
+	//CHECK(cudaMemcpy(host_second, gpu_second, nBytes, cudaMemcpyDeviceToHost));
+	//
+	//PrintStruct(host_second, pairs, file_name , 2);
+	////释放second空间
+	//CHECK(cudaFree(gpu_second));
+	//
+	//elapse = seconds();
+	//printf("SecondStep compltete %lf\n", elapse - start);
+	//// 第二步完成！
+	//
 
 
 	return;
