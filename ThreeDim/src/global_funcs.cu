@@ -178,13 +178,14 @@ __global__ void DoubleNormalRandomArrayD(nuclei* Array, const long Size)
 __global__ void first_step_on_gpu(nuclei* first_arr, const long size)
 {
 	int idx = threadIdx.x + blockIdx.x * blockDim.x;
-	printf("%p\n", &first_arr);
+	//printf("%p\n", &first_arr);
 	if(idx<size)
 	{
-		for (int i = 0; i < one_steps; i++)
+		printf("%p\n", &first_arr);
+		for (int i = 0; i < 1000; i++)
 			update_step_one(first_arr[idx].first, first_arr[idx].second);
 	}
-	printf("%p\n", &first_arr);
+	
 	
 }
 
@@ -212,7 +213,7 @@ void NucleiRandomD(nuclei* Array, const long Size)
 
 void NucleiFisrtStep(nuclei* first_array, const long size)
 {
-	int dimx = 32;
+	int dimx = 8;
 	dim3 block(dimx);
 	dim3 grid((size + block.x - 1) / block.x, 1);
 	first_step_on_gpu <<< grid, block >>> (first_array, size);

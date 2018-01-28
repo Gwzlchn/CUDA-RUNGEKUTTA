@@ -32,7 +32,7 @@ __device__ int  one_steps = 10000;
 
 __device__ int	two_steps = 40000;
 
-__device__ double dx = 0.01;
+__device__ double dx = 1;
 
 
 
