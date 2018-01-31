@@ -10,6 +10,16 @@
 #include "../include/nucleus.hpp"
 
 
+struct derivative
+{
+	double px;
+	double py;
+	double pz;
+	double fx;
+	double fy;
+	double fz;
+};
+
 //初始分配函数
 //计算总动能
 __device__ double E_kall(const nucleus& first, const nucleus& second);
@@ -24,24 +34,21 @@ __device__ void px_py_pz_distribution(nucleus& first, nucleus& second, double ek
 __device__  double nucleus_distance(const nucleus& first, const nucleus& second);
 
 //第一个核，三个坐标的二阶导
-__device__ nucleus fx_first_nucleus(const nucleus& first, const nucleus& second);
+__device__ double3 fx_first_nucleus(const nucleus& first, const nucleus& second);
 
 //第二个核，三个坐标的二阶导
-__device__ nucleus fx_second_nucleus(const nucleus& first, const nucleus& second);
+__device__ double3 fx_second_nucleus(const nucleus& first, const nucleus& second);
 
 //龙哥库塔方法
 __device__ void update_step_one(nucleus& step_one_first, nucleus& step_one_second);
 __device__ void update_step_two(nucleus& step_two_first, nucleus& step_two_second);
 
 
-
-__device__ nuclei pair_add_dx(const nucleus& first, const nucleus& second, nuclei k_one_to_four, int choose);
-__device__ void k_one_to_four_add(const nuclei& k1, const nuclei& k2, const nuclei& k3, const nuclei& k4,
-	nucleus& raw_first, nucleus& raw_second);
-
-__device__ nuclei pair_add_dx(const nucleus& first, const nucleus& second, nuclei k_one_to_four, int choose);
-
-__device__ nuclei pair_k(const nucleus& first, const nucleus& second);
+__device__ derivative fisrt_k_one_to_four(const nucleus& first, const nucleus& second);
+__device__ derivative second_k_one_to_four(const nucleus& first, const nucleus& second);
+__device__ nucleus first_and_second_k_add(const derivative& k_one_to_four, const nucleus& raw_nucleus, int choose);
+__device__ void k_one_to_four_add(const derivative& K1, const derivative& K2, const derivative& K3, const derivative& K4,
+	nucleus& raw_nucleus);
 
 #endif //DEVICE_COMPUTE_FUNCS_CUH
 
@@ -107,11 +114,11 @@ __device__  double nucleus_distance(const nucleus& first, const nucleus& second)
 
 
 
-__device__  nucleus fx_first_nucleus(const nucleus& first, const nucleus& second)
+__device__  double3 fx_first_nucleus(const nucleus& first, const nucleus& second)
 {
-	nucleus fx_first;
+	double3 fx_fy_fz_first;
 
-	fx_first.x = (first.x - second.x)
+	fx_fy_fz_first.x = (first.x - second.x)
 					/ sqrt(pow((nucleus_distance(first, second) + elec_nucl*elec_nucl), 3))
 				- (first.x - nuclear_spacing / 2.0 * sin(PI*rotation))
 					/ sqrt(pow((pow((first.z - nuclear_spacing / 2.0 * cos(PI*rotation)), 2) +
@@ -122,7 +129,7 @@ __device__  nucleus fx_first_nucleus(const nucleus& first, const nucleus& second
 								pow((first.x + nuclear_spacing / 2.0 * sin(PI*rotation)), 2) +
 								first.y*first.y + elec_elec*elec_elec), 3));
 
-	fx_first.y = (first.y - second.y)
+	fx_fy_fz_first.y = (first.y - second.y)
 					/ sqrt(pow((nucleus_distance(first, second) + elec_nucl*elec_nucl), 3))
 				- first.y
 					/ sqrt(pow((pow((first.z - nuclear_spacing / 2.0*cos(PI*rotation)), 2) +
@@ -133,7 +140,7 @@ __device__  nucleus fx_first_nucleus(const nucleus& first, const nucleus& second
 								pow((first.x + nuclear_spacing / 2.0*sin(PI*rotation)), 2) +
 								first.y*first.y + elec_elec*elec_elec), 3));
 
-	fx_first.z = (first.z - second.z)
+	fx_fy_fz_first.z = (first.z - second.z)
 					/ sqrt(pow((nucleus_distance(first, second) + elec_nucl*elec_nucl), 3))
 				- (first.z - nuclear_spacing / 2.0 * cos(PI*rotation))
 					/ sqrt(pow((pow((first.z - nuclear_spacing / 2.0 * cos(PI*rotation)), 2) +
@@ -144,92 +151,52 @@ __device__  nucleus fx_first_nucleus(const nucleus& first, const nucleus& second
 								pow((first.x + nuclear_spacing / 2.0 * sin(PI*rotation)), 2) +
 								first.y*first.y + elec_elec*elec_elec), 3));
 
-	fx_first.px = fx_first.py = fx_first.pz = 0;
-	return fx_first;
-}
-
-__device__  nucleus fx_second_nucleus(const nucleus& first, const nucleus& second)
-{
-	nucleus fx_second;
-	fx_second.x = (second.x - first.x)
-					/ sqrt(pow((nucleus_distance(first, second) + elec_nucl*elec_nucl), 3))
-				- (second.x - nuclear_spacing / 2.0 * sin(PI*rotation))
-					/ sqrt(pow((pow((second.z - nuclear_spacing / 2.0 * cos(PI*rotation)), 2) +
-								pow((second.x - nuclear_spacing / 2.0 * sin(PI*rotation)), 2) +
-								second.y*second.y + elec_elec*elec_elec), 3))
-				- (second.x + nuclear_spacing / 2.0 * sin(PI*rotation))
-					/ sqrt(pow((pow((second.z + nuclear_spacing / 2.0 * cos(PI*rotation)), 2) +
-								pow((second.x + nuclear_spacing / 2.0 * sin(PI*rotation)), 2) +
-								second.y*second.y + elec_elec*elec_elec), 3));
-
-	fx_second.y = (second.y - first.y)
-					/ sqrt(pow((nucleus_distance(first, second) + elec_nucl*elec_nucl), 3))
-				- second.y
-					/ sqrt(pow((pow((second.z - nuclear_spacing / 2.0*cos(PI*rotation)), 2) +
-								pow((second.x - nuclear_spacing / 2.0*sin(PI*rotation)), 2) +
-								second.y*second.y + elec_elec*elec_elec), 3))
-				- second.y
-					/ sqrt(pow((pow((second.z + nuclear_spacing / 2.0*cos(PI*rotation)), 2) +
-								pow((second.x + nuclear_spacing / 2.0*sin(PI*rotation)), 2) +
-								second.y*second.y + elec_elec*elec_elec), 3));
-
-	fx_second.z = (first.z - second.z)
-					/ sqrt(pow((nucleus_distance(first, second) + elec_nucl*elec_nucl), 3))
-				- (second.z - nuclear_spacing / 2.0 * cos(PI*rotation))
-					/ sqrt(pow((pow((second.z - nuclear_spacing / 2.0 * cos(PI*rotation)), 2) +
-								pow((second.x - nuclear_spacing / 2.0 * sin(PI*rotation)), 2) +
-								second.y*second.y + elec_elec*elec_elec), 3))
-				- (second.z + nuclear_spacing / 2.0 * cos(PI*rotation))
-					/ sqrt(pow((pow((second.z + nuclear_spacing / 2.0 * cos(PI*rotation)), 2) +
-								pow((second.x + nuclear_spacing / 2.0 * sin(PI*rotation)), 2) +
-								second.y*second.y + elec_elec*elec_elec), 3));
-	fx_second.px = fx_second.py = fx_second.pz = 0;
-	return fx_second;
-}
-
-
-
-//choose = 2 ：balabalba+dx/2 
-//=1: something+ dx 
-//代替这个
-//y21 = x1(1, j) + h*K1(1) / 2
-//y22 = px1(1, j) + h*K1(2) / 2
-//y23 = x2(1, j) + h*K1(3) / 2
-//y24 = px2(1, j) + h*K1(4) / 2
-//y25 = y1(1, j) + h*K1(5) / 2
-//y26 = Py1(1, j) + h*K1(6) / 2
-//y27 = y2(1, j) + h*K1(7) / 2
-//y28 = Py2(1, j) + h*K1(8) / 2
-//y211 = z1(1, j) + h*K1(9) / 2
-//y212 = pz1(1, j) + h*K1(10) / 2
-//y213 = z2(1, j) + h*K1(11) / 2
-//y214 = pz2(1, j) + h*K1(12) / 2
-__device__ nuclei pair_add_dx(const nucleus& first, const nucleus& second,nuclei k_one_to_four,int choose)
-{
-	double h;
-	if (choose == 1)
-		h = dx;
-	else if (choose == 2)
-		h = dx / 2.0;
 	
-	nuclei add_dx;
-	add_dx.first.x = first.x + h*k_one_to_four.first.px;
-	add_dx.first.y = first.y + h*k_one_to_four.first.py;
-	add_dx.first.z = first.z + h*k_one_to_four.first.pz;
-	add_dx.first.px = first.px + h*k_one_to_four.first.x;
-	add_dx.first.py = first.py + h*k_one_to_four.first.y;
-	add_dx.first.pz = first.pz + h*k_one_to_four.first.z;
-
-	add_dx.second.x = second.x + h*k_one_to_four.second.px;
-	add_dx.second.y = second.y + h*k_one_to_four.second.py;
-	add_dx.second.z = second.z + h*k_one_to_four.second.pz;
-	add_dx.second.px = second.px + h*k_one_to_four.second.x;
-	add_dx.second.py = second.py + h*k_one_to_four.second.y;
-	add_dx.second.pz = second.pz + h*k_one_to_four.second.z;
-
-	return add_dx;
-
+	return fx_fy_fz_first;
 }
+
+__device__ double3 fx_second_nucleus(const nucleus& first, const nucleus& second)
+{
+	double3 fx_fy_fz_second;
+	fx_fy_fz_second.x = (second.x - first.x)
+							/ sqrt(pow((nucleus_distance(first, second) + elec_nucl*elec_nucl), 3))
+						- (second.x - nuclear_spacing / 2.0 * sin(PI*rotation))
+							/ sqrt(pow((pow((second.z - nuclear_spacing / 2.0 * cos(PI*rotation)), 2) +
+										pow((second.x - nuclear_spacing / 2.0 * sin(PI*rotation)), 2) +
+										second.y*second.y + elec_elec*elec_elec), 3))
+						- (second.x + nuclear_spacing / 2.0 * sin(PI*rotation))
+							/ sqrt(pow((pow((second.z + nuclear_spacing / 2.0 * cos(PI*rotation)), 2) +
+										pow((second.x + nuclear_spacing / 2.0 * sin(PI*rotation)), 2) +
+										second.y*second.y + elec_elec*elec_elec), 3));
+
+	fx_fy_fz_second.y = (second.y - first.y)
+							/ sqrt(pow((nucleus_distance(first, second) + elec_nucl*elec_nucl), 3))
+						- second.y
+							/ sqrt(pow((pow((second.z - nuclear_spacing / 2.0*cos(PI*rotation)), 2) +
+										pow((second.x - nuclear_spacing / 2.0*sin(PI*rotation)), 2) +
+										second.y*second.y + elec_elec*elec_elec), 3))
+						- second.y
+							/ sqrt(pow((pow((second.z + nuclear_spacing / 2.0*cos(PI*rotation)), 2) +
+										pow((second.x + nuclear_spacing / 2.0*sin(PI*rotation)), 2) +
+										second.y*second.y + elec_elec*elec_elec), 3));
+
+	fx_fy_fz_second.z = (first.z - second.z)
+							/ sqrt(pow((nucleus_distance(first, second) + elec_nucl*elec_nucl), 3))
+						- (second.z - nuclear_spacing / 2.0 * cos(PI*rotation))
+							/ sqrt(pow((pow((second.z - nuclear_spacing / 2.0 * cos(PI*rotation)), 2) +
+										pow((second.x - nuclear_spacing / 2.0 * sin(PI*rotation)), 2) +
+										second.y*second.y + elec_elec*elec_elec), 3))
+						- (second.z + nuclear_spacing / 2.0 * cos(PI*rotation))
+							/ sqrt(pow((pow((second.z + nuclear_spacing / 2.0 * cos(PI*rotation)), 2) +
+										pow((second.x + nuclear_spacing / 2.0 * sin(PI*rotation)), 2) +
+										second.y*second.y + elec_elec*elec_elec), 3));
+	
+
+	return fx_fy_fz_second;
+}
+
+
+
 
 //在pair_k里面 x为二阶导！px为原始px；
 ////K1=(/g1(y11,y12,y13,y14,y15,y16,y17,y18,y111,y112,y113,y114,t1),&
@@ -244,86 +211,100 @@ __device__ nuclei pair_add_dx(const nucleus& first, const nucleus& second,nuclei
 //&f5(y11, y12, y13, y14, y15, y16, y17, y18, y111, y112, y113, y114, t1, a, a1) - EE, &
 //&g6(y11, y12, y13, y14, y15, y16, y17, y18, y111, y112, y113, y114, t1), &
 //&f6(y11, y12, y13, y14, y15, y16, y17, y18, y111, y112, y113, y114, t1, a, a1) - EE / )
-__device__ nuclei pair_k(const nucleus& first, const nucleus& second)
+__device__ derivative fisrt_k_one_to_four(const nucleus& first, const nucleus& second)
 {
-	nucleus fir_k1 = fx_first_nucleus(first, second);
-	fir_k1.px = first.px;
-	fir_k1.py = first.py;
-	fir_k1.pz = first.pz;
-	nucleus sec_k1 = fx_second_nucleus(first, second);
-	sec_k1.px = second.px;
-	sec_k1.py = second.py;
-	sec_k1.pz = second.pz;
+	double3 first_fx = fx_first_nucleus(first, second);
+	derivative first_px_fx;
+	first_px_fx.px = first.px;
+	first_px_fx.py = first.py;
+	first_px_fx.pz = first.pz;
+	first_px_fx.fx = first_fx.x;
+	first_px_fx.fy = first_fx.y;
+	first_px_fx.fz = first_fx.z;
 
-	return { fir_k1, sec_k1 };
+	return first_px_fx;
 	
 }
 
 
-//__device__ nuclei pair_k2(const nucleus& first, const nucleus& second)
-//{
-//	//nuclei k2 = pair_add_dx(first,second)
-//	nucleus fir_k1 = fx_first_nucleus(first, second);
-//	fir_k1.px = first.px;
-//	fir_k1.py = first.py;
-//	fir_k1.pz = first.pz;
-//	nucleus sec_k1 = fx_second_nucleus(first, second);
-//	sec_k1.px = second.px;
-//	sec_k1.py = second.py;
-//	sec_k1.pz = second.pz;
-//	return { fir_k2, sec_k2 };
-//}
-__device__ void k_one_to_four_add(const nuclei& k1,const nuclei& k2,const nuclei& k3,const nuclei& k4,
-				nucleus& raw_first,nucleus& raw_second)
+__device__ derivative second_k_one_to_four(const nucleus& first, const nucleus& second)
 {
-	nuclei k_total;
-	k_total.first.x = 1 / 6 * (k1.first.px + 2 * k2.first.px + 2 * k3.first.px + k4.first.px);
-	k_total.first.y = 1 / 6 * (k1.first.py + 2 * k2.first.py + 2 * k3.first.py + k4.first.py);
-	k_total.first.z = 1 / 6 * (k1.first.pz + 2 * k2.first.pz + 2 * k3.first.pz + k4.first.pz);
-	k_total.first.px = 1 / 6 * (k1.first.x + 2 * k2.first.x + 2 * k3.first.x + k4.first.x);
-	k_total.first.py = 1 / 6 * (k1.first.y + 2 * k2.first.y + 2 * k3.first.y + k4.first.y);
-	k_total.first.pz = 1 / 6 * (k1.first.z + 2 * k2.first.z + 2 * k3.first.z + k4.first.z);
-	
-	k_total.second.x = 1 / 6 * (k1.second.px + 2 * k2.second.px + 2 * k3.second.px + k4.second.px);
-	k_total.second.y = 1 / 6 * (k1.second.py + 2 * k2.second.py + 2 * k3.second.py + k4.second.py);
-	k_total.second.z = 1 / 6 * (k1.second.pz + 2 * k2.second.pz + 2 * k3.second.pz + k4.second.pz);
-	k_total.second.px = 1 / 6 * (k1.second.x + 2 * k2.second.x + 2 * k3.second.x + k4.second.x);
-	k_total.second.py = 1 / 6 * (k1.second.y + 2 * k2.second.y + 2 * k3.second.y + k4.second.y);
-	k_total.second.pz = 1 / 6 * (k1.second.z + 2 * k2.second.z + 2 * k3.second.z + k4.second.z);
+	double3 second_fx = fx_second_nucleus(first, second);
+	derivative second_px_fx;
+	second_px_fx.px = second.px;
+	second_px_fx.py = second.py;
+	second_px_fx.pz = second.pz;
+	second_px_fx.fx = second_fx.x;
+	second_px_fx.fy = second_fx.y;
+	second_px_fx.fz = second_fx.z;
+	return second_px_fx;
+
+}
 
 
-	raw_first.x += k_total.first.x;
-	raw_first.y += k_total.first.y;
-	raw_first.z += k_total.first.z;
-	raw_first.px += k_total.first.px;
-	raw_first.py += k_total.first.py;
-	raw_first.pz += k_total.first.pz;
+__device__ void k_one_to_four_add(const derivative& K1,const derivative& K2,const derivative& K3,const derivative& K4,
+				nucleus& raw_nucleus)
+{
+	raw_nucleus.x = raw_nucleus.x + DX * (K1.px + 2.0*K2.px + 2.0*K3.px + K4.px) / 6.0;
+	raw_nucleus.y = raw_nucleus.y + DX * (K1.py + 2.0*K2.py + 2.0*K3.py + K4.py) / 6.0;
+	raw_nucleus.z = raw_nucleus.z + DX * (K1.pz + 2.0*K2.pz + 2.0*K3.pz + K4.pz) / 6.0;
+	raw_nucleus.px = raw_nucleus.px + DX * (K1.px + 2.0*K2.px + 2.0*K3.px + K4.px) / 6.0;
+	raw_nucleus.py = raw_nucleus.py + DX * (K1.py + 2.0*K2.py + 2.0*K3.py + K4.py) / 6.0;
+	raw_nucleus.pz = raw_nucleus.pz + DX * (K1.pz + 2.0*K2.pz + 2.0*K3.pz + K4.pz) / 6.0;
 
-	raw_second.x += k_total.second.x;
-	raw_second.y += k_total.second.y;
-	raw_second.z += k_total.second.z;
-	raw_second.px += k_total.second.px;
-	raw_second.py += k_total.second.py;
-	raw_second.pz += k_total.second.pz;
+
 
 	return;
 }
 
 
+__device__ nucleus first_and_second_k_add(const derivative& k_one_to_four,const nucleus& raw_nucleus,int choose)
+{
+	double now_dx = DX;
+	if (choose == 2)
+		now_dx = DX / 2;
+
+	nucleus k_add;
+	k_add.x = raw_nucleus.x + now_dx * k_one_to_four.px / 2.0;
+	k_add.y = raw_nucleus.y + now_dx * k_one_to_four.py / 2.0;
+	k_add.z = raw_nucleus.z + now_dx * k_one_to_four.pz / 2.0;
+	k_add.px = raw_nucleus.px + now_dx * k_one_to_four.fx / 2.0;
+	k_add.py = raw_nucleus.py + now_dx * k_one_to_four.fy / 2.0;
+	k_add.pz = raw_nucleus.pz + now_dx * k_one_to_four.fz / 2.0;
+
+	return k_add;
+}
+
+
+
+
 __device__ void update_step_one(nucleus& step_one_first, nucleus& step_one_second)
 {
-	/*nucleus x_y_z_fir_fx1 = fx_first_nucleus(step_one_first, step_one_second);
-	nucleus x_y_z_sec_fx1 = fx_second_nucleus(step_one_first, step_one_second);*/
-	nuclei nuclei_k1 = pair_k(step_one_first, step_one_second);
-	nuclei nuclei_k1_add = pair_add_dx(step_one_first, step_one_second, nuclei_k1, 2);
-	nuclei nuclei_k2 = pair_k(nuclei_k1_add.first, nuclei_k1_add.second);
-	nuclei nuclei_k2_add = pair_add_dx(step_one_first, step_one_second, nuclei_k2, 2);
-	nuclei nuclei_k3 = pair_k(nuclei_k2_add.first, nuclei_k2_add.second);
-	nuclei nuclei_k3_add = pair_add_dx(step_one_first, step_one_second, nuclei_k3, 1);
-	nuclei nuclei_k4 = pair_k(nuclei_k3_add.first, nuclei_k3_add.second);
+	//计算K1
+	const derivative first_k1 = fisrt_k_one_to_four(step_one_first, step_one_second);
+	const derivative second_k1 = second_k_one_to_four(step_one_first, step_one_second);
+	const nucleus first_k1_add = first_and_second_k_add(first_k1, step_one_first, 2);
+	const nucleus second_k1_add = first_and_second_k_add(second_k1, step_one_second, 2);
 
+	//K2
+	const derivative first_k2 = fisrt_k_one_to_four(first_k1_add, second_k1_add);
+	const derivative second_k2 = second_k_one_to_four(first_k1_add, second_k1_add);
+	const nucleus first_k2_add = first_and_second_k_add(first_k2, step_one_first, 2);
+	const nucleus second_k2_add = first_and_second_k_add(second_k2, step_one_second, 2);
 
-	k_one_to_four_add(nuclei_k1, nuclei_k2, nuclei_k3, nuclei_k4, step_one_first, step_one_second);
+	//K3
+	const derivative first_k3 = fisrt_k_one_to_four(first_k2_add, second_k2_add);
+	const derivative second_k3 = second_k_one_to_four(first_k2_add, second_k2_add);
+	const nucleus first_k3_add = first_and_second_k_add(first_k3, step_one_first, 1);
+	const nucleus second_k3_add = first_and_second_k_add(second_k3, step_one_second, 1);
+
+	//K4
+	const derivative first_k4 = fisrt_k_one_to_four(first_k3_add, second_k3_add);
+	const derivative second_k4 = second_k_one_to_four(first_k3_add, second_k3_add);
+
+	k_one_to_four_add(first_k1, first_k2, first_k3, first_k4, step_one_first);
+	k_one_to_four_add(second_k1, second_k2, second_k3, second_k4, step_one_second);
+
 	return;
 }
 

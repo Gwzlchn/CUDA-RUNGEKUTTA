@@ -119,8 +119,7 @@
 //	}
 //}
 
-//生成双精度双正态分布随机数
-
+//生成双精度双正态分布随机数double3
 
 __global__ void DoubleNormalRandomArrayD(nuclei* Array, const long Size)
 {
@@ -181,7 +180,7 @@ __global__ void first_step_on_gpu(nuclei* first_arr, const long size)
 	//printf("%p\n", &first_arr);
 	if(idx<size)
 	{
-		printf("%p\n", &first_arr);
+		//printf("%d\n", idx);
 		for (int i = 0; i < 1000; i++)
 			update_step_one(first_arr[idx].first, first_arr[idx].second);
 	}
@@ -261,8 +260,8 @@ void compute_on_gpu_one(const long pairs)
 	NucleiRandomD(gpu_init, pairs);
 
 	//把值赋给第一步(也申请了第一步的空间)
-	/*CHECK(cudaMalloc((void **)(&gpu_first), nBytes));
-	CHECK(cudaMemcpy(gpu_first, gpu_init, nBytes, cudaMemcpyDeviceToDevice));*/
+	CHECK(cudaMalloc((void **)(&gpu_first), nBytes));
+	CHECK(cudaMemcpy(gpu_first, gpu_init, nBytes, cudaMemcpyDeviceToDevice));
 	//拷回并保存
 	CHECK(cudaMemcpy(host_init, gpu_init, nBytes, cudaMemcpyDeviceToHost));
 	CHECK(cudaDeviceSynchronize());
@@ -278,14 +277,14 @@ void compute_on_gpu_one(const long pairs)
 	//first空间在之前申请过了
 	 start = seconds();
 	//计算
-	NucleiFisrtStep(gpu_init, pairs);
+	NucleiFisrtStep(gpu_first, pairs);
 	CHECK(cudaDeviceSynchronize());
 
 	//把值赋给第二步(也申请了第二步的空间)
 	/*CHECK(cudaMalloc((void **)(&gpu_second), nBytes));
 	CHECK(cudaMemcpy(gpu_second, gpu_first, nBytes, cudaMemcpyDeviceToDevice));*/
 	//拷回并保存
-	CHECK(cudaMemcpy(host_first, gpu_init, nBytes, cudaMemcpyDeviceToHost));
+	CHECK(cudaMemcpy(host_first, gpu_first, nBytes, cudaMemcpyDeviceToHost));
 	PrintStruct(host_first, pairs, "undefined", 1);
 	//释放first空间
 	//CHECK(cudaFree(gpu_first));

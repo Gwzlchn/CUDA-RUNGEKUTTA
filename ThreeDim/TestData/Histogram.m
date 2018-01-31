@@ -1,4 +1,2 @@
-A=load('init_undefined01271850.dat');
-histogram(A(:,3));
-hold on 
-histogram(A(:,9));
+A=load('init_undefined01311914.dat');
+plot(A(:,6),A(:,12))
