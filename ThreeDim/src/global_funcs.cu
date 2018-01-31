@@ -181,7 +181,7 @@ __global__ void first_step_on_gpu(nuclei* first_arr, const long size)
 	if(idx<size)
 	{
 		//printf("%d\n", idx);
-		for (int i = 0; i < 1000; i++)
+		for (int i = 0; i < 10000; i++)
 			update_step_one(first_arr[idx].first, first_arr[idx].second);
 	}
 	

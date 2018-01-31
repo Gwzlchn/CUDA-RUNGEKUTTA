@@ -1,38 +1,38 @@
-ï»¿
+
 #ifndef SCI_CONST_H
 #define SCI_CONST_H
 
 #include <crt/host_defines.h>
 
-//éšæœºæ•°æœ‰å…³
-__device__ double stddev = 0.7;		//æ–¹å·®
+//Ëæ»úÊıÓĞ¹Ø
+__device__ double stddev = 0.7;		//·½²î
 
-__device__ double mean = 2;			//å‡å€¼
-
-
-//æ ¸ç²’å­æœ‰å…³
-__device__ double rotation = 0.0;	//è½¬è½´è§’åº¦ï¼Œå¯¹åº”ä¹‹å‰çš„kk
-
-__device__ double nuclear_spacing = 4.0;	//æ ¸é—´è·,å¯¹åº”ä¹‹å‰çš„R
-
-__device__ double PI = 3.1415926535897932384626433832795;	//åœ†å‘¨ç‡
-
-__device__ double elec_nucl = 0.1;	//ç”µå­ä¸æ ¸ä¹‹é—´å‚æ•°ï¼Œå¯¹åº”ä¹‹å‰A1
-
-__device__ double elec_elec = 1.25;	//ç”µå­ä¸ç”µå­ä¹‹é—´å‚æ•°ã€‚å¯¹åº”ä¹‹å‰A
+__device__ double mean = 2;			//¾ùÖµ
 
 
-//!!æ³¨æ„è¿™ä¸ª4.0åº”è¯¥æ˜¯R,ä½†windowsä¸æ”¯æŒã€‚æœåŠ¡å™¨å¯ä»¥
-__device__ double E_total = -1.0165 - 1.0 / 4.0;	//ä¸¤ä¸ªç”µå­æ€»èƒ½é‡ å¯¹åº”ä¹‹å‰ E0
+//ºËÁ£×ÓÓĞ¹Ø
+__device__ double rotation = 0.0;	//×ªÖá½Ç¶È£¬¶ÔÓ¦Ö®Ç°µÄkk
+
+__device__ double nuclear_spacing = 4.0;	//ºË¼ä¾à,¶ÔÓ¦Ö®Ç°µÄR
+
+__device__ double PI = 3.1415926535897932384626433832795;	//Ô²ÖÜÂÊ
+
+__device__ double elec_nucl = 0.1;	//µç×ÓÓëºËÖ®¼ä²ÎÊı£¬¶ÔÓ¦Ö®Ç°A1
+
+__device__ double elec_elec = 1.25;	//µç×ÓÓëµç×ÓÖ®¼ä²ÎÊı¡£¶ÔÓ¦Ö®Ç°A
+
+
+//!!×¢ÒâÕâ¸ö4.0Ó¦¸ÃÊÇR,µ«windows²»Ö§³Ö¡£·şÎñÆ÷¿ÉÒÔ
+__device__ double E_total = -1.0165 - 1.0 / 4.0;	//Á½¸öµç×Ó×ÜÄÜÁ¿ ¶ÔÓ¦Ö®Ç° E0
 
 
 
-//é¾™å“¥åº“å¡”ç”¨åˆ°å˜é‡
+//Áú¸ç¿âËşÓÃµ½±äÁ¿
 __device__ int  one_steps = 10000;
 
 __device__ int	two_steps = 40000;
 
-__device__ double DX = 1;
+__device__ double DX = 0.027;
 
 
 
