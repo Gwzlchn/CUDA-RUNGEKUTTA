@@ -61,20 +61,19 @@ __device__ void k_one_to_four_add(const derivative& K1, const derivative& K2, co
 
 __device__ double E_kall(const nucleus& first, const nucleus& second)
 {
-	const double power_e_n = elec_nucl * elec_nucl;
 	return E_total - (-1.0 / sqrt(pow((first.z - nuclear_spacing / 2.0*cos(PI*rotation)), 2) +
 								pow((first.x - nuclear_spacing / 2.0*sin(PI*rotation)), 2) +
-								first.y*first.y + power_e_n)) -
+								first.y*first.y + pow_elec_nucl)) -
 					(-1.0 / sqrt(pow((second.z - nuclear_spacing / 2.0*cos(PI*rotation)), 2) +
 								pow((second.x - nuclear_spacing / 2.0*sin(PI*rotation)), 2) +
-								second.y*second.y + power_e_n))
+								second.y*second.y + pow_elec_nucl))
 					- (1.0 / sqrt(nucleus_distance(first, second) + elec_nucl*elec_nucl)) -
 					(-1.0 / sqrt(pow((first.z + nuclear_spacing / 2.0*cos(PI*rotation)), 2) +
 								pow((first.x + nuclear_spacing / 2.0*sin(PI*rotation)), 2) +
-								first.y*first.y + power_e_n)) -
+								first.y*first.y + pow_elec_nucl)) -
 					(-1.0 / sqrt(pow((second.z + nuclear_spacing / 2.0*cos(PI*rotation)), 2) +
 								pow((second.x + nuclear_spacing / 2.0*sin(PI*rotation)), 2) +
-								second.y*second.y + power_e_n));
+								second.y*second.y + pow_elec_nucl));
 }
 
 __device__ void px_py_pz_distribution(nucleus& first, nucleus& second,double ekall,int i)
@@ -118,8 +117,6 @@ __device__  double nucleus_distance(const nucleus& first, const nucleus& second)
 __device__  double3 fx_first_nucleus(const nucleus& first, const nucleus& second)
 {
 	double3 fx_fy_fz_first;
-	const double pow_elec_elec = elec_elec * elec_elec; // A1*A1
-	const double pow_elec_nucl = elec_nucl * elec_nucl; // A*A
 
 	fx_fy_fz_first.x = (first.x - second.x)
 					/ sqrt(pow((nucleus_distance(first, second) + pow_elec_elec), 3))
@@ -161,8 +158,7 @@ __device__  double3 fx_first_nucleus(const nucleus& first, const nucleus& second
 __device__ double3 fx_second_nucleus(const nucleus& first, const nucleus& second)
 {
 	double3 fx_fy_fz_second;
-	const double pow_elec_elec = elec_elec * elec_elec; // A1*A1
-	const double pow_elec_nucl = elec_nucl * elec_nucl; // A*A
+	
 	fx_fy_fz_second.x = (second.x - first.x)
 							/ sqrt(pow((nucleus_distance(first, second) + pow_elec_elec), 3))
 						- (second.x - nuclear_spacing / 2.0 * sin(PI*rotation))
@@ -265,10 +261,11 @@ __device__ void k_one_to_four_add(const derivative& K1,const derivative& K2,cons
 
 __device__ nucleus first_and_second_k_add(const derivative& k_one_to_four,const nucleus& raw_nucleus,int choose)
 {
-	double now_dx = DX;
+	double now_dx;
 	if (choose == 2)
 		now_dx = DX / 2.0;
-
+	else if (choose == 1)
+		now_dx = DX;
 	nucleus k_add;
 	k_add.x = raw_nucleus.x + now_dx * k_one_to_four.px ;
 	k_add.y = raw_nucleus.y + now_dx * k_one_to_four.py ;
