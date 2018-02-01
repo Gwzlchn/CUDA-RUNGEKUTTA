@@ -181,7 +181,7 @@ __global__ void first_step_on_gpu(nuclei* first_arr, const long size)
 	if(idx<size)
 	{
 		//printf("%d\n", idx);
-		for (int i = 0; i < 10000; i++)
+		for (int i = 0; i < one_steps; i++)
 			update_step_one(first_arr[idx].first, first_arr[idx].second);
 	}
 	
@@ -240,7 +240,7 @@ void NucleiSecondStep(nuclei* second_array, const long size)
 
 
 
-void compute_on_gpu_one(const long pairs)
+void compute_on_gpu_one(const long pairs,const char* file_name)
 {
 	long long nBytes = pairs * sizeof(nuclei);
 	printf("Use %lld Bytes %lfMB\n", nBytes, nBytes / double(1024 * 1024));
@@ -265,7 +265,7 @@ void compute_on_gpu_one(const long pairs)
 	//拷回并保存
 	CHECK(cudaMemcpy(host_init, gpu_init, nBytes, cudaMemcpyDeviceToHost));
 	CHECK(cudaDeviceSynchronize());
-	PrintStruct(host_init, pairs, "undefined", 0);
+	PrintStruct(host_init, pairs, file_name, 0);
 	//释放init空间
 	//CHECK(cudaFree(gpu_init));
 	double elapse = seconds();
@@ -285,7 +285,7 @@ void compute_on_gpu_one(const long pairs)
 	CHECK(cudaMemcpy(gpu_second, gpu_first, nBytes, cudaMemcpyDeviceToDevice));*/
 	//拷回并保存
 	CHECK(cudaMemcpy(host_first, gpu_first, nBytes, cudaMemcpyDeviceToHost));
-	PrintStruct(host_first, pairs, "undefined", 1);
+	PrintStruct(host_first, pairs, file_name, 1);
 	//释放first空间
 	//CHECK(cudaFree(gpu_first));
 	 elapse = seconds();
@@ -301,7 +301,7 @@ void compute_on_gpu_one(const long pairs)
 	////拷回并保存
 	//CHECK(cudaMemcpy(host_second, gpu_second, nBytes, cudaMemcpyDeviceToHost));
 	//
-	//PrintStruct(host_second, pairs, "undefined" , 2);
+	//PrintStruct(host_second, pairs,file_name , 2);
 	////释放second空间
 	//CHECK(cudaFree(gpu_second));
 	//

@@ -1,2 +1,7 @@
-A=load('init_undefined01311914.dat');
-plot(A(:,6),A(:,12))
+A=load('init_1w.dat');
+
+histogram(A(:,3))
+hold on
+histogram(A(:,9))
+
+%axis([-5,5,-5,5]);

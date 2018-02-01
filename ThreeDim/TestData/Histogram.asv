@@ -1,0 +1,2 @@
+A=load('step_one_undefined02010712.dat');
+s(A(:,3),A(:,9))

@@ -21,7 +21,7 @@ int main()
 
 	long pairs = 100000;
 	
-	compute_on_gpu_one(pairs);
+	compute_on_gpu_one(pairs,"1000");
 
 	return 0;
 }

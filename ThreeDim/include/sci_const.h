@@ -7,7 +7,7 @@
 //随机数有关
 __device__ double stddev = 0.7;		//方差
 
-__device__ double mean = 2;			//均值
+__device__ double mean = 2.0;			//均值
 
 
 //核粒子有关
@@ -17,9 +17,9 @@ __device__ double nuclear_spacing = 4.0;	//核间距,对应之前的R
 
 __device__ double PI = 3.1415926535897932384626433832795;	//圆周率
 
-__device__ double elec_nucl = 0.1;	//电子与核之间参数，对应之前A1
+__device__ double elec_nucl =1.25;	//电子与核之间参数，对应之前A
 
-__device__ double elec_elec = 1.25;	//电子与电子之间参数。对应之前A
+__device__ double elec_elec = 0.1;	//电子与电子之间参数。对应之前A1
 
 
 //!!注意这个4.0应该是R,但windows不支持。服务器可以
@@ -32,7 +32,7 @@ __device__ int  one_steps = 10000;
 
 __device__ int	two_steps = 40000;
 
-__device__ double DX = 0.027;
+__device__ double DX = 0.0275438596;
 
 
 
