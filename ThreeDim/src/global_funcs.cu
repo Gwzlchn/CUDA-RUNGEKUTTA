@@ -189,6 +189,18 @@ __global__ void first_step_on_gpu(nuclei* first_arr, const long size)
 }
 
 
+__global__ void pre_second_step(double* AW)
+{
+	int idx = threadIdx.x + blockIdx.x * blockDim.x;
+	double t0 = 2 * PI / omega;
+	double t1 = 0.5 * DX * idx; 
+	AW[idx] = field_strength / omega * pow(sin(PI * t1) / (10 * t0), 2) * cos(omega * t1);
+}
+
+__global__
+
+
+
 __global__ void second_step_on_gpu(nuclei* second_arr, const long size)
 {
 	int idx = threadIdx.x + blockIdx.x * blockDim.x;

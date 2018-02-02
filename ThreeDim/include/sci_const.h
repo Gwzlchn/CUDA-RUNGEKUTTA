@@ -37,6 +37,10 @@ __device__ int	two_steps = 40000;
 
 __device__ double DX = 0.0275438596;
 
+__device__ double field_strength = 2.8e15 / 3.51e16; // 场强，对应之前ee0
+
+__device__ double omega = 0.057; // 对应之前w
+
 
 
 #endif
