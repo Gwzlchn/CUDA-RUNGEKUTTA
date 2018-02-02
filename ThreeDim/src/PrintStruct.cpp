@@ -48,7 +48,7 @@ void PrintStruct(nuclei* ToSaveNuclei, long long n, const char* FileName, int ch
 			break;
 		}
 	}
-	//仅初始化的
+	
 
 	if (!file) perror("cannot open file");
 	for (long i = 0; i < n; i++)
@@ -67,3 +67,52 @@ void PrintStruct(nuclei* ToSaveNuclei, long long n, const char* FileName, int ch
 
 	return;
 }
+
+
+void PrintArray(double* array, long long n, const char* FileName, int choose)
+{
+	//format date and time. 
+	struct tm *ptr;
+	time_t lt;
+	char str[9];
+	lt = time(NULL);
+	ptr = localtime(&lt);
+	strftime(str, 9, "%m%d%H%M", ptr);
+
+	FILE* file;
+	switch (choose)
+	{
+		case 0:
+		{
+			char init_file_name[15] = "TestData/AW_";
+			///*strcat((char*)(FileName), tmpBuf);
+			strcat(init_file_name, FileName);
+			strcat(init_file_name, str);
+			strcat(init_file_name, ".dat");
+			file = fopen(init_file_name, "w");
+			break;
+		}
+		case 1:
+		{
+			char step_one_file_name[20] = "TestData/DS_";
+			strcat(step_one_file_name, FileName);
+			strcat(step_one_file_name, str);
+			strcat(step_one_file_name, ".dat");
+			file = fopen(step_one_file_name, "w");
+			break;
+		}
+	}
+
+	if (!file) perror("cannot open file");
+	for (long i = 0; i < n; i++)
+	{
+		fprintf(file, "%-.10lf\n",array[i]);
+	}
+
+
+	fclose(file);
+
+
+}
+
+

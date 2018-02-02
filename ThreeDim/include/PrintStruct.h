@@ -10,6 +10,9 @@
 
 void PrintStruct(nuclei* ToSaveNuclei, long long n, const char* FileName,int choose);
 
+
+//0 aw     1 ds
+void PrintArray(double* array, long long n, const char* FileName, int choose);
 #endif //PRINTSTRUCT_HPP
 
 

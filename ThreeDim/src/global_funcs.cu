@@ -189,16 +189,35 @@ __global__ void first_step_on_gpu(nuclei* first_arr, const long size)
 }
 
 
-__global__ void pre_second_step(double* AW)
+__global__ void pre_second_step_aw(double* AW)
 {
 	int idx = threadIdx.x + blockIdx.x * blockDim.x;
-	double t0 = 2 * PI / omega;
-	double t1 = 0.5 * DX * idx; 
-	AW[idx] = field_strength / omega * pow(sin(PI * t1) / (10 * t0), 2) * cos(omega * t1);
+	if(idx < 2 * two_steps)
+	{
+		double t0 = 2 * PI / omega;
+		double t1 = 0.5 * DX * idx;
+		AW[idx] = field_strength / omega * pow(sin(PI * t1) / (10 * t0), 2) * cos(omega * t1);
+	}
+	
 }
 
-__global__
+__global__ void pre_second_step_ds(double* AW,double* DS)
+{
+	int idx = threadIdx.x + blockIdx.x * blockDim.x;
+	if(idx < 2*two_steps)
+	{
+		if (idx == 0)
+			DS[idx] = (AW[2] - AW[1]) / (0.5*DX);
+		if (idx == (2 * two_steps - 1))
+			DS[idx] = (AW[idx] - AW[idx - 1]) / (0.5*DX);
+		else
+		{
+			DS[idx] = (AW[idx + 1] - AW[idx - 1]) / 2.0 / DX;
+		}
+			
+	}
 
+}
 
 
 __global__ void second_step_on_gpu(nuclei* second_arr, const long size)
@@ -218,36 +237,59 @@ void NucleiRandomD(nuclei* Array, const long Size)
 	dim3 block(dimx);
 	dim3 grid((Size + block.x - 1) / block.x, 1);
 	DoubleNormalRandomArrayD <<< grid, block >>> (Array, Size);
-	//cudaDeviceSynchronize();
+	CHECK(cudaDeviceSynchronize());
 }
 
 
 void NucleiFisrtStep(nuclei* first_array, const long size)
 {
-	int dimx = 8;
+	int dimx = 16;
 	dim3 block(dimx);
 	dim3 grid((size + block.x - 1) / block.x, 1);
 	first_step_on_gpu <<< grid, block >>> (first_array, size);
 	cudaError_t cudaStatus = cudaGetLastError();
 	if (cudaStatus != cudaSuccess)
 	{
-		fprintf(stderr, "addKernel launch failed: %s\n", cudaGetErrorString(cudaStatus));
+		fprintf(stderr, "1st Kernel launch failed: %s\n", cudaGetErrorString(cudaStatus));
 		return;
 	}
-	//cudaDeviceSynchronize();
-	printf("123\n");
+	CHECK(cudaDeviceSynchronize());
+	
 }
 
 
 
 
-void NucleiSecondStep(nuclei* second_array, const long size)
+void NucleiSecondStep(nuclei* second_array, const long size, double* aw, double* ds)
 {
-	int dimx = 512;
+	//准备矢量势
+	int pre_dimx = 512;
+	dim3 pre_block(pre_dimx);
+	dim3 pre_grid((2 * two_steps + pre_block.x - 1) / pre_block.x, 1);
+	pre_second_step_aw <<< pre_grid,pre_block>>>(aw);
+	CHECK(cudaDeviceSynchronize());
+	pre_second_step_ds <<< pre_grid, pre_block >>>(aw, ds);
+	CHECK(cudaDeviceSynchronize());
+	
+	cudaError_t cudaStatus = cudaGetLastError();
+	if (cudaStatus != cudaSuccess)
+	{
+		fprintf(stderr, "2nd Kernel launch failed: %s\n", cudaGetErrorString(cudaStatus));
+		return;
+	}
+
+	//计算第二步
+	/*int dimx = 16;
 	dim3 block(dimx);
 	dim3 grid((size + block.x - 1) / block.x, 1);
 	second_step_on_gpu <<< grid, block >>> (second_array, size);
-	//cudaDeviceSynchronize();
+	cudaStatus = cudaGetLastError();
+	if (cudaStatus != cudaSuccess)
+	{
+		fprintf(stderr, "2nd Kernel launch failed: %s\n", cudaGetErrorString(cudaStatus));
+		return;
+	}
+	CHECK(cudaDeviceSynchronize());*/
 }
 
 
@@ -276,10 +318,10 @@ void compute_on_gpu_one(const long pairs,const char* file_name)
 	CHECK(cudaMemcpy(gpu_first, gpu_init, nBytes, cudaMemcpyDeviceToDevice));
 	//拷回并保存
 	CHECK(cudaMemcpy(host_init, gpu_init, nBytes, cudaMemcpyDeviceToHost));
-	CHECK(cudaDeviceSynchronize());
+	
 	PrintStruct(host_init, pairs, file_name, 0);
 	//释放init空间
-	//CHECK(cudaFree(gpu_init));
+	CHECK(cudaFree(gpu_init));
 	double elapse = seconds();
 	printf("Inition compltete %lf\n", elapse - start);
 	//初始化完成！
@@ -290,7 +332,7 @@ void compute_on_gpu_one(const long pairs,const char* file_name)
 	 start = seconds();
 	//计算
 	NucleiFisrtStep(gpu_first, pairs);
-	CHECK(cudaDeviceSynchronize());
+	
 
 	//把值赋给第二步(也申请了第二步的空间)
 	/*CHECK(cudaMalloc((void **)(&gpu_second), nBytes));
@@ -299,28 +341,52 @@ void compute_on_gpu_one(const long pairs,const char* file_name)
 	CHECK(cudaMemcpy(host_first, gpu_first, nBytes, cudaMemcpyDeviceToHost));
 	PrintStruct(host_first, pairs, file_name, 1);
 	//释放first空间
-	//CHECK(cudaFree(gpu_first));
-	 elapse = seconds();
+	CHECK(cudaFree(gpu_first));
+	elapse = seconds();
 	printf("FirstStep compltete %lf\n", elapse - start);
 	//第一步完成！
 
 
-	////第二步计算
-	//start = seconds();
-	////计算
-	//NucleiSecondStep(gpu_second, pairs);
+	//第二步计算
+	start = seconds();
+	//准备导数
+	double *gpu_aw, *gpu_ds;
+	double *host_aw, *host_ds;
+	long bytes_of_aw_ds = sizeof(double) * 2 * two_steps;
+	CHECK(cudaMalloc((void **)(&gpu_aw), bytes_of_aw_ds));
+	CHECK(cudaMalloc((void **)(&gpu_ds), bytes_of_aw_ds));
+	host_aw = (double*)malloc(bytes_of_aw_ds);
+	host_ds = (double*)malloc(bytes_of_aw_ds);
 
-	////拷回并保存
-	//CHECK(cudaMemcpy(host_second, gpu_second, nBytes, cudaMemcpyDeviceToHost));
-	//
-	//PrintStruct(host_second, pairs,file_name , 2);
-	////释放second空间
-	//CHECK(cudaFree(gpu_second));
-	//
-	//elapse = seconds();
-	//printf("SecondStep compltete %lf\n", elapse - start);
-	//// 第二步完成！
-	//
+	
+	//计算
+
+	NucleiSecondStep(gpu_second, pairs, gpu_aw, gpu_ds);
+
+	//拷回并保存
+	CHECK(cudaMemcpy(host_second, gpu_second, nBytes, cudaMemcpyDeviceToHost));
+	CHECK(cudaMemcpy(host_aw, gpu_aw, nBytes, cudaMemcpyDeviceToHost));
+	CHECK(cudaMemcpy(host_ds, gpu_ds, nBytes, cudaMemcpyDeviceToHost));
+	PrintStruct(host_second, pairs,file_name , 2);
+	PrintArray(host_aw, 2 * two_steps, file_name, 0);
+	PrintArray(host_ds, 2 * two_steps, file_name, 1);
+	//释放second空间
+	CHECK(cudaFree(gpu_second));
+	CHECK(cudaFree(gpu_aw));
+	CHECK(cudaFree(gpu_ds));
+	
+	elapse = seconds();
+	printf("SecondStep compltete %lf\n", elapse - start);
+	// 第二步完成！
+
+	//释放主机内存空间
+	free(host_aw);
+	free(host_ds);
+	free(host_first);
+	free(host_init);
+	free(host_init);
+
+
 
 
 	return;
