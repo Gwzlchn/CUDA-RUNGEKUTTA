@@ -1,4 +1,4 @@
-#include <cuda_runtime.h>
+﻿#include <cuda_runtime.h>
 #include <cstdio>
 #include <cstdlib>
 
@@ -7,19 +7,19 @@
 
 int main()
 {
-	//��ʱ
+	//计时
 	double Start, Elaps;
 
 	printf("Starting...\n");
 
-	//ѡ���豸
+	//选择设备
 	int dev = 0;
 	cudaDeviceProp deviceProp;
 	CHECK(cudaGetDeviceProperties(&deviceProp, dev));
 	printf("Using Device %d: %s\n", dev, deviceProp.name);
 	CHECK(cudaSetDevice(dev));
 
-	long pairs = 100000;
+	long pairs = 10000;
 	
 	compute_on_gpu_one(pairs,"10w");
 

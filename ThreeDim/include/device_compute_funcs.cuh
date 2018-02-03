@@ -390,4 +390,3 @@ __device__ void update_step_two(nucleus& step_one_first, nucleus& step_one_secon
 	k_one_to_four_add(first_k1, first_k2, first_k3, first_k4, step_one_first);
 	k_one_to_four_add(second_k1, second_k2, second_k3, second_k4, step_one_second);
 }
-
