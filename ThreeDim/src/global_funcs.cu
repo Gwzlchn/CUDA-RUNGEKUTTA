@@ -217,7 +217,6 @@ __global__ void pre_second_step_ds(double* AW,double* DS)
 		{
 			DS[idx] = (AW[idx + 1] - AW[idx - 1]) / 2.0 / DX;
 		}
-		printf("%f\n", DS[idx]);
 	}
 
 }
@@ -277,7 +276,7 @@ void NucleiRandomD(nuclei* Array, const long Size)
 
 void NucleiFisrtStep(nuclei* first_array, const long size)
 {
-	int dimx = 16;
+	int dimx = 32;
 	dim3 block(dimx);
 	dim3 grid((size + block.x - 1) / block.x, 1);
 	first_step_on_gpu <<< grid, block >>> (first_array, size);
@@ -313,7 +312,7 @@ void NucleiSecondStep(nuclei* second_array, const long size, double* aw, double*
 	}
 
 	//计算第二步
-	int dimx = 16;
+	int dimx = 32;
 	dim3 block(dimx);
 	dim3 grid((size + block.x - 1) / block.x, 1);
 	second_step_on_gpu << < grid, block >> > (second_array, size, ds);

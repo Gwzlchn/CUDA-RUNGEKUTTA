@@ -11,7 +11,7 @@ __device__ double mean = 2.0;			//均值
 
 
 //核粒子有关
-__device__ double rotation = 0.0;	//转轴角度，对应之前的kk
+__device__ double rotation = 0.5;	//转轴角度，对应之前的kk
 
 __device__ double nuclear_spacing = 4.0;	//核间距,对应之前的R
 
