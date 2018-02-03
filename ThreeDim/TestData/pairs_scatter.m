@@ -16,4 +16,4 @@ pz2 = A(:,12);
 
 colorbar;
 %  scatter(x1,x2,'.');
-scatplot(py1,py2);
+scatplot(pz1,pz2);
