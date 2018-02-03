@@ -1,17 +1,19 @@
-A=load('DS_100002040328.dat');
+A=load('step_two_10w02040641.dat');
 
-%scatter(A(:,3),A(:,9))
-AA = load('AW_1000.dat');
+x1 = A(:,1);
+y1 = A(:,2);
+z1 = A(:,3);
+px1 = A(:,4);
+py1 = A(:,5);
+pz1 = A(:,6);
+x2 = A(:,7);
+y2 = A(:,8);
+z2 = A(:,9);
+px2 = A(:,10);
+py2 = A(:,11);
+pz2 = A(:,12);
 
-PI = 3.1415926;
-omega = 0.057;
-t0 = 2 * PI / omega;
-h=0.027;
-B =zeros(80000,1);
-for i = 1:80000
-    B(i) = i*h*0.5/t0;
-end
-scatter(B,A)
-hold on 
-scatter(B,AA)
-% save('time.txt','B')
+
+colorbar;
+%  scatter(x1,x2,'.');
+scatplot(py1,py2);

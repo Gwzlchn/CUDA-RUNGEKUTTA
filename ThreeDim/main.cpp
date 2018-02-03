@@ -1,4 +1,4 @@
-﻿#include <cuda_runtime.h>
+#include <cuda_runtime.h>
 #include <cstdio>
 #include <cstdlib>
 
@@ -7,12 +7,12 @@
 
 int main()
 {
-	//计时
+	//��ʱ
 	double Start, Elaps;
 
 	printf("Starting...\n");
 
-	//选择设备
+	//ѡ���豸
 	int dev = 0;
 	cudaDeviceProp deviceProp;
 	CHECK(cudaGetDeviceProperties(&deviceProp, dev));

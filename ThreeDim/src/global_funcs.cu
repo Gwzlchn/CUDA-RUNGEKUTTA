@@ -226,7 +226,7 @@ __global__ void second_step_on_gpu(nuclei* second_arr, const long size,double* D
 {
 	const int idx = threadIdx.x + blockIdx.x * blockDim.x;
 	double e_laser_t1=0.0, e_laser_t2=0.0, e_laser_t3=0.0, e_laser_t4=0.0;
-	int idx_of_ds; // 相当于nn
+	int idx_of_ds=0; // 相当于nn
 	double t1=0.0, t2=0.0, t3=0.0, t4=0.0;
 	double now_t=0.0; //当前时间，相当于t(1)
 	if (idx<size)
@@ -239,22 +239,26 @@ __global__ void second_step_on_gpu(nuclei* second_arr, const long size,double* D
 				e_laser_t1 = 0.0;
 			else
 			{
-				idx_of_ds = (2 * t1) / DX;
+				idx_of_ds = (2 * t1) / DX - 1;
 				e_laser_t1 = DS[idx_of_ds];
 			}
+			//printf("%d\t",idx_of_ds);
 			//第二个激光场强度
 			t2 = now_t + DX / 2.0;
-			idx_of_ds = 2 * t2 / DX;
+			idx_of_ds = 2 * t2 / DX- 1;
 			e_laser_t2 = DS[idx_of_ds];
+			//printf("%d\t",idx_of_ds);
 			//第三个激光场强度
 			t3 = now_t + DX / 2.0;
-			idx_of_ds = 2 * t3 / DX;
+			idx_of_ds = 2 * t3 / DX- 1;
 			e_laser_t3 = DS[idx_of_ds];
+			//printf("%d\t",idx_of_ds);
 			//第四个激光场强度
 			t4 = now_t + DX;
-			idx_of_ds = 2 * t4 / DX;
+			idx_of_ds = 2 * t4 / DX- 1;
 			e_laser_t4 = DS[idx_of_ds];
-
+			//printf("%d\t\n",idx_of_ds);
+			//printf("%10f\t%10f\t%10f\t%10f\t\n", e_laser_t1, e_laser_t2, e_laser_t3, e_laser_t4);
 			update_step_two(second_arr[idx].first, second_arr[idx].second,
 							e_laser_t1,e_laser_t2,e_laser_t3,e_laser_t4);
 			now_t = now_t + DX;
