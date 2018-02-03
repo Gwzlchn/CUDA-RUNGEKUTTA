@@ -42,8 +42,8 @@ __device__ double3 fx_second_nucleus(const nucleus& first, const nucleus& second
 //龙哥库塔方法
 __device__ void update_step_one(nucleus& step_one_first, nucleus& step_one_second);
 __device__ void update_step_two(nucleus& step_one_first, nucleus& step_one_second,
-	const double& E_laser_t1, const double& E_laser_t2,
-	const double& E_laser_t3, const double& E_laser_t4);
+	const double& e_laser_t1, const double& e_laser_t2,
+	const double& e_laser_t3, const double& e_laser_t4);
 
 
 
@@ -326,7 +326,7 @@ __device__ void update_step_one(nucleus& step_one_first, nucleus& step_one_secon
 __device__ derivative fisrt_k_one_to_four_second_step
 (const nucleus& first, const nucleus& second,const double& e_laser)
 {
-	double3 first_fx = fx_first_nucleus(first, second);
+	const double3 first_fx = fx_first_nucleus(first, second);
 	derivative first_px_fx;
 	first_px_fx.px = first.px;
 	first_px_fx.py = first.py;
@@ -343,7 +343,7 @@ __device__ derivative fisrt_k_one_to_four_second_step
 __device__ derivative second_k_one_to_four_second_step
 (const nucleus& first, const nucleus& second, const double& e_laser)
 {
-	double3 second_fx = fx_second_nucleus(first, second);
+	const double3 second_fx = fx_second_nucleus(first, second);
 	derivative second_px_fx;
 	second_px_fx.px = second.px;
 	second_px_fx.py = second.py;
@@ -362,30 +362,30 @@ __device__ derivative second_k_one_to_four_second_step
 
 
 __device__ void update_step_two(nucleus& step_one_first, nucleus& step_one_second,
-	const double& E_laser_t1,const double& E_laser_t2, 
-	const double& E_laser_t3, const double& E_laser_t4 )
+	const double& e_laser_t1,const double& e_laser_t2, 
+	const double& e_laser_t3, const double& e_laser_t4 )
 {
 	//计算K1
-	const derivative first_k1 = fisrt_k_one_to_four_second_step(step_one_first, step_one_second,E_laser_t1);
-	const derivative second_k1 = second_k_one_to_four_second_step(step_one_first, step_one_second, E_laser_t1);
+	const derivative first_k1 = fisrt_k_one_to_four_second_step(step_one_first, step_one_second,e_laser_t1);
+	const derivative second_k1 = second_k_one_to_four_second_step(step_one_first, step_one_second, e_laser_t1);
 	const nucleus first_k1_add = first_and_second_k_add(first_k1, step_one_first, 2);
 	const nucleus second_k1_add = first_and_second_k_add(second_k1, step_one_second, 2);
 
 	//K2
-	const derivative first_k2 = fisrt_k_one_to_four_second_step(first_k1_add, second_k1_add, E_laser_t2);
-	const derivative second_k2 = second_k_one_to_four_second_step(first_k1_add, second_k1_add, E_laser_t2);
+	const derivative first_k2 = fisrt_k_one_to_four_second_step(first_k1_add, second_k1_add, e_laser_t2);
+	const derivative second_k2 = second_k_one_to_four_second_step(first_k1_add, second_k1_add, e_laser_t2);
 	const nucleus first_k2_add = first_and_second_k_add(first_k2, step_one_first, 2);
 	const nucleus second_k2_add = first_and_second_k_add(second_k2, step_one_second, 2);
 
 	//K3
-	const derivative first_k3 = fisrt_k_one_to_four_second_step(first_k2_add, second_k2_add,E_laser_t3);
-	const derivative second_k3 = second_k_one_to_four_second_step(first_k2_add, second_k2_add, E_laser_t3);
+	const derivative first_k3 = fisrt_k_one_to_four_second_step(first_k2_add, second_k2_add,e_laser_t3);
+	const derivative second_k3 = second_k_one_to_four_second_step(first_k2_add, second_k2_add, e_laser_t3);
 	const nucleus first_k3_add = first_and_second_k_add(first_k3, step_one_first, 1);
 	const nucleus second_k3_add = first_and_second_k_add(second_k3, step_one_second, 1);
 
 	//K4
-	const derivative first_k4 = fisrt_k_one_to_four_second_step(first_k3_add, second_k3_add, E_laser_t4);
-	const derivative second_k4 = second_k_one_to_four_second_step(first_k3_add, second_k3_add, E_laser_t4);
+	const derivative first_k4 = fisrt_k_one_to_four_second_step(first_k3_add, second_k3_add, e_laser_t4);
+	const derivative second_k4 = second_k_one_to_four_second_step(first_k3_add, second_k3_add, e_laser_t4);
 
 	k_one_to_four_add(first_k1, first_k2, first_k3, first_k4, step_one_first);
 	k_one_to_four_add(second_k1, second_k2, second_k3, second_k4, step_one_second);

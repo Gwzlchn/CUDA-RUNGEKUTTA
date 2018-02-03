@@ -242,23 +242,18 @@ __global__ void second_step_on_gpu(nuclei* second_arr, const long size,double* D
 				idx_of_ds = (2 * t1) / DX - 1;
 				e_laser_t1 = DS[idx_of_ds];
 			}
-			//printf("%d\t",idx_of_ds);
 			//第二个激光场强度
 			t2 = now_t + DX / 2.0;
 			idx_of_ds = 2 * t2 / DX- 1;
 			e_laser_t2 = DS[idx_of_ds];
-			//printf("%d\t",idx_of_ds);
 			//第三个激光场强度
 			t3 = now_t + DX / 2.0;
 			idx_of_ds = 2 * t3 / DX- 1;
 			e_laser_t3 = DS[idx_of_ds];
-			//printf("%d\t",idx_of_ds);
 			//第四个激光场强度
 			t4 = now_t + DX;
 			idx_of_ds = 2 * t4 / DX- 1;
 			e_laser_t4 = DS[idx_of_ds];
-			//printf("%d\t\n",idx_of_ds);
-			//printf("%10f\t%10f\t%10f\t%10f\t\n", e_laser_t1, e_laser_t2, e_laser_t3, e_laser_t4);
 			update_step_two(second_arr[idx].first, second_arr[idx].second,
 							e_laser_t1,e_laser_t2,e_laser_t3,e_laser_t4);
 			now_t = now_t + DX;
