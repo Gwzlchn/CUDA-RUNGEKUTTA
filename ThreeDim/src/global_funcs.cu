@@ -210,7 +210,7 @@ __global__ void pre_second_step_ds(double* AW,double* DS)
 	if(idx < 2*two_steps)
 	{
 		if (idx == 0)
-			DS[idx] = (AW[2] - AW[1]) / (0.5*DX);
+			DS[idx] = (AW[1] - AW[0]) / (0.5*DX);
 		if (idx == (2 * two_steps - 1))
 			DS[idx] = (AW[idx] - AW[idx - 1]) / (0.5*DX);
 		else
