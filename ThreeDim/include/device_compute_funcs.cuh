@@ -41,7 +41,10 @@ __device__ double3 fx_second_nucleus(const nucleus& first, const nucleus& second
 
 //龙哥库塔方法
 __device__ void update_step_one(nucleus& step_one_first, nucleus& step_one_second);
-__device__ void update_step_two(nucleus& step_two_first, nucleus& step_two_second, const double E_laser);
+__device__ void update_step_two(nucleus& step_one_first, nucleus& step_one_second,
+	const double& E_laser_t1, const double& E_laser_t2,
+	const double& E_laser_t3, const double& E_laser_t4);
+
 
 
 __device__ derivative fisrt_k_one_to_four_fisrt_step(const nucleus& first, const nucleus& second);

@@ -3,7 +3,7 @@
 #define SCI_CONST_H
 
 #include <crt/host_defines.h>
-
+#include <cmath>
 //随机数有关
 __device__ double stddev = 0.7;		//方差
 
@@ -34,10 +34,10 @@ __device__ double E_total = -1.0165 - 1.0 / 4.0;	//两个电子总能量 对应�
 __device__ int  one_steps = 10000;
 
 __device__ int	two_steps = 40000;
+int two_steps_in_host = 40000;
+
 
 __device__ double DX = 0.0275438596;
-
-__device__ double field_strength = 2.8e15 / 3.51e16; // 场强，对应之前ee0
 
 __device__ double omega = 0.057; // 对应之前w
 
