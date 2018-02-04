@@ -390,3 +390,30 @@ __device__ void update_step_two(nucleus& step_one_first, nucleus& step_one_secon
 	k_one_to_four_add(first_k1, first_k2, first_k3, first_k4, step_one_first);
 	k_one_to_four_add(second_k1, second_k2, second_k3, second_k4, step_one_second);
 }
+
+
+__device__ double EE1(const nucleus& first,const nucleus& second)
+{
+	return 0.5*(pow(first.px, 2) + pow(first.py, 2) + pow(first.pz, 2)) +
+		(-1.0 / sqrt(pow((first.z + nuclear_spacing / 2.0 * cos(PI*rotation)), 2) +
+					pow(first.x + nuclear_spacing / 2.0 * sin(PI*rotation), 2) +
+					pow(first.y, 2) + elec_nucl * elec_nucl)) +
+		(-1.0 / sqrt(pow((first.z - nuclear_spacing / 2.0 * cos(PI*rotation)), 2) +
+					pow(first.x - nuclear_spacing / 2.0*sin(PI*rotation), 2) +
+					pow(first.y, 2) + elec_nucl * elec_nucl)) +
+		(0.5 * (1.0 / sqrt(nucleus_distance(first, second) + elec_elec*elec_elec)));
+
+}
+
+__device__ double EE2(const nucleus& first, const nucleus& second)
+{
+	return 0.5*(pow(first.px, 2) + pow(first.py, 2) + pow(first.pz, 2)) +
+		(-1.0 / sqrt(pow((first.z + nuclear_spacing / 2.0 * cos(PI*rotation)), 2) +
+					pow(first.x + nuclear_spacing / 2.0 * sin(PI*rotation), 2) +
+					pow(first.y, 2) + elec_nucl * elec_nucl)) +
+		(-1.0 / sqrt(pow((first.z - nuclear_spacing / 2.0 * cos(PI*rotation)), 2) +
+					pow(first.x - nuclear_spacing / 2.0*sin(PI*rotation), 2) +
+					pow(first.y, 2) + elec_nucl * elec_nucl)) +
+		(0.5 * (1.0 / sqrt(nucleus_distance(first, second) + elec_elec*elec_elec)));
+
+}
