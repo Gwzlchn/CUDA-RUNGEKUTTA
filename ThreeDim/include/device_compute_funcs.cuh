@@ -5,6 +5,7 @@
 #include <curand_kernel.h>
 #include <cmath>
 
+
 #include "sm_20_atomic_functions.h"
 #include "../include/sci_const.h"
 #include "../include/nucleus.hpp"
@@ -62,9 +63,9 @@ __device__ derivative second_k_one_to_four_second_step
 (const nucleus& first, const nucleus& second, const double& e_laser);
 
 //E1与E2
-__device__ void CalculationE1	(const nucleus& first, const nucleus& second, double& e_laser);
-__device__ void CalculationE2	(const nucleus& first, const nucleus& second, double& e_laser);
-__device__ void E1AndE2			(const nucleus& first, const nucleus& second, double& e_laser);
+__device__ double CalculationE1	(const nucleus& first, const nucleus& second);
+__device__ double CalculationE2	(const nucleus& first, const nucleus& second);
+__device__ void count_ee1_and_ee2(const nucleus& first, const nucleus& second, unsigned long* e_laser);
 #endif //DEVICE_COMPUTE_FUNCS_CUH
 
 
@@ -396,29 +397,38 @@ __device__ void update_step_two(nucleus& step_one_first, nucleus& step_one_secon
 	k_one_to_four_add(second_k1, second_k2, second_k3, second_k4, step_one_second);
 }
 
-__device__ void CalculationE1(const nucleus& first, const nucleus& second, double& e_laser)
+__device__ double CalculationE1(const nucleus& first, const nucleus& second)
 {
-	e_laser = 0.5*(pow(first.px, 2) + pow(first.py, 2) + pow(first.pz, 2)) +
-		(-1 / sqrt(pow(first.z + (nuclear_spacing / 2)*cos(PI*rotation), 2) +
-			pow(first.x + (nuclear_spacing / 2)*sin(PI*rotation), 2) + pow(first.y, 2) + pow(elec_nucl, 2))) +
-			(-1 / sqrt(pow(first.z - (nuclear_spacing / 2)*cos(PI*rotation), 2) +
-				pow(first.x - (nuclear_spacing / 2)*sin(PI*rotation), 2) + pow(first.y, 2) + pow(elec_nucl, 2))) +
-		0.5*(1 / sqrt(pow(first.x - second.x, 2) + pow(first.y - second.y, 2) + pow(first.z - second.z, 2) + pow(elec_elec, 2)));
+	return  0.5*(pow(first.px, 2) + pow(first.py, 2) + pow(first.pz, 2)) +
+			(-1.0 / sqrt(pow(first.z + (nuclear_spacing / 2.0)*cos(PI*rotation), 2) +
+						pow(first.x + (nuclear_spacing / 2.0)*sin(PI*rotation), 2) + 
+						pow(first.y, 2) + pow(elec_nucl, 2))) +
+			(-1.0 / sqrt(pow(first.z - (nuclear_spacing / 2.0)*cos(PI*rotation), 2) +
+						pow(first.x - (nuclear_spacing / 2.0)*sin(PI*rotation), 2) +
+						pow(first.y, 2) + pow(elec_nucl, 2))) +
+			0.5*(1.0 / sqrt(pow(first.x - second.x, 2) + pow(first.y - second.y, 2) +
+						pow(first.z - second.z, 2) + pow(elec_elec, 2)));
 }
 
-__device__ void CalculationE2(const nucleus& first, const nucleus& second, double& e_laser)
+__device__ double CalculationE2(const nucleus& first, const nucleus& second)
 {
-	e_laser = 0.5*(pow(second.px, 2) + pow(second.py, 2) + pow(second.pz, 2)) +
-		(-1 / sqrt(pow(second.z + (nuclear_spacing / 2)*cos(PI*rotation), 2) +
-			pow(second.x + (nuclear_spacing / 2)*sin(PI*rotation), 2) + pow(second.y, 2) + pow(elec_nucl, 2))) +
+	return 0.5*(pow(second.px, 2) + pow(second.py, 2) + pow(second.pz, 2)) +
+			(-1 / sqrt(pow(second.z + (nuclear_spacing / 2)*cos(PI*rotation), 2) +
+						pow(second.x + (nuclear_spacing / 2)*sin(PI*rotation), 2) +
+						pow(second.y, 2) + pow(elec_nucl, 2))) +
 			(-1 / sqrt(pow(second.z - (nuclear_spacing / 2)*cos(PI*rotation), 2) +
-				pow(second.x - (nuclear_spacing / 2)*sin(PI*rotation), 2) + pow(second.y, 2) + pow(elec_nucl, 2))) +
-		0.5*(1 / sqrt(pow(first.x - second.x, 2) + pow(first.y - second.y, 2) + pow(first.z - second.z, 2) + pow(elec_elec, 2)));
+						pow(second.x - (nuclear_spacing / 2)*sin(PI*rotation), 2) + 
+						pow(second.y, 2) + pow(elec_nucl, 2))) +
+			0.5*(1 / sqrt(pow(first.x - second.x, 2) + pow(first.y - second.y, 2) + 
+						pow(first.z - second.z, 2) + pow(elec_elec, 2)));
 }
 
-__device__ void E1AndE2(const double& e1, const double& e2, int* e_laser)
+
+__device__ void count_ee1_and_ee2(const nucleus& first,const nucleus& second, unsigned long* e_laser)
 {
-	if (e1>0&&e2>0)
+	double ee1 = CalculationE1(first, second);
+	double ee2 = CalculationE2(first, second);
+	if (ee1>0 && ee2>0)
 	{
 		atomicAdd(e_laser, 1);
 	}

@@ -222,7 +222,7 @@ __global__ void pre_second_step_ds(double* AW,double* DS)
 }
 
 
-__global__ void second_step_on_gpu(nuclei* second_arr, const long size,double* DS)
+__global__ void second_step_on_gpu(nuclei* second_arr, const long size,double* DS,unsigned long* ee1_ee2_count)
 {
 	const int idx = threadIdx.x + blockIdx.x * blockDim.x;
 	double e_laser_t1=0.0, e_laser_t2=0.0, e_laser_t3=0.0, e_laser_t4=0.0;
@@ -258,6 +258,7 @@ __global__ void second_step_on_gpu(nuclei* second_arr, const long size,double* D
 							e_laser_t1,e_laser_t2,e_laser_t3,e_laser_t4);
 			now_t = now_t + DX;
 		}
+		count_ee1_and_ee2(second_arr[idx].first, second_arr[idx].second, ee1_ee2_count);
 			
 	}
 }
@@ -292,7 +293,7 @@ void NucleiFisrtStep(nuclei* first_array, const long size)
 
 
 
-void NucleiSecondStep(nuclei* second_array, const long size, double* aw, double* ds)
+void NucleiSecondStep(nuclei* second_array, const long size, double* aw, double* ds, unsigned long* count)
 {
 	//准备矢量势
 	int pre_dimx = 512;
@@ -314,7 +315,7 @@ void NucleiSecondStep(nuclei* second_array, const long size, double* aw, double*
 	int dimx = 32;
 	dim3 block(dimx);
 	dim3 grid((size + block.x - 1) / block.x, 1);
-	second_step_on_gpu << < grid, block >> > (second_array, size, ds);
+	second_step_on_gpu << < grid, block >> > (second_array, size, ds,count);
 	cudaStatus = cudaGetLastError();
 	if (cudaStatus != cudaSuccess)
 	{
@@ -391,14 +392,24 @@ void compute_on_gpu_one(const long pairs,const char* file_name)
 	host_ds = (double*)malloc(bytes_of_aw_ds);
 
 	
+	//电离率计数
+	unsigned long *gpu_count,*host_count;
+	int bytes_of_u_long = sizeof(unsigned long);
+	host_count = (unsigned long*)malloc(bytes_of_u_long);
+	CHECK(cudaMalloc((void **)(&gpu_count), bytes_of_u_long));
+
+
 	//计算
 
-	NucleiSecondStep(gpu_second, pairs, gpu_aw, gpu_ds);
+	NucleiSecondStep(gpu_second, pairs, gpu_aw, gpu_ds,gpu_count);
 
 	//拷回并保存
 	CHECK(cudaMemcpy(host_second, gpu_second, nBytes, cudaMemcpyDeviceToHost));
 	CHECK(cudaMemcpy(host_aw, gpu_aw, bytes_of_aw_ds, cudaMemcpyDeviceToHost));
 	CHECK(cudaMemcpy(host_ds, gpu_ds, bytes_of_aw_ds, cudaMemcpyDeviceToHost));
+	CHECK(cudaMemcpy(host_count, gpu_count, bytes_of_u_long, cudaMemcpyDeviceToHost));
+	printf("%ld\n", *host_count);
+
 	PrintStruct(host_second, pairs,file_name , 2);
 	PrintArray(host_aw, 2 * two_steps_in_host, file_name, 0);
 	PrintArray(host_ds, 2 * two_steps_in_host, file_name, 1);
