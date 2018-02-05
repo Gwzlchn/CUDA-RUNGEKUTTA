@@ -65,7 +65,7 @@ __device__ derivative second_k_one_to_four_second_step
 //E1与E2
 __device__ double CalculationE1	(const nucleus& first, const nucleus& second);
 __device__ double CalculationE2	(const nucleus& first, const nucleus& second);
-__device__ void count_ee1_and_ee2(const nucleus& first, const nucleus& second, unsigned long* e_laser);
+__device__ void count_ee1_and_ee2(const nucleus& first, const nucleus& second, unsigned long long* e_laser);
 #endif //DEVICE_COMPUTE_FUNCS_CUH
 
 
@@ -397,6 +397,10 @@ __device__ void update_step_two(nucleus& step_one_first, nucleus& step_one_secon
 	k_one_to_four_add(second_k1, second_k2, second_k3, second_k4, step_one_second);
 }
 
+
+
+
+
 __device__ double CalculationE1(const nucleus& first, const nucleus& second)
 {
 	return  0.5*(pow(first.px, 2) + pow(first.py, 2) + pow(first.pz, 2)) +
@@ -424,7 +428,7 @@ __device__ double CalculationE2(const nucleus& first, const nucleus& second)
 }
 
 
-__device__ void count_ee1_and_ee2(const nucleus& first,const nucleus& second, unsigned long* e_laser)
+__device__ void count_ee1_and_ee2(const nucleus& first,const nucleus& second, unsigned long long* e_laser)
 {
 	double ee1 = CalculationE1(first, second);
 	double ee2 = CalculationE2(first, second);

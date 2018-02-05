@@ -222,11 +222,11 @@ __global__ void pre_second_step_ds(double* AW,double* DS)
 }
 
 
-__global__ void second_step_on_gpu(nuclei* second_arr, const long size,double* DS,unsigned long* ee1_ee2_count)
+__global__ void second_step_on_gpu(nuclei* second_arr, const long size,double* DS,unsigned long long* ee1_ee2_count)
 {
 	const int idx = threadIdx.x + blockIdx.x * blockDim.x;
 	double e_laser_t1=0.0, e_laser_t2=0.0, e_laser_t3=0.0, e_laser_t4=0.0;
-	int idx_of_ds=0; // 相当于nn
+	int idx_of_ds=-1; // 相当于nn
 	double t1=0.0, t2=0.0, t3=0.0, t4=0.0;
 	double now_t=0.0; //当前时间，相当于t(1)
 	if (idx<size)
@@ -257,6 +257,16 @@ __global__ void second_step_on_gpu(nuclei* second_arr, const long size,double* D
 			update_step_two(second_arr[idx].first, second_arr[idx].second,
 							e_laser_t1,e_laser_t2,e_laser_t3,e_laser_t4);
 			now_t = now_t + DX;
+			/*if(idx_of_ds == -1 )
+				update_step_two(second_arr[idx].first, second_arr[idx].second,
+									0.0,DS[0],DS[0],DS[1]);
+			else
+			{
+				update_step_two(second_arr[idx].first, second_arr[idx].second,
+					DS[idx_of_ds], DS[idx_of_ds + 1], DS[idx_of_ds + 1], DS[idx_of_ds + 2]);
+			}
+			idx_of_ds += 2;*/
+
 		}
 		count_ee1_and_ee2(second_arr[idx].first, second_arr[idx].second, ee1_ee2_count);
 			
@@ -293,7 +303,7 @@ void NucleiFisrtStep(nuclei* first_array, const long size)
 
 
 
-void NucleiSecondStep(nuclei* second_array, const long size, double* aw, double* ds, unsigned long* count)
+void NucleiSecondStep(nuclei* second_array, const long size, double* aw, double* ds, unsigned long long* count)
 {
 	//准备矢量势
 	int pre_dimx = 512;
@@ -393,9 +403,9 @@ void compute_on_gpu_one(const long pairs,const char* file_name)
 
 	
 	//电离率计数
-	unsigned long *gpu_count,*host_count;
-	int bytes_of_u_long = sizeof(unsigned long);
-	host_count = (unsigned long*)malloc(bytes_of_u_long);
+	unsigned long long*gpu_count,*host_count;
+	int bytes_of_u_long = sizeof(unsigned long long);
+	host_count = (unsigned long long*)malloc(bytes_of_u_long);
 	CHECK(cudaMalloc((void **)(&gpu_count), bytes_of_u_long));
 
 
