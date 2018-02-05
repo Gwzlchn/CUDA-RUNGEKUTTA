@@ -195,11 +195,11 @@ __global__ void pre_second_step_aw(double* AW)
 	if(idx < 2 * two_steps)
 	{
 
-		double field_strength = sqrt(2.8e15 / 3.51e16); // 场强，对应之前ee0
+		double field_strength = sqrt((2.8e15) / (3.51e16)); // 场强，对应之前ee0
 
 		double t0 = 2 * PI / omega;
 		double t1 = 0.5 * DX * idx;
-		AW[idx] = field_strength / omega * pow(sin((PI * t1) / (10 * t0)), 2) * cos(omega * t1);
+		AW[idx] = (field_strength / omega) * (pow(sin((PI * t1) / (10 * t0)), 2)) * cos(omega * t1);
 	}
 	
 }
