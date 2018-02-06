@@ -272,11 +272,12 @@ __global__ void second_step_on_gpu(nuclei* second_arr, nuclei* second_arr_fliter
 		double ee2 = CalculationE2(second_arr[idx].first, second_arr[idx].second);
 		if (ee1>0 && ee2>0)
 		{
+			
+			unsigned long long temp_idx = atomicAdd(ee1_ee2_count, 1);
 			nuclei temp;
 			temp.first = second_arr[idx].first;
 			temp.second = second_arr[idx].second;
-			second_arr_fliter[*ee1_ee2_count] = temp;
-			atomicAdd(ee1_ee2_count, 1);
+			second_arr_fliter[temp_idx-1] = temp;
 		}
 			
 	}
@@ -334,7 +335,7 @@ void NucleiSecondStep(nuclei* second_array, nuclei* second_array_fliter, const l
 	int dimx = 32;
 	dim3 block(dimx);
 	dim3 grid((size + block.x - 1) / block.x, 1);
-	second_step_on_gpu <<< grid, block >>> (second_array, size, ds,count);
+	second_step_on_gpu <<< grid, block >>> (second_array, second_array_fliter,size, ds,count);
 	cudaStatus = cudaGetLastError();
 	if (cudaStatus != cudaSuccess)
 	{
