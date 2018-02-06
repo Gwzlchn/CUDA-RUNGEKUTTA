@@ -1,4 +1,4 @@
-A=load('step_two_10w02060015.dat');
+A=load('step_two_10w02060041.dat');
 
 x1 = A(:,1);
 y1 = A(:,2);
@@ -16,4 +16,7 @@ pz2 = A(:,12);
 
 colorbar;
 %  scatter(x1,x2,'.');
-scatplot(pz1,pz2);
+% scatplot(pz1,pz2);
+
+X = load('pz1pz2.dat');
+scatter(X(:,1),X(:,2),'.');

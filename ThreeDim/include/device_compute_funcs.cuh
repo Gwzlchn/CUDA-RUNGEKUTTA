@@ -65,7 +65,7 @@ __device__ derivative second_k_one_to_four_second_step
 //E1与E2
 __device__ double CalculationE1	(const nucleus& first, const nucleus& second);
 __device__ double CalculationE2	(const nucleus& first, const nucleus& second);
-__device__ void count_ee1_and_ee2(const nucleus& first, const nucleus& second, unsigned long long* e_laser);
+//__device__ void count_ee1_and_ee2(const nucleus& first, const nucleus& second, unsigned long long* e_laser);
 #endif //DEVICE_COMPUTE_FUNCS_CUH
 
 
@@ -428,12 +428,3 @@ __device__ double CalculationE2(const nucleus& first, const nucleus& second)
 }
 
 
-__device__ void count_ee1_and_ee2(const nucleus& first,const nucleus& second, unsigned long long* e_laser)
-{
-	double ee1 = CalculationE1(first, second);
-	double ee2 = CalculationE2(first, second);
-	if (ee1>0 && ee2>0)
-	{
-		atomicAdd(e_laser, 1);
-	}
-}

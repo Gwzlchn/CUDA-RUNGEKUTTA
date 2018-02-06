@@ -222,7 +222,7 @@ __global__ void pre_second_step_ds(double* AW,double* DS)
 }
 
 
-__global__ void second_step_on_gpu(nuclei* second_arr, const long size,double* DS,unsigned long long* ee1_ee2_count)
+__global__ void second_step_on_gpu(nuclei* second_arr, nuclei* second_arr_fliter , const long size,double* DS,unsigned long long* ee1_ee2_count)
 {
 	const int idx = threadIdx.x + blockIdx.x * blockDim.x;
 	double e_laser_t1=0.0, e_laser_t2=0.0, e_laser_t3=0.0, e_laser_t4=0.0;
@@ -268,7 +268,16 @@ __global__ void second_step_on_gpu(nuclei* second_arr, const long size,double* D
 			idx_of_ds += 2;*/
 
 		}
-		count_ee1_and_ee2(second_arr[idx].first, second_arr[idx].second, ee1_ee2_count);
+		double ee1 = CalculationE1(second_arr[idx].first, second_arr[idx].second);
+		double ee2 = CalculationE2(second_arr[idx].first, second_arr[idx].second);
+		if (ee1>0 && ee2>0)
+		{
+			nuclei temp;
+			temp.first = second_arr[idx].first;
+			temp.second = second_arr[idx].second;
+			second_arr_fliter[*ee1_ee2_count] = temp;
+			atomicAdd(ee1_ee2_count, 1);
+		}
 			
 	}
 }
@@ -303,7 +312,7 @@ void NucleiFisrtStep(nuclei* first_array, const long size)
 
 
 
-void NucleiSecondStep(nuclei* second_array, const long size, double* aw, double* ds, unsigned long long* count)
+void NucleiSecondStep(nuclei* second_array, nuclei* second_array_fliter, const long size, double* aw, double* ds, unsigned long long* count)
 {
 	//准备矢量势
 	int pre_dimx = 512;
@@ -325,7 +334,7 @@ void NucleiSecondStep(nuclei* second_array, const long size, double* aw, double*
 	int dimx = 32;
 	dim3 block(dimx);
 	dim3 grid((size + block.x - 1) / block.x, 1);
-	second_step_on_gpu << < grid, block >> > (second_array, size, ds,count);
+	second_step_on_gpu <<< grid, block >>> (second_array, size, ds,count);
 	cudaStatus = cudaGetLastError();
 	if (cudaStatus != cudaSuccess)
 	{
@@ -341,12 +350,12 @@ void compute_on_gpu_one(const long pairs,const char* file_name)
 {
 	long long nBytes = pairs * sizeof(nuclei);
 	printf("Use %lld Bytes %lfMB\n", nBytes, nBytes / double(1024 * 1024));
-	nuclei *gpu_init,*gpu_first,*gpu_second;
-	nuclei *host_init,*host_first,*host_second;
+	nuclei *gpu_init,*gpu_first,*gpu_second,*gpu_second_fliter;
+	nuclei *host_init,*host_first,*host_second,*host_second_fliter;
 	host_init = (nuclei*)malloc(nBytes);
 	host_first = (nuclei*)malloc(nBytes);
 	host_second = (nuclei*)malloc(nBytes);
-
+	host_second_fliter = (nuclei*)malloc(nBytes);
 
 
 	//初始化！
@@ -407,14 +416,15 @@ void compute_on_gpu_one(const long pairs,const char* file_name)
 	int bytes_of_u_long = sizeof(unsigned long long);
 	host_count = (unsigned long long*)malloc(bytes_of_u_long);
 	CHECK(cudaMalloc((void **)(&gpu_count), bytes_of_u_long));
-
+	CHECK(cudaMalloc((void **)(&gpu_second_fliter), nBytes));
 
 	//计算
 
-	NucleiSecondStep(gpu_second, pairs, gpu_aw, gpu_ds,gpu_count);
+	NucleiSecondStep(gpu_second, gpu_second_fliter,pairs, gpu_aw, gpu_ds,gpu_count);
 
 	//拷回并保存
 	CHECK(cudaMemcpy(host_second, gpu_second, nBytes, cudaMemcpyDeviceToHost));
+	CHECK(cudaMemcpy(host_second_fliter, gpu_second_fliter, nBytes, cudaMemcpyDeviceToHost));
 	CHECK(cudaMemcpy(host_aw, gpu_aw, bytes_of_aw_ds, cudaMemcpyDeviceToHost));
 	CHECK(cudaMemcpy(host_ds, gpu_ds, bytes_of_aw_ds, cudaMemcpyDeviceToHost));
 	CHECK(cudaMemcpy(host_count, gpu_count, bytes_of_u_long, cudaMemcpyDeviceToHost));
@@ -423,6 +433,7 @@ void compute_on_gpu_one(const long pairs,const char* file_name)
 	PrintStruct(host_second, pairs,file_name , 2);
 	PrintArray(host_aw, 2 * two_steps_in_host, file_name, 0);
 	PrintArray(host_ds, 2 * two_steps_in_host, file_name, 1);
+	PrintStruct(host_second_fliter, *host_count, file_name, 3);
 	//释放second空间
 	CHECK(cudaFree(gpu_second));
 	CHECK(cudaFree(gpu_aw));

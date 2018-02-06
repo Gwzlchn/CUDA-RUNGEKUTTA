@@ -40,13 +40,23 @@ void PrintStruct(nuclei* ToSaveNuclei, long long n, const char* FileName, int ch
 		}
 		case 2:
 		{
-			char step_two_file_name[20] = "TestData/step_two_";
+			char step_two_file_name[23] = "TestData/step_two_ALL_";
 			strcat(step_two_file_name, FileName);
 			strcat(step_two_file_name, str);
 			strcat(step_two_file_name, ".dat");
 			file = fopen(step_two_file_name, "w");
 			break;
 		}
+		case 3:
+		{
+			char step_two_file_name[26] = "TestData/step_two_fliter_";
+			strcat(step_two_file_name, FileName);
+			strcat(step_two_file_name, str);
+			strcat(step_two_file_name, ".dat");
+			file = fopen(step_two_file_name, "w");
+			break;
+		}
+
 	}
 	
 
