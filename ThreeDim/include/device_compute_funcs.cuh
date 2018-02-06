@@ -50,7 +50,8 @@ __device__ void update_step_two(nucleus& step_one_first, nucleus& step_one_secon
 
 __device__ derivative fisrt_k_one_to_four_fisrt_step(const nucleus& first, const nucleus& second);
 __device__ derivative second_k_one_to_four_fisrt_step(const nucleus& first, const nucleus& second);
-__device__ nucleus first_and_second_k_add(const derivative& k_one_to_four, const nucleus& raw_nucleus, int choose);
+__device__ nucleus first_and_second_k_add_dx_raw(const derivative& k_one_to_four, const nucleus& raw_nucleus);
+__device__ nucleus first_and_second_k_add_dx_div(const derivative& k_one_to_four, const nucleus& raw_nucleus);
 __device__ void k_one_to_four_add(const derivative& K1, const derivative& K2, const derivative& K3, const derivative& K4,
 	nucleus& raw_nucleus);
 
@@ -275,13 +276,9 @@ __device__ void k_one_to_four_add(const derivative& K1,const derivative& K2,cons
 }
 
 
-__device__ nucleus first_and_second_k_add(const derivative& k_one_to_four,const nucleus& raw_nucleus,int choose)
+ nucleus first_and_second_k_add_dx_raw(const derivative& k_one_to_four,const nucleus& raw_nucleus)
 {
-	double now_dx;
-	if (choose == 2)
-		now_dx = DX / 2.0;
-	else if (choose == 1)
-		now_dx = DX;
+	double now_dx = DX;
 
 	nucleus k_add;
 	k_add.x = raw_nucleus.x + now_dx * k_one_to_four.px ;
@@ -290,6 +287,21 @@ __device__ nucleus first_and_second_k_add(const derivative& k_one_to_four,const 
 	k_add.px = raw_nucleus.px + now_dx * k_one_to_four.fx ;
 	k_add.py = raw_nucleus.py + now_dx * k_one_to_four.fy ;
 	k_add.pz = raw_nucleus.pz + now_dx * k_one_to_four.fz ;
+
+	return k_add;
+}
+
+__device__ nucleus first_and_second_k_add_dx_div(const derivative& k_one_to_four, const nucleus& raw_nucleus)
+{
+	double now_dx = DX/2.0;
+
+	nucleus k_add;
+	k_add.x = raw_nucleus.x + now_dx * k_one_to_four.px;
+	k_add.y = raw_nucleus.y + now_dx * k_one_to_four.py;
+	k_add.z = raw_nucleus.z + now_dx * k_one_to_four.pz;
+	k_add.px = raw_nucleus.px + now_dx * k_one_to_four.fx;
+	k_add.py = raw_nucleus.py + now_dx * k_one_to_four.fy;
+	k_add.pz = raw_nucleus.pz + now_dx * k_one_to_four.fz;
 
 	return k_add;
 }
@@ -302,20 +314,20 @@ __device__ void update_step_one(nucleus& step_one_first, nucleus& step_one_secon
 	//计算K1
 	const derivative first_k1 = fisrt_k_one_to_four_fisrt_step(step_one_first, step_one_second);
 	const derivative second_k1 = second_k_one_to_four_fisrt_step(step_one_first, step_one_second);
-	const nucleus first_k1_add = first_and_second_k_add(first_k1, step_one_first, 2);
-	const nucleus second_k1_add = first_and_second_k_add(second_k1, step_one_second, 2);
+	const nucleus first_k1_add = first_and_second_k_add_dx_div(first_k1, step_one_first);
+	const nucleus second_k1_add = first_and_second_k_add_dx_div(second_k1, step_one_second);
 
 	//K2
 	const derivative first_k2 = fisrt_k_one_to_four_fisrt_step(first_k1_add, second_k1_add);
 	const derivative second_k2 = second_k_one_to_four_fisrt_step(first_k1_add, second_k1_add);
-	const nucleus first_k2_add = first_and_second_k_add(first_k2, step_one_first, 2);
-	const nucleus second_k2_add = first_and_second_k_add(second_k2, step_one_second, 2);
+	const nucleus first_k2_add = first_and_second_k_add_dx_div(first_k2, step_one_first);
+	const nucleus second_k2_add = first_and_second_k_add_dx_div(second_k2, step_one_second);
 
 	//K3
 	const derivative first_k3 = fisrt_k_one_to_four_fisrt_step(first_k2_add, second_k2_add);
 	const derivative second_k3 = second_k_one_to_four_fisrt_step(first_k2_add, second_k2_add);
-	const nucleus first_k3_add = first_and_second_k_add(first_k3, step_one_first, 1);
-	const nucleus second_k3_add = first_and_second_k_add(second_k3, step_one_second, 1);
+	const nucleus first_k3_add = first_and_second_k_add_dx_raw(first_k3, step_one_first);
+	const nucleus second_k3_add = first_and_second_k_add_dx_raw(second_k3, step_one_second);
 
 	//K4
 	const derivative first_k4 = fisrt_k_one_to_four_fisrt_step(first_k3_add, second_k3_add);
@@ -374,20 +386,20 @@ __device__ void update_step_two(nucleus& step_one_first, nucleus& step_one_secon
 	//计算K1
 	const derivative first_k1 = fisrt_k_one_to_four_second_step(step_one_first, step_one_second,e_laser_t1);
 	const derivative second_k1 = second_k_one_to_four_second_step(step_one_first, step_one_second, e_laser_t1);
-	const nucleus first_k1_add = first_and_second_k_add(first_k1, step_one_first, 2);
-	const nucleus second_k1_add = first_and_second_k_add(second_k1, step_one_second, 2);
+	const nucleus first_k1_add = first_and_second_k_add_dx_div(first_k1, step_one_first);
+	const nucleus second_k1_add = first_and_second_k_add_dx_div(second_k1, step_one_second);
 
 	//K2
 	const derivative first_k2 = fisrt_k_one_to_four_second_step(first_k1_add, second_k1_add, e_laser_t2);
 	const derivative second_k2 = second_k_one_to_four_second_step(first_k1_add, second_k1_add, e_laser_t2);
-	const nucleus first_k2_add = first_and_second_k_add(first_k2, step_one_first, 2);
-	const nucleus second_k2_add = first_and_second_k_add(second_k2, step_one_second, 2);
+	const nucleus first_k2_add = first_and_second_k_add_dx_div(first_k2, step_one_first);
+	const nucleus second_k2_add = first_and_second_k_add_dx_div(second_k2, step_one_second);
 
 	//K3
 	const derivative first_k3 = fisrt_k_one_to_four_second_step(first_k2_add, second_k2_add,e_laser_t3);
 	const derivative second_k3 = second_k_one_to_four_second_step(first_k2_add, second_k2_add, e_laser_t3);
-	const nucleus first_k3_add = first_and_second_k_add(first_k3, step_one_first, 1);
-	const nucleus second_k3_add = first_and_second_k_add(second_k3, step_one_second, 1);
+	const nucleus first_k3_add = first_and_second_k_add_dx_raw(first_k3, step_one_first);
+	const nucleus second_k3_add = first_and_second_k_add_dx_raw(second_k3, step_one_second);
 
 	//K4
 	const derivative first_k4 = fisrt_k_one_to_four_second_step(first_k3_add, second_k3_add, e_laser_t4);

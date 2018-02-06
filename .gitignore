@@ -270,3 +270,4 @@ __pycache__/
 *.exe
 *.exp
 *.lib
+*.txt

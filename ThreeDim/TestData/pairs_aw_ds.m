@@ -16,7 +16,7 @@ end
 % scatter(B,AA,'.')
 % save('time.txt','B')
 
- AAA=load('E(t).dat');
+ AAA=load('1E(t).dat');
  scatter(AAA(:,1),AAA(:,2),'.');
  hold on;
  scatter(AAA(:,1),AAA(:,3),'.');

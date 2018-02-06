@@ -1,4 +1,4 @@
-A=load('step_two_fliter_10w02061900.dat');
+A=load('step_two_fliter_100K02062337.dat');
 
 x1 = A(:,1);
 y1 = A(:,2);
