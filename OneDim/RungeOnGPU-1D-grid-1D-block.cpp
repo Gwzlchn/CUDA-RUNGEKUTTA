@@ -23,7 +23,7 @@ int main()
     CHECK(cudaSetDevice(dev));
 
     // 数据量，nx是粒子数
-    int nx = 100000;
+    int nx = 1000000;
     int ny = 9;
     int nxy = nx * ny;
     int nBytes = nxy * sizeof(double);

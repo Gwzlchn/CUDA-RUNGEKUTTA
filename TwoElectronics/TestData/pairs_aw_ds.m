@@ -11,16 +11,16 @@ B =zeros(80000,1);
 for i = 1:80000
     B(i) = i*h*0.5/t0;
 end
-scatter(B,A,'.')
-hold on 
-scatter(B,AA,'.')
+% scatter(B,A,'.')
+% hold on 
+% scatter(B,AA,'.')
 % save('time.txt','B')
 
- A=load('E(t).dat');
- scatter(A(:,1),A(:,2),'.');
+ AAA=load('1E(t).dat');
+ scatter(AAA(:,1),AAA(:,2),'.');
  hold on;
- scatter(A(:,1),A(:,3),'.');
+ scatter(AAA(:,1),AAA(:,3),'.');
 
-scatter(A(:,1),A,'.')
+scatter(AAA(:,1),-A,'.')
 hold on 
-scatter(B,AA,'.')
+scatter(AAA(:,1),AA,'.')

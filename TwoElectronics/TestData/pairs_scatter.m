@@ -1,4 +1,4 @@
-A=load('step_two_fliter_10w02061900.dat');
+A=load('step_two_ALL_100K02062359.dat');
 
 x1 = A(:,1);
 y1 = A(:,2);
@@ -17,6 +17,7 @@ pz2 = A(:,12);
 %colorbar;
 %  scatter(x1,x2,'.');
  scatplot(pz1,pz2);
+ %axis([-1.5,1.5,-1.5,1.5]);
 
 % X = load('pz1pz2.dat');
 % scatter(X(:,1),X(:,2),'.');

@@ -6,7 +6,7 @@
 
 
 __device__ const double PI=3.14159265358979323846; 
-__device__ const double A=1.0;
+__device__ const double A=0.05;
 __device__ const double E0=-0.5;
 __device__ const double omega=0.057;
 //步长DX 终点TIME
@@ -31,7 +31,7 @@ __device__ void updateXiAtStepTwo(double& xi,double& pxi,double time);
 __device__ double fx(double x)
 {
 
-	return -(x/(pow(sqrt(pow(x,2.0)+pow(A,2.0)),3.0)));
+	return -x/sqrt((pow((pow(x,2.0)+pow(A,2.0)),3.0)));
 }
 
 
