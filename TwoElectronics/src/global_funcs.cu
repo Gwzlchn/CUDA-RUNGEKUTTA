@@ -165,8 +165,8 @@ __global__ void pre_second_step_e2(const double* QQ, const double EE0, double* E
 		double tao = 2.0 * random * PI;*/
 		double tao = 0.0;
 
-		E2[idx] = (EE0 / (1.0 + TP_const)) * QQ[idx] * sin(Omega1 * t1 + tao) +
-			(EE0*TP_const / (1.0 + TP_const)) * QQ[idx] * sin(Omega2 * t1 + 2 * tao);
+		E2[idx] = (EE0 / (1.0 + TP_const)) * QQ[idx] * cos(Omega1 * t1 + tao) +
+			(EE0*TP_const / (1.0 + TP_const)) * QQ[idx] * cos(Omega2 * t1 + 2 * tao);
 
 	}
 
