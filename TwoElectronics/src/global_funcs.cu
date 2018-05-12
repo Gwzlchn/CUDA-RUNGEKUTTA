@@ -417,7 +417,7 @@ void NucleiSecondStepPreECheck(const double* QQ,const double EE0, double* E_chec
 
 void NucleiSecondStepWholeLaser(nuclei* first_array, const long size, double* QQ)
 {
-	int n_streams = 21;
+	int n_streams = 1;
 	cudaStream_t *streams = (cudaStream_t *)malloc(n_streams * sizeof(
 		cudaStream_t));
 
@@ -478,8 +478,8 @@ void NucleiSecondStepWholeLaser(nuclei* first_array, const long size, double* QQ
 	
 		//printf("第一列z,第二列zz");
 		printf("%.10f\t", EE0);
-		printf("z: %ulld \t", host_count_z_arr[stream_index]);
-		printf("zz: %ulld \n", host_count_zz_arr[stream_index]);
+		printf("z: %lld \t", host_count_z_arr[stream_index]);
+		printf("zz: %lld \n", host_count_zz_arr[stream_index]);
 	}
 
 	for (int i = 0; i < n_streams; i++)
