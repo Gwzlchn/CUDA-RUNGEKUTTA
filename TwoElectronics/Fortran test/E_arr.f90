@@ -51,32 +51,12 @@ h=(2.d0*n1+n2)*t0/dble(n)
 
 
 tp=0.8d0
-!-------------------------------
-!c=2.997925d0*(10.d0**8.d0)
-!lamda=740.d0*(10.d0**(-9.d0)) 
-!w1=2.d0*pai*c/lamda         
-!w1=w1*2.4189d0*(10.d0**(-17.d0))
-!t0=2.d0*pai/w1
-!fwhm=7.d0*(10.d0**(-15.d0))                         !!! 半高宽 秒 (激光强度)；
-!tao=fwhm/2.d0/( sqrt(2.d0*log(sqrt(2.d0)))  )       !!! tao 秒； f(t)=E0 * exp[ -1/2 (t/tao)^2 ]
-!tao=tao/(2.4189d0*10.d0**(-17.d0)) 
-!tt=15.d0*(10.d0**(-15.d0))                          !!! 秒
-!Tp=tt/(2.4189d0*(10.d0**(-17.d0)))                  !!! 原子单位
-!h=2.d0*Tp/(n-1)
-!n2=0.7d0                                           !椭偏率
-!EE0=2.742*10**3.d0*sqrt(4d15)    
-!EE0=EE0/(5.1421*(10**11.D0))
-!n1=0.d0*pai
-!------------------------------------
+
+
+
+
 write(*,*) h
-do i=1,N
 
-t1=h*i
-E(i)=sqrt(E1(t1,t0,ee0,w1,w2,n1,n2,tao,tp)**2.d0+E2(t1,t0,ee0,w1,w2,n1,n2,tao,tp)**2.d0)
-write(21,'(1X,21(1X,F15.10))')t1/t0,E1(t1,t0,ee0,w1,w2,n1,n2,tao,tp),E2(t1,t0,ee0,w1,w2,n1,n2,tao,tp),E(i)
-
-enddo
-    
 i = 1
 do i=1,(2*N)
 
@@ -110,37 +90,12 @@ Implicit None
 REAL*8 ee0,w,t,n1,n2,t0,E1,QQ,h,fwhm,n,tao,tp,w1,w2
 
 
-!-------------T------------------------                                              !原子单位
-!if(t.lt.n1*T0) then
-!QQ=t/(n1*T0)
-!end if
-!if((t.ge.n1*T0).and.(t.le.(n1+n2)*T0)) then
-!QQ=1.d0
-!endif
-!if((t.gt.(n1+n2)*T0).and.(t.le.(2.d0*n1+n2)*T0)) then
-!QQ=-t/(n1*T0)+(2.d0*n1+n2)/n1
-!endif
-!if(t.GT.(2.d0*n1+n2)*T0) then
-!QQ=0.D0
-!endif
-!----------sin2-------------------------
-QQ=(DSIN(w1/2.D0/(2*n1+n2)*t))**2.D0
 
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-!E1=EE0*QQ*(sin(w1*t)-sin(w2*t))
+QQ=(DSIN(w1/2.D0/(2*n1+n2)*t))**2.D0
 
 
 E1=(ee0/(1.d0+tp))*QQ*(sin(w1*t+tao))-(ee0*tp/(1.d0+tp))*QQ*(sin(w2*t+2*tao))
-!-------------ellipse---------------
 
-
-!E1=ee0*exp( -((t-tp)/tao)**2.d0/2.d0 )*(n2/sqrt(1.d0+n2**2.d0))*SIN(w1*t+N1)
-!-------------------------------------
-
-
-
-!E1=ee0*QQ*sin(w1*t)
-return
 end
 
 Function  E2(t,t0,ee0,w1,w2,n1,n2,tao,tp)
@@ -148,36 +103,13 @@ Implicit None
 REAL*8 ee0,w,t,n1,n2,t0,E2,QQ,h,fwhm,n,tao,tp,w1,w2
   
 
-!-------------T------------------------                                            
-!if(t.lt.n1*T0) then
-!QQ=t/(n1*T0)
-!end if
-!if((t.ge.n1*T0).and.(t.le.(n1+n2)*T0)) then
-!QQ=1.d0
-!endif
-!if((t.gt.(n1+n2)*T0).and.(t.le.(2.d0*n1+n2)*T0)) then
-!QQ=-t/(n1*T0)+(2.d0*n1+n2)/n1
-!endif
-!if(t.GT.(2.d0*n1+n2)*T0) then
-!QQ=0.D0
-!endif 
 
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-!E2=EE0*QQ*(COS(w1*t)+COS(w2*t))
 
 !----------sin2-------------------------
 QQ=(DSIN(w1/2.D0/(2*n1+n2)*t))**2.D0
 
 
-E2=(ee0/(1.d0+tp))*QQ*(cos(w1*t+tao))+(ee0*tp/(1.d0+tp))*QQ*(cos(w2*t+2*tao))
 
-!-------------ellipse---------------
-
-!E2=ee0*exp( -((t-tp)/tao)**2.d0/2.d0 ) *(1.d0/sqrt(1.d0+n2**2.d0))*cos(w1*t+N1)
-
-!------------------------------------------
-
-!E2=ee0*QQ*cos(w1*t)
 return
 end
 

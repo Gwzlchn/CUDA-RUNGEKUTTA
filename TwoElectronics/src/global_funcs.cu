@@ -105,10 +105,9 @@ __global__ void pre_second_step_qq(double* QQ)
 	if(idx < 2 * two_steps)
 	{
 
-		double t1 = 0.5 * DX * idx;
-		QQ[idx] = pow((sin(Omega1 / 2.0 / (2 * N1_const + N2_const)*t1)), 2);
-	    
-		
+		double t1 = 0.5 * DX * (idx+1);
+		//QQ[idx] = pow((sin(Omega1 / 2.0 / (2 * N1_const + N2_const)*t1)), 2);
+		QQ[idx] = idx;
 	}
 	
 }
@@ -237,6 +236,37 @@ __global__ void second_step_on_gpu(nuclei* second_arr , const long size, double*
 			
 	}
 }
+
+
+
+
+
+__global__ void second_step_on_gpu_fliter
+(const nuclei* second_arr, nuclei* second__arr_filter,
+	const long size, long* count_z,long* count_zz)
+{
+	const int idx = threadIdx.x + blockIdx.x * blockDim.x;
+	if(idx < size)
+	{
+		double ee1 = CalculationE1(second_arr[idx].first, second_arr[idx].second);
+		double ee2 = CalculationE2(second_arr[idx].first, second_arr[idx].second);
+
+		if(ee1*ee2 < 0 )
+		{
+			atomicAdd(count_z, 1);
+		}
+		if( (ee1 > 0) && (ee2 > 0))
+		{
+			unsigned long long temp_idx = atomicAdd(count_zz, 1);
+			nuclei temp;
+			temp.first = second_arr[idx].first;
+			temp.second = second_arr[idx].second;
+			second__arr_filter[temp_idx - 1] = temp;
+		}
+	}
+	
+}
+
 
 
 /*
@@ -385,7 +415,82 @@ void NucleiSecondStepPreECheck(const double* QQ,const double EE0, double* E_chec
 
 
 
+void NucleiSecondStepWholeLaser(nuclei* first_array, const long size, double* QQ)
+{
+	int n_streams = 21;
+	cudaStream_t *streams = (cudaStream_t *)malloc(n_streams * sizeof(
+		cudaStream_t));
 
+	for (int i = 0; i < n_streams; i++)
+	{
+		CHECK(cudaStreamCreate(&(streams[i])));
+	}
+
+	long *host_count_z_arr, *host_count_zz_arr;
+	long *gpu_count_z_arr, *gpu_count_zz_arr;
+	
+	CHECK(cudaMalloc((void**)&gpu_count_z_arr, n_streams * sizeof(long)));
+	CHECK(cudaMalloc((void**)&gpu_count_zz_arr, n_streams * sizeof(long)));
+
+	//在CPU上分配页锁定内存  
+	CHECK(cudaHostAlloc((void**)&gpu_count_z_arr, n_streams * sizeof(long), cudaHostAllocDefault));
+	CHECK(cudaHostAlloc((void**)&gpu_count_zz_arr, n_streams * sizeof(long), cudaHostAllocDefault));
+	for(int stream_index = 0 ; stream_index < n_streams ; stream_index++)
+	{
+		double *gpu_e1, *gpu_e2;
+		long bytes_of_e_laser = sizeof(double) * 2 * two_steps_in_host;
+		CHECK(cudaMalloc((void **)(&gpu_e1), bytes_of_e_laser));
+		CHECK(cudaMalloc((void **)(&gpu_e2), bytes_of_e_laser));
+		double EE0 = 2.742*pow(10, 3)*sqrt(pow(10.0, (12.0 + double(stream_index)*0.2)));
+		EE0 = EE0 / (5.1421*(pow(10.0, 11.0)));
+				
+		int pre_dimx = 512;
+		dim3 pre_block(pre_dimx);
+		dim3 pre_grid((2 * two_steps_in_host + pre_block.x - 1) / pre_block.x, 1);
+		pre_second_step_e1 <<< pre_grid, pre_block ,0, streams[stream_index]>>> (QQ, EE0, gpu_e1);
+		pre_second_step_e2 <<< pre_grid, pre_block , 0, streams[stream_index] >>> (QQ, EE0, gpu_e2);
+		
+
+		//计算第二步 一个激光场
+		int dimx = 32;
+		dim3 block(dimx);
+		dim3 grid((size + block.x - 1) / block.x, 1);
+
+		nuclei* gpu_second_arr_once,*gpu_second_filter_once;
+		
+		long long nBytes = size * sizeof(nuclei);
+		CHECK(cudaMalloc((void **)(&gpu_second_arr_once), nBytes));
+		CHECK(cudaMalloc((void **)(&gpu_second_filter_once), nBytes));
+
+		CHECK(cudaMemcpy(gpu_second_arr_once, first_array, nBytes, cudaMemcpyDeviceToDevice));
+		
+		second_step_on_gpu <<< pre_grid, pre_block, 0, streams[stream_index] >>> (gpu_second_arr_once, size, gpu_e1, gpu_e2);
+
+		second_step_on_gpu_fliter << <pre_grid, pre_block, 0, streams[stream_index] >> > (gpu_second_arr_once, 
+			gpu_second_filter_once, size, gpu_count_z_arr + stream_index , gpu_count_zz_arr + stream_index);
+		
+		cudaMemcpyAsync(host_count_z_arr + long(stream_index),
+			gpu_count_z_arr + long(stream_index),
+			sizeof(long), cudaMemcpyDeviceToHost, streams[stream_index]);
+		cudaMemcpyAsync(host_count_z_arr + long(stream_index),
+			gpu_count_z_arr + long(stream_index),
+			sizeof(long), cudaMemcpyDeviceToHost, streams[stream_index]);
+	
+	}
+
+	for (int i = 0; i < n_streams; i++)
+	{
+		CHECK(cudaStreamDestroy(streams[i]));
+		printf("第一列z,第二列zz");
+		printf("%d \t", host_count_z_arr[i]);
+		printf("%d \n", host_count_zz_arr[i]);
+	}
+	
+
+
+
+	free(streams);
+}
 
 
 

@@ -63,7 +63,7 @@ int two_steps_in_host = 40000;
 
 //下面的10000为one_steps
 
-#define   DX    ((2.0*N1_const + N2_const) * T0_const / (10000))
+#define   DX    ((2.0*N1_const + N2_const) * T0_const / (40000))
 
 #define  TP_const 0.8
 
