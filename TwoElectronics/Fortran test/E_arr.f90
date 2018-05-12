@@ -15,18 +15,22 @@ REAL*8 a,q,E0,Pai,RR,PP,aa2,aa3,aa4,aa5,t1,t2,t3,t4,t(1),aa,bb,tion,&
 &y11,y12,y13,y14,y15,y16,y17,y18,y19,y111,y112,y113,y114,&
 &y21,y22,y23,y24,y25,y26,y27,y28,y29,y211,y212,y213,y214,&
 &y31,y32,y33,y34,y35,y36,y37,y38,y39,y311,y312,y313,y314,&
-&y41,y42,y43,y44,y45,y46,y47,y48,y49,y411,y412,y413,y414,E(n)
+&y41,y42,y43,y44,y45,y46,y47,y48,y49,y411,y412,y413,y414
 REAL*8 ee0,n1,n2,h,w,t0,fwhm,qq1,tdi,tre,trec,aaa1,za,zb,tao,tp,tt,c,lamda,W1,W2,zz
 Real*8 matrix(nx, ny), x(nx), y(ny), min,z,pd,ip2,s,pion
 Real*8 p1, p2, r1, r2,r12,ef
 REAL*8,EXTERNAL::g1,g2,g3,g4,g5,g6,f1,f2,f3,f4,f5,f6,E1,E2,QQ
 
-
+REAL*8 E(2*n),my_QQ(2*n)
 
 !open(file='interaction.DAT',unit=20)
 open(file='E.DAT',unit=21)
 
-open(file='E2.DAT',unit=22)
+open(file='E_2t.DAT',unit=22)
+open(file='E1.DAT',unit=23)
+open(file='E2.DAT',unit=24)
+open(file='QQ.DAT',unit=25)
+
 
 !------------Ar--------------------
  pai=3.1415926535897932384626433832795d0 
@@ -77,15 +81,25 @@ do i=1,(2*N)
 
 t1=h*i * 0.5
 E(i)=sqrt(E1(t1,t0,ee0,w1,w2,n1,n2,tao,tp)**2.d0+E2(t1,t0,ee0,w1,w2,n1,n2,tao,tp)**2.d0)
+my_QQ(i) = QQ(t1,t0,ee0,w1,w2,n1,n2,tao,tp)
 write(22,'(1X,21(1X,F15.10))')t1/t0,E1(t1,t0,ee0,w1,w2,n1,n2,tao,tp),E2(t1,t0,ee0,w1,w2,n1,n2,tao,tp),E(i)
 
+write(23,'(1X,21(1X,F15.10))') E1(t1,t0,ee0,w1,w2,n1,n2,tao,tp)
+write(24,'(1X,21(1X,F15.10))') E2(t1,t0,ee0,w1,w2,n1,n2,tao,tp)
+write(25,'(1X,21(1X,F15.10))') my_QQ(i)
 enddo
     
 end
 
 
 
+Function QQ(t,t0,ee0,w1,w2,n1,n2,tao,tp)
+Implicit None
+Real*8 ee0,w,t,n1,n2,t0,E1,QQ,h,fwhm,n,tao,tp,w1,w2
 
+QQ=(DSIN(w1/2.D0/(2*n1+n2)*t))**2.D0
+return
+end
 
 
 

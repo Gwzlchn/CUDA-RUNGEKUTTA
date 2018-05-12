@@ -347,6 +347,7 @@ void NucleiSecondStepPreQQ(double* QQ)
 	pre_second_step_qq <<< pre_grid, pre_block >>> (QQ);
 	CHECK(cudaGetLastError());
 	CHECK(cudaDeviceSynchronize());
+	
 
 }
 
@@ -371,7 +372,8 @@ void NucleiSecondStepPreECheck(const double* QQ,const double EE0, double* E_chec
 	CHECK(cudaGetLastError());
 
 	
-	
+	PrintArray(host_e1, 2 * two_steps_in_host, "E1_check", 1);
+	PrintArray(host_e2, 2 * two_steps_in_host, "E2_check", 1);
 	
 
 	pre_second_step_E_forcheck <<< pre_grid, pre_block >>> (gpu_e1,gpu_e2,E_check);
@@ -482,6 +484,9 @@ void compute_on_gpu_one(const long pairs,const char* file_name)
 	CHECK(cudaMalloc((void **)(&gpu_qq), bytes_of_e_laser));
 	host_qq = (double*)malloc(bytes_of_e_laser);
 	NucleiSecondStepPreQQ(gpu_qq);
+	CHECK(cudaMemcpy(host_qq, gpu_qq, bytes_of_e_laser, cudaMemcpyDeviceToHost));
+	PrintArray(host_qq, 2 * two_steps_in_host, "QQ_Check", 0);
+
 
 	double *gpu_e_check, *host_e_check;
 	CHECK(cudaMalloc((void **)(&gpu_e_check), bytes_of_e_laser));
