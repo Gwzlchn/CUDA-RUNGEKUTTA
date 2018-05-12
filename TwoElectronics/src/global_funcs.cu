@@ -118,11 +118,7 @@ __global__ void pre_second_step_E_forcheck(const double* E1,const double* E2,dou
 	int idx = threadIdx.x + blockIdx.x * blockDim.x;
 	if(idx < 2 * two_steps)
 	{
-
-		double t1 = 0.5 * DX * idx;
 		E_check[idx] = sqrt(pow(E1[idx], 2) + pow(E2[idx] ,2));
-	    
-		
 	}
 }
 
@@ -182,11 +178,11 @@ __global__ void pre_second_step_e2(const double* QQ, const double EE0, double* E
 __global__ void second_step_on_gpu(nuclei* second_arr , const long size, double* E1,double* E2)
 {
 	const int idx = threadIdx.x + blockIdx.x * blockDim.x;
-	double e1_laser_t1=0.0, e1_laser_t2=0.0, e1_laser_t3=0.0, e1_laser_t4=0.0;
+	double e1_laser_t1 = 0.0, e1_laser_t2 = 0.0, e1_laser_t3 = 0.0, e1_laser_t4 = 0.0;
 	double e2_laser_t1 = 0.0, e2_laser_t2 = 0.0, e2_laser_t3 = 0.0, e2_laser_t4 = 0.0;
 	int idx_of_ds=-1; // 相当于nn
-	double t1=0.0, t2=0.0, t3=0.0, t4=0.0;
-	double now_t=0.0; //当前时间，相当于t(1)
+	double t1 = 0.0, t2 = 0.0, t3 = 0.0, t4 = 0.0;
+	double now_t = 0.0; //当前时间，相当于t(1)
 	if (idx<size)
 	{
 		for (int i = 0; i < two_steps; i++)
@@ -194,7 +190,10 @@ __global__ void second_step_on_gpu(nuclei* second_arr , const long size, double*
 			//第一个激光场强度
 			t1 = now_t;
 			if (t1 == 0)
+			{
 				e1_laser_t1 = 0.0;
+				e2_laser_t1 = 0.0;
+			}
 			else
 			{
 				idx_of_ds = (2.0 * t1) / DX - 1;
@@ -216,7 +215,7 @@ __global__ void second_step_on_gpu(nuclei* second_arr , const long size, double*
 			idx_of_ds = 2.0 * t4 / DX - 1;
 			e1_laser_t4 = E1[idx_of_ds];
 			e2_laser_t4 = E2[idx_of_ds];
-			double4 e1_laser = make_double4(e1_laser_t1, e2_laser_t2, e1_laser_t3, e1_laser_t4);
+			double4 e1_laser = make_double4(e1_laser_t1, e1_laser_t2, e1_laser_t3, e1_laser_t4);
 			double4 e2_laser = make_double4(e2_laser_t1, e2_laser_t2, e2_laser_t3, e2_laser_t4);
 			update_step_two(second_arr[idx].first, second_arr[idx].second,
 							e1_laser,e2_laser);
@@ -497,35 +496,7 @@ void NucleiSecondStepWholeLaser(nuclei* first_array, const long size, double* QQ
 
 
 
-void NucleiSecondStepOneLaser(nuclei* second_array , const long size,double* QQ,double EE0)
-{
-	//申请当前激光场 E1 E2 空间
-	double *host_e1,*host_e2;
-	double *gpu_e1, *gpu_e2;
-	long bytes_of_e_laser = sizeof(double) * 2 * two_steps_in_host;
-	CHECK(cudaMalloc((void **)(&gpu_e1), bytes_of_e_laser));
-	CHECK(cudaMalloc((void **)(&gpu_e2), bytes_of_e_laser));
-	host_e1 = (double*)malloc(bytes_of_e_laser);
-	host_e2 = (double*)malloc(bytes_of_e_laser);
 
-	//准备矢量势
-	int pre_dimx = 512;
-	dim3 pre_block(pre_dimx);
-	dim3 pre_grid((2 * two_steps_in_host + pre_block.x - 1) / pre_block.x, 1);
-	pre_second_step_e1 <<< pre_grid, pre_block >>> (QQ, EE0, gpu_e1);
-	pre_second_step_e2 <<< pre_grid, pre_block >>> (QQ, EE0, gpu_e2);
-	CHECK(cudaDeviceSynchronize());
-	CHECK(cudaGetLastError());
-
-	//计算第二步 一个激光场
- 	int dimx = 32;
-	dim3 block(dimx);
-	dim3 grid((size + block.x - 1) / block.x, 1);
-	second_step_on_gpu <<< grid, block >>> (second_array,size,gpu_e1,gpu_e2);
-	
-	CHECK(cudaGetLastError());
-	CHECK(cudaDeviceSynchronize());
-}
 
 
 
