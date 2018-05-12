@@ -416,7 +416,7 @@ void NucleiSecondStepPreECheck(const double* QQ,const double EE0, double* E_chec
 
 void NucleiSecondStepWholeLaserNoStream(nuclei* first_array, const long size, double* QQ)
 {
-	int n_streams = 1;
+	int n_streams = 21;
 
 
 	unsigned long long *host_count_z_arr, *host_count_zz_arr;
@@ -479,6 +479,7 @@ void NucleiSecondStepWholeLaserNoStream(nuclei* first_array, const long size, do
 		printf("z: %lld \t", host_count_z_arr[stream_index]);
 		printf("zz: %lld \n", host_count_zz_arr[stream_index]);
 		CHECK(cudaGetLastError());
+		CHECK(cudaDeviceSynchronize());
 	}
 	CHECK(cudaGetLastError());
 	//CHECK(cudaDeviceSynchronize());
