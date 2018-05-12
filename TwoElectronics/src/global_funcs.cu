@@ -107,7 +107,7 @@ __global__ void pre_second_step_qq(double* QQ)
 
 		double t1 = 0.5 * DX * (idx+1);
 		//QQ[idx] = pow((sin(Omega1 / 2.0 / (2 * N1_const + N2_const)*t1)), 2);
-		QQ[idx] = idx;
+		QQ[idx] = t1;
 	}
 	
 }
