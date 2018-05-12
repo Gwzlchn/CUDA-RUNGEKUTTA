@@ -13,7 +13,7 @@
 #include <cmath>
 #include <vector_types.h>
 #include <cuda_runtime.h>
-#include <thr/xthrcommon.h>
+
 
 //生成双精度01均匀分布随机数
 //参数:	Array:双精度数组	Size:数组长度
