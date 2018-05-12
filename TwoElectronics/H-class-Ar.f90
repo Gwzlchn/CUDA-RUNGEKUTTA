@@ -90,7 +90,7 @@ do j=1, ny
 	
 end do
 
-
+!min1!!!!!!!
 call find_max(nx, ny, matrix, min, i1, j1)
 
 rr=r(i1)
