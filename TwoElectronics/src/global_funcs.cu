@@ -417,8 +417,7 @@ void NucleiSecondStepPreECheck(const double* QQ,const double EE0, double* E_chec
 void NucleiSecondStepWholeLaser(nuclei* first_array, const long size, double* QQ)
 {
 	int n_streams = 1;
-	cudaStream_t *streams = (cudaStream_t *)malloc(n_streams * sizeof(
-		cudaStream_t));
+	cudaStream_t *streams = (cudaStream_t *)malloc(n_streams * sizeof(cudaStream_t));
 
 	for (int i = 0; i < n_streams; i++)
 	{
@@ -465,9 +464,9 @@ void NucleiSecondStepWholeLaser(nuclei* first_array, const long size, double* QQ
 
 		CHECK(cudaMemcpy(gpu_second_arr_once, first_array, nBytes, cudaMemcpyDeviceToDevice));
 		
-		second_step_on_gpu <<< pre_grid, pre_block, 0, streams[stream_index] >>> (gpu_second_arr_once, size, gpu_e1, gpu_e2);
+		second_step_on_gpu <<< grid, block, 0, streams[stream_index] >>> (gpu_second_arr_once, size, gpu_e1, gpu_e2);
 
-		second_step_on_gpu_fliter << <pre_grid, pre_block, 0, streams[stream_index] >> > (gpu_second_arr_once, 
+		second_step_on_gpu_fliter <<< grid, block, 0, streams[stream_index] >>> (gpu_second_arr_once, 
 			gpu_second_filter_once, size, gpu_count_z_arr + stream_index , gpu_count_zz_arr + stream_index);
 		
 		cudaMemcpyAsync(host_count_z_arr + stream_index * size_ull,
