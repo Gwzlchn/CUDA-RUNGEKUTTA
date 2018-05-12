@@ -427,19 +427,21 @@ void NucleiSecondStepWholeLaser(nuclei* first_array, const long size, double* QQ
 
 	unsigned long long *host_count_z_arr, *host_count_zz_arr;
 	unsigned long long *gpu_count_z_arr, *gpu_count_zz_arr;
+	const int size_ull = sizeof(unsigned long long);
 	
-	CHECK(cudaMalloc((void**)&gpu_count_z_arr, n_streams * sizeof(unsigned long long)));
-	CHECK(cudaMalloc((void**)&gpu_count_zz_arr, n_streams * sizeof(unsigned long long)));
+	CHECK(cudaMalloc((void**)&gpu_count_z_arr, n_streams * size_ull));
+	CHECK(cudaMalloc((void**)&gpu_count_zz_arr, n_streams * size_ull));
 
 	//在CPU上分配页锁定内存  
-	CHECK(cudaHostAlloc((void**)&host_count_z_arr, n_streams * sizeof(unsigned long long), cudaHostAllocDefault));
-	CHECK(cudaHostAlloc((void**)&host_count_zz_arr, n_streams * sizeof(unsigned long long), cudaHostAllocDefault));
+	CHECK(cudaHostAlloc((void**)&host_count_z_arr, n_streams * size_ull, cudaHostAllocDefault));
+	CHECK(cudaHostAlloc((void**)&host_count_zz_arr, n_streams * size_ull, cudaHostAllocDefault));
 	for(int stream_index = 0 ; stream_index < n_streams ; stream_index++)
 	{
 		double *gpu_e1, *gpu_e2;
 		long bytes_of_e_laser = sizeof(double) * 2 * two_steps_in_host;
 		CHECK(cudaMalloc((void **)(&gpu_e1), bytes_of_e_laser));
 		CHECK(cudaMalloc((void **)(&gpu_e2), bytes_of_e_laser));
+		
 		double EE0 = 2.742*pow(10, 3)*sqrt(pow(10.0, (12.0 + double(stream_index)*0.2)));
 		EE0 = EE0 / (5.1421*(pow(10.0, 11.0)));
 				
@@ -468,12 +470,12 @@ void NucleiSecondStepWholeLaser(nuclei* first_array, const long size, double* QQ
 		second_step_on_gpu_fliter << <pre_grid, pre_block, 0, streams[stream_index] >> > (gpu_second_arr_once, 
 			gpu_second_filter_once, size, gpu_count_z_arr + stream_index , gpu_count_zz_arr + stream_index);
 		
-		cudaMemcpyAsync(host_count_z_arr + long(stream_index),
-			gpu_count_z_arr + long(stream_index),
-			sizeof(unsigned long long), cudaMemcpyDeviceToHost, streams[stream_index]);
-		cudaMemcpyAsync(host_count_zz_arr + long(stream_index),
-			gpu_count_zz_arr + long(stream_index),
-			sizeof(unsigned long long), cudaMemcpyDeviceToHost, streams[stream_index]);
+		cudaMemcpyAsync(host_count_z_arr + stream_index * size_ull,
+			gpu_count_z_arr + size_ull * (stream_index),
+			size_ull, cudaMemcpyDeviceToHost, streams[stream_index]);
+		cudaMemcpyAsync(host_count_zz_arr + size_ull * (stream_index),
+			gpu_count_zz_arr + size_ull * (stream_index),
+			size_ull, cudaMemcpyDeviceToHost, streams[stream_index]);
 	
 		//printf("第一列z,第二列zz");
 		printf("%.10f\t", EE0);
