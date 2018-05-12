@@ -243,7 +243,7 @@ __global__ void second_step_on_gpu(nuclei* second_arr , const long size, double*
 
 __global__ void second_step_on_gpu_fliter
 (const nuclei* second_arr, nuclei* second__arr_filter,
-	const long size, long* count_z,long* count_zz)
+	const long size, unsigned long long* count_z, unsigned long long* count_zz)
 {
 	const int idx = threadIdx.x + blockIdx.x * blockDim.x;
 	if(idx < size)
@@ -426,15 +426,15 @@ void NucleiSecondStepWholeLaser(nuclei* first_array, const long size, double* QQ
 		CHECK(cudaStreamCreate(&(streams[i])));
 	}
 
-	long *host_count_z_arr, *host_count_zz_arr;
-	long *gpu_count_z_arr, *gpu_count_zz_arr;
+	unsigned long long *host_count_z_arr, *host_count_zz_arr;
+	unsigned long long *gpu_count_z_arr, *gpu_count_zz_arr;
 	
-	CHECK(cudaMalloc((void**)&gpu_count_z_arr, n_streams * sizeof(long)));
-	CHECK(cudaMalloc((void**)&gpu_count_zz_arr, n_streams * sizeof(long)));
+	CHECK(cudaMalloc((void**)&gpu_count_z_arr, n_streams * sizeof(unsigned long long)));
+	CHECK(cudaMalloc((void**)&gpu_count_zz_arr, n_streams * sizeof(unsigned long long)));
 
 	//在CPU上分配页锁定内存  
-	CHECK(cudaHostAlloc((void**)&gpu_count_z_arr, n_streams * sizeof(long), cudaHostAllocDefault));
-	CHECK(cudaHostAlloc((void**)&gpu_count_zz_arr, n_streams * sizeof(long), cudaHostAllocDefault));
+	CHECK(cudaHostAlloc((void**)&gpu_count_z_arr, n_streams * sizeof(unsigned long long), cudaHostAllocDefault));
+	CHECK(cudaHostAlloc((void**)&gpu_count_zz_arr, n_streams * sizeof(unsigned long long), cudaHostAllocDefault));
 	for(int stream_index = 0 ; stream_index < n_streams ; stream_index++)
 	{
 		double *gpu_e1, *gpu_e2;
@@ -471,10 +471,10 @@ void NucleiSecondStepWholeLaser(nuclei* first_array, const long size, double* QQ
 		
 		cudaMemcpyAsync(host_count_z_arr + long(stream_index),
 			gpu_count_z_arr + long(stream_index),
-			sizeof(long), cudaMemcpyDeviceToHost, streams[stream_index]);
+			sizeof(unsigned long long), cudaMemcpyDeviceToHost, streams[stream_index]);
 		cudaMemcpyAsync(host_count_z_arr + long(stream_index),
 			gpu_count_z_arr + long(stream_index),
-			sizeof(long), cudaMemcpyDeviceToHost, streams[stream_index]);
+			sizeof(unsigned long long), cudaMemcpyDeviceToHost, streams[stream_index]);
 	
 	}
 
@@ -482,8 +482,8 @@ void NucleiSecondStepWholeLaser(nuclei* first_array, const long size, double* QQ
 	{
 		CHECK(cudaStreamDestroy(streams[i]));
 		printf("第一列z,第二列zz");
-		printf("%d \t", host_count_z_arr[i]);
-		printf("%d \n", host_count_zz_arr[i]);
+		printf("%ulld \t", host_count_z_arr[i]);
+		printf("%ulld \n", host_count_zz_arr[i]);
 	}
 	
 
