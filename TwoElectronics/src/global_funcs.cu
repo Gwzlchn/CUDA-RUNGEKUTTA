@@ -50,7 +50,36 @@ __global__ void pre_step_init(nuclei* Array, const long& size,
 	int idx = threadIdx.x + blockIdx.x * blockDim.x;
 	if (idx < size)
 	{
-		distribution(Array[idx].first, Array[idx].second, idx, min_r, min_p);
+
+		double2 two_rand;
+		double4 four_rand;
+		get_six_random(two_rand, four_rand, idx);
+
+		double theta1 = two_rand.x * 2.0 * PI;
+		double phi1 = two_rand.y * PI;
+
+
+		Array[idx].first.x = min_r * sin(phi1) * cos(theta1);
+		Array[idx].first.y = min_r * sin(phi1) * sin(theta1);
+		Array[idx].first.z = min_r * cos(phi1);
+
+		Array[idx].second.x = -Array[idx].first.x;
+		Array[idx].second.y = -Array[idx].first.y;
+		Array[idx].second.z = -Array[idx].first.z;
+
+
+		double phi2 = four_rand.x * PI;
+		double phi3 = four_rand.y * PI;
+		double theta2 = four_rand.z * 2.0 * PI;
+		double theta3 = four_rand.w * 2.0 * PI;
+
+		Array[idx].first.px = min_p * cos(theta2)*sin(phi2);
+		Array[idx].first.py = min_p * sin(theta2)*sin(phi2);
+		Array[idx].first.pz = min_p * cos(phi2);
+
+		Array[idx].second.px = min_p * cos(theta3)*sin(phi3);
+		Array[idx].second.py = min_p * sin(theta3)*sin(phi3);
+		Array[idx].second.pz = min_p * cos(phi3);
 	}
 	return;
 }
