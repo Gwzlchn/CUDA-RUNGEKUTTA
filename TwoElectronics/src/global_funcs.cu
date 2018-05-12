@@ -476,14 +476,16 @@ void NucleiSecondStepWholeLaser(nuclei* first_array, const long size, double* QQ
 			gpu_count_z_arr + long(stream_index),
 			sizeof(unsigned long long), cudaMemcpyDeviceToHost, streams[stream_index]);
 	
+		//printf("第一列z,第二列zz");
+		printf("%.10f\t", EE0);
+		printf("z: %ulld \t", host_count_z_arr[stream_index]);
+		printf("zz: %ulld \n", host_count_zz_arr[stream_index]);
 	}
 
 	for (int i = 0; i < n_streams; i++)
 	{
 		CHECK(cudaStreamDestroy(streams[i]));
-		printf("第一列z,第二列zz");
-		printf("%ulld \t", host_count_z_arr[i]);
-		printf("%ulld \n", host_count_zz_arr[i]);
+		
 	}
 	
 
@@ -590,28 +592,21 @@ void compute_on_gpu_one(const long pairs,const char* file_name)
 	host_qq = (double*)malloc(bytes_of_e_laser);
 	NucleiSecondStepPreQQ(gpu_qq);
 	CHECK(cudaMemcpy(host_qq, gpu_qq, bytes_of_e_laser, cudaMemcpyDeviceToHost));
-	PrintArray(host_qq, 2 * two_steps_in_host, "QQ_Check", 0);
+	//验证QQ 通过！
+	//PrintArray(host_qq, 2 * two_steps_in_host, "QQ_Check", 0);
 
 
-	double *gpu_e_check, *host_e_check;
-	CHECK(cudaMalloc((void **)(&gpu_e_check), bytes_of_e_laser));
-	host_e_check = (double*)malloc(bytes_of_e_laser);
-	double EE0 = sqrt(1e15 / 3.51e16);
-	NucleiSecondStepPreECheck(gpu_qq, EE0, gpu_e_check);
-	CHECK(cudaMemcpy(host_e_check, gpu_e_check, bytes_of_e_laser, cudaMemcpyDeviceToHost));
-	PrintArray(host_e_check, 2 * two_steps_in_host, "e_check", 0);
+	////测试E通过！
+	//double *gpu_e_check, *host_e_check;
+	//CHECK(cudaMalloc((void **)(&gpu_e_check), bytes_of_e_laser));
+	//host_e_check = (double*)malloc(bytes_of_e_laser);
+	//double EE0 = sqrt(1e15 / 3.51e16);
+	//NucleiSecondStepPreECheck(gpu_qq, EE0, gpu_e_check);
+	//CHECK(cudaMemcpy(host_e_check, gpu_e_check, bytes_of_e_laser, cudaMemcpyDeviceToHost));
+	//PrintArray(host_e_check, 2 * two_steps_in_host, "e_check", 0);
  
-	
-	////电离率计数
-	//unsigned long long*gpu_count,*host_count;
-	//int bytes_of_u_long = sizeof(unsigned long long);
-	//host_count = (unsigned long long*)malloc(bytes_of_u_long);
-	//CHECK(cudaMalloc((void **)(&gpu_count), bytes_of_u_long));
-	//CHECK(cudaMalloc((void **)(&gpu_second_fliter), nBytes));
+	NucleiSecondStepWholeLaser(gpu_first, pairs, gpu_qq);
 
-	////检查E_check
-
-	//
 
 
 
@@ -636,8 +631,8 @@ void compute_on_gpu_one(const long pairs,const char* file_name)
 	//CHECK(cudaFree(gpu_aw));
 	//CHECK(cudaFree(gpu_ds));
 	//
-	//elapse = seconds();
-	//printf("SecondStep compltete %lf\n", elapse - start);
+	elapse = seconds();
+	printf("SecondStep compltete %lf\n", elapse - start);
 	// 第二步完成！
 
 	//释放主机内存空间
