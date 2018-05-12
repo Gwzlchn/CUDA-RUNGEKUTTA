@@ -480,8 +480,10 @@ void NucleiSecondStepWholeLaser(nuclei* first_array, const long size, double* QQ
 		printf("%.10f\t", EE0);
 		printf("z: %lld \t", host_count_z_arr[stream_index]);
 		printf("zz: %lld \n", host_count_zz_arr[stream_index]);
+		CHECK(cudaGetLastError());
 	}
-
+	CHECK(cudaGetLastError());
+	CHECK(cudaDeviceSynchronize());
 	for (int i = 0; i < n_streams; i++)
 	{
 		CHECK(cudaStreamDestroy(streams[i]));
