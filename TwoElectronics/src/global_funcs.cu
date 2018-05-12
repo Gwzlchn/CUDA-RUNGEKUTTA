@@ -106,7 +106,7 @@ __global__ void pre_second_step_qq(double* QQ)
 	{
 
 		double t1 = 0.5 * DX * idx;
-		QQ[idx] = pow((sin(Omega1 / 2.0 / (2 * N1_const + N2_const))*t1), 2);
+		QQ[idx] = pow((sin(Omega1 / 2.0 / (2 * N1_const + N2_const)*t1)), 2);
 	    
 		
 	}
@@ -140,11 +140,11 @@ __global__ void pre_second_step_e1(const double* QQ,const double EE0,double* E1)
 	if(idx < 2*two_steps)
 	{
 		double t1 = 0.5 * DX * idx;
-		curandStatePhilox4_32_10_t s;
+		/*curandStatePhilox4_32_10_t s;
 		curand_init(idx, 0, 0, &s);
 		double random = curand_uniform_double(&s);
-		double tao = 2.0 * random * PI;
-
+		double tao = 2.0 * random * PI;*/
+		double tao = 0.0;
 		E1[idx] = (EE0 / (1.0 + TP_const)) * QQ[idx] * sin(Omega1 * t1 + tao) -
 			(EE0*TP_const / (1.0 + TP_const)) * QQ[idx] * sin(Omega2 * t1 + 2 * tao);
 
@@ -159,10 +159,11 @@ __global__ void pre_second_step_e2(const double* QQ, const double EE0, double* E
 	if (idx < 2 * two_steps)
 	{
 		double t1 = 0.5 * DX * idx;
-		curandStatePhilox4_32_10_t s;
+	/*	curandStatePhilox4_32_10_t s;
 		curand_init(idx, 0, 0, &s);
 		double random = curand_uniform_double(&s);
-		double tao = 2.0 * random * PI;
+		double tao = 2.0 * random * PI;*/
+		double tao = 0.0;
 
 		E2[idx] = (EE0 / (1.0 + TP_const)) * QQ[idx] * sin(Omega1 * t1 + tao) +
 			(EE0*TP_const / (1.0 + TP_const)) * QQ[idx] * sin(Omega2 * t1 + 2 * tao);
