@@ -11,6 +11,10 @@ void NucleiPreRandom(nuclei* Array, const long size);
 
 void NucleiFisrtStep(nuclei* first_array, const long size);
 
-void NucleiSecondStep(nuclei* second_array, nuclei* second_array_fliter, const long size, double* aw, double* ds, unsigned long long* count);
+void NucleiSecondStepPreQQ(double* QQ);
+void NucleiSecondStepPreECheck(const double* QQ, const double EE0, double* E_check);
+
+
+void NucleiSecondStepOneLaser(nuclei* second_array, const long size, double* QQ, double EE0);
 
 #endif //GLOBAL_FUNCS_H
