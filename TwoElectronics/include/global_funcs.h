@@ -15,6 +15,7 @@ void NucleiSecondStepPreQQ(double* QQ);
 void NucleiSecondStepPreECheck(const double* QQ, const double EE0, double* E_check);
 
 
-void NucleiSecondStepOneLaser(nuclei* second_array, const long size, double* QQ, double EE0);
+void NucleiSecondStepWholeLaserNoStream(nuclei* first_array, const long size, double* QQ);
+void NucleiSecondStepWholeLaser(nuclei* first_array, const long size, double* QQ)
 
 #endif //GLOBAL_FUNCS_H

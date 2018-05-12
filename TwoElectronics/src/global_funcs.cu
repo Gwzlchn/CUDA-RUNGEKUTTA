@@ -13,6 +13,7 @@
 #include <cmath>
 #include <vector_types.h>
 #include <cuda_runtime.h>
+#include <thr/xthrcommon.h>
 
 //生成双精度01均匀分布随机数
 //参数:	Array:双精度数组	Size:数组长度
@@ -413,6 +414,82 @@ void NucleiSecondStepPreECheck(const double* QQ,const double EE0, double* E_chec
 
 
 
+void NucleiSecondStepWholeLaserNoStream(nuclei* first_array, const long size, double* QQ)
+{
+	int n_streams = 1;
+
+
+	unsigned long long *host_count_z_arr, *host_count_zz_arr;
+	unsigned long long *gpu_count_z_arr, *gpu_count_zz_arr;
+	const int size_ull = sizeof(unsigned long long);
+
+	CHECK(cudaMalloc((void**)&gpu_count_z_arr, n_streams * size_ull));
+	CHECK(cudaMalloc((void**)&gpu_count_zz_arr, n_streams * size_ull));
+
+	//在CPU上分配页锁定内存  
+	CHECK(cudaHostAlloc((void**)&host_count_z_arr, n_streams * size_ull, cudaHostAllocDefault));
+	CHECK(cudaHostAlloc((void**)&host_count_zz_arr, n_streams * size_ull, cudaHostAllocDefault));
+	for (int stream_index = 0; stream_index < n_streams; stream_index++)
+	{
+		double *gpu_e1, *gpu_e2;
+		long bytes_of_e_laser = sizeof(double) * 2 * two_steps_in_host;
+		CHECK(cudaMalloc((void **)(&gpu_e1), bytes_of_e_laser));
+		CHECK(cudaMalloc((void **)(&gpu_e2), bytes_of_e_laser));
+
+		double EE0 = 2.742*pow(10, 3)*sqrt(pow(10.0, (12.0 + double(stream_index)*0.2)));
+		EE0 = EE0 / (5.1421*(pow(10.0, 11.0)));
+
+		int pre_dimx = 512;
+		dim3 pre_block(pre_dimx);
+		dim3 pre_grid((2 * two_steps_in_host + pre_block.x - 1) / pre_block.x, 1);
+		pre_second_step_e1 << < pre_grid, pre_block, 0, 0 >> > (QQ, EE0, gpu_e1);
+		pre_second_step_e2 << < pre_grid, pre_block, 0, 0 >> > (QQ, EE0, gpu_e2);
+
+
+		//计算第二步 一个激光场
+		int dimx = 32;
+		dim3 block(dimx);
+		dim3 grid((size + block.x - 1) / block.x, 1);
+
+		nuclei* gpu_second_arr_once, *gpu_second_filter_once;
+
+		long long nBytes = size * sizeof(nuclei);
+		CHECK(cudaMalloc((void **)(&gpu_second_arr_once), nBytes));
+		CHECK(cudaMalloc((void **)(&gpu_second_filter_once), nBytes));
+
+		CHECK(cudaMemcpy(gpu_second_arr_once, first_array, nBytes, cudaMemcpyDeviceToDevice));
+
+		second_step_on_gpu << < grid, block, 0, 0 >> > (gpu_second_arr_once, size, gpu_e1, gpu_e2);
+
+		second_step_on_gpu_fliter << < grid, block, 0, 0 >> > (gpu_second_arr_once,
+			gpu_second_filter_once, size, gpu_count_z_arr + stream_index, gpu_count_zz_arr + stream_index);
+
+		CHECK(cudaMemcpy(host_count_z_arr + stream_index * size_ull,
+			gpu_count_z_arr + size_ull * (stream_index),
+			size_ull, cudaMemcpyDeviceToHost));
+		CHECK(cudaMemcpy(host_count_zz_arr + size_ull * (stream_index),
+			gpu_count_zz_arr + size_ull * (stream_index),
+			size_ull, cudaMemcpyDeviceToHost));
+
+
+
+
+		//printf("第一列z,第二列zz");
+		printf("%.10f\t", EE0);
+		printf("z: %lld \t", host_count_z_arr[stream_index]);
+		printf("zz: %lld \n", host_count_zz_arr[stream_index]);
+		CHECK(cudaGetLastError());
+	}
+	CHECK(cudaGetLastError());
+	//CHECK(cudaDeviceSynchronize());
+}
+
+
+
+
+
+
+
 
 void NucleiSecondStepWholeLaser(nuclei* first_array, const long size, double* QQ)
 {
@@ -483,7 +560,7 @@ void NucleiSecondStepWholeLaser(nuclei* first_array, const long size, double* QQ
 		CHECK(cudaGetLastError());
 	}
 	CHECK(cudaGetLastError());
-	CHECK(cudaDeviceSynchronize());
+	//CHECK(cudaDeviceSynchronize());
 	for (int i = 0; i < n_streams; i++)
 	{
 		CHECK(cudaStreamDestroy(streams[i]));
