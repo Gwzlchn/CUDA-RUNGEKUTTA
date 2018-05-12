@@ -18,16 +18,16 @@
 
 //下面的10000为one_steps
 
-#define   DX    ((2.0*N1_const + N2_const) * T0_const / (10000))
-//#include<iostream>
+#define   DX    ((2.0*N1_const + N2_const) * T0_const / double(40000))
+#include<iostream>
 
 
 int main(int argc, char const *argv[])
 {
-    int dx = DX;
+    double dx = DX;
 
     printf("%.10f\n",T0_const);
-    printf("%.10f",dx);
+    printf("%.15f",dx);
 
     return 0;
 }
