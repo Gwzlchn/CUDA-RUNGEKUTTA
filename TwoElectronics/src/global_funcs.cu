@@ -257,10 +257,10 @@ __global__ void second_step_on_gpu_fliter
 		if( (ee1 > 0) && (ee2 > 0))
 		{
 			unsigned long long temp_idx = atomicAdd(count_zz, 1);
-			nuclei temp;
+			/*nuclei temp;
 			temp.first = second_arr[idx].first;
 			temp.second = second_arr[idx].second;
-			second__arr_filter[temp_idx - 1] = temp;
+			second__arr_filter[temp_idx - 1] = temp;*/
 		}
 	}
 	
@@ -432,8 +432,8 @@ void NucleiSecondStepWholeLaser(nuclei* first_array, const long size, double* QQ
 	CHECK(cudaMalloc((void**)&gpu_count_zz_arr, n_streams * sizeof(unsigned long long)));
 
 	//在CPU上分配页锁定内存  
-	CHECK(cudaHostAlloc((void**)&gpu_count_z_arr, n_streams * sizeof(unsigned long long), cudaHostAllocDefault));
-	CHECK(cudaHostAlloc((void**)&gpu_count_zz_arr, n_streams * sizeof(unsigned long long), cudaHostAllocDefault));
+	CHECK(cudaHostAlloc((void**)&host_count_z_arr, n_streams * sizeof(unsigned long long), cudaHostAllocDefault));
+	CHECK(cudaHostAlloc((void**)&host_count_zz_arr, n_streams * sizeof(unsigned long long), cudaHostAllocDefault));
 	for(int stream_index = 0 ; stream_index < n_streams ; stream_index++)
 	{
 		double *gpu_e1, *gpu_e2;
@@ -471,8 +471,8 @@ void NucleiSecondStepWholeLaser(nuclei* first_array, const long size, double* QQ
 		cudaMemcpyAsync(host_count_z_arr + long(stream_index),
 			gpu_count_z_arr + long(stream_index),
 			sizeof(unsigned long long), cudaMemcpyDeviceToHost, streams[stream_index]);
-		cudaMemcpyAsync(host_count_z_arr + long(stream_index),
-			gpu_count_z_arr + long(stream_index),
+		cudaMemcpyAsync(host_count_zz_arr + long(stream_index),
+			gpu_count_zz_arr + long(stream_index),
 			sizeof(unsigned long long), cudaMemcpyDeviceToHost, streams[stream_index]);
 	
 		//printf("第一列z,第二列zz");
