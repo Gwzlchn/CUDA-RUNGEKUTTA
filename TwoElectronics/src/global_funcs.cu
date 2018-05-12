@@ -43,8 +43,8 @@
 //
 
 
-__global__ void pre_step_init(nuclei* Array, const long& size,
-				const double& min_r,const double& min_p)
+__global__ void pre_step_init(nuclei* Array, const long size,
+				const double min_r,const double min_p)
 {
 	
 	int idx = threadIdx.x + blockIdx.x * blockDim.x;
@@ -452,7 +452,7 @@ void compute_on_gpu_one(const long pairs,const char* file_name)
 	//初始化完成！
 
 
-	//第一步计算
+	 //第一步计算
 	//first空间在之前申请过了
 	 start = seconds();
 	//计算
@@ -489,7 +489,7 @@ void compute_on_gpu_one(const long pairs,const char* file_name)
 	NucleiSecondStepPreECheck(gpu_qq, EE0, gpu_e_check);
 	CHECK(cudaMemcpy(host_e_check, gpu_e_check, bytes_of_e_laser, cudaMemcpyDeviceToHost));
 	PrintArray(host_e_check, 2 * two_steps_in_host, "e_check", 0);
-
+ 
 	
 	////电离率计数
 	//unsigned long long*gpu_count,*host_count;
