@@ -19,7 +19,7 @@ int main()
 	printf("Using Device %d: %s\n", dev, deviceProp.name);
 	CHECK(cudaSetDevice(dev));
 
-	long pairs = 100000;
+	long pairs = 1000000;
 	
 	compute_on_gpu_one(pairs,"");
 
