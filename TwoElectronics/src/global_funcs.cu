@@ -464,11 +464,11 @@ void NucleiSecondStepWholeLaserNoStream(nuclei* first_array, const long size, do
 		second_step_on_gpu_fliter << < grid, block, 0, 0 >> > (gpu_second_arr_once,
 			gpu_second_filter_once, size, gpu_count_z_arr + stream_index, gpu_count_zz_arr + stream_index);
 
-		CHECK(cudaMemcpy(host_count_z_arr + stream_index * size_ull,
-			gpu_count_z_arr + size_ull * (stream_index),
+		CHECK(cudaMemcpy(host_count_z_arr + stream_index,
+			gpu_count_z_arr + (stream_index),
 			size_ull, cudaMemcpyDeviceToHost));
-		CHECK(cudaMemcpy(host_count_zz_arr + size_ull * (stream_index),
-			gpu_count_zz_arr + size_ull * (stream_index),
+		CHECK(cudaMemcpy(host_count_zz_arr + (stream_index),
+			gpu_count_zz_arr + (stream_index),
 			size_ull, cudaMemcpyDeviceToHost));
 
 
@@ -662,7 +662,7 @@ void compute_on_gpu_one(const long pairs,const char* file_name)
 	//CHECK(cudaMemcpy(host_e_check, gpu_e_check, bytes_of_e_laser, cudaMemcpyDeviceToHost));
 	//PrintArray(host_e_check, 2 * two_steps_in_host, "e_check", 0);
  
-	NucleiSecondStepWholeLaser(gpu_second, pairs, gpu_qq);
+	NucleiSecondStepWholeLaserNoStream(gpu_second, pairs, gpu_qq);
 
 
 
