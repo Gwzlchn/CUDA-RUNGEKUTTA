@@ -510,8 +510,11 @@ void NucleiSecondStepWholeLaser(nuclei* first_array, const long size, double* QQ
 	CHECK(cudaMalloc((void**)&gpu_count_zz_arr, n_streams * size_ull));
 
 	//在CPU上分配页锁定内存  
-	CHECK(cudaHostAlloc((void**)&host_count_z_arr, n_streams * size_ull, cudaHostAllocDefault));
-	CHECK(cudaHostAlloc((void**)&host_count_zz_arr, n_streams * size_ull, cudaHostAllocDefault));
+	CHECK(cudaHostAlloc((void**)&host_count_z_arr, size_ull, cudaHostAllocDefault));
+	CHECK(cudaHostAlloc((void**)&host_count_zz_arr, size_ull, cudaHostAllocDefault));
+	unsigned long long * z_arr = new unsigned long long[n_streams];
+	unsigned long long * zz_arr = new unsigned long long[n_streams];
+
 	for(int stream_index = 0 ; stream_index < n_streams ; stream_index++)
 	{
 		double *gpu_e1, *gpu_e2;
@@ -547,17 +550,19 @@ void NucleiSecondStepWholeLaser(nuclei* first_array, const long size, double* QQ
 		second_step_on_gpu_fliter <<< grid, block, 0, streams[stream_index] >>> (gpu_second_arr_once, 
 			gpu_second_filter_once, size, gpu_count_z_arr + stream_index , gpu_count_zz_arr + stream_index);
 		
-		cudaMemcpyAsync(host_count_z_arr + stream_index * size_ull,
+		CHECK(cudaMemcpyAsync(host_count_z_arr ,
 			gpu_count_z_arr + size_ull * (stream_index),
-			size_ull, cudaMemcpyDeviceToHost, streams[stream_index]);
-		cudaMemcpyAsync(host_count_zz_arr + size_ull * (stream_index),
+			size_ull, cudaMemcpyDeviceToHost, streams[stream_index]));
+		CHECK(cudaMemcpyAsync(host_count_zz_arr ,
 			gpu_count_zz_arr + size_ull * (stream_index),
-			size_ull, cudaMemcpyDeviceToHost, streams[stream_index]);
+			size_ull, cudaMemcpyDeviceToHost, streams[stream_index]));
 	
 		//printf("第一列z,第二列zz");
 		printf("%.10f\t", EE0);
-		printf("z: %lld \t", host_count_z_arr[stream_index]);
-		printf("zz: %lld \n", host_count_zz_arr[stream_index]);
+		printf("z: %lld \t", *host_count_z_arr);
+		printf("zz: %lld \n", *host_count_zz_arr);
+		z_arr[stream_index] = *host_count_z_arr;
+		zz_arr[stream_index] = *host_count_zz_arr;
 		CHECK(cudaGetLastError());
 	}
 	CHECK(cudaGetLastError());
