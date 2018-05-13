@@ -551,10 +551,10 @@ void NucleiSecondStepWholeLaser(nuclei* first_array, const long size, double* QQ
 			gpu_second_filter_once, size, gpu_count_z_arr + stream_index , gpu_count_zz_arr + stream_index);
 		
 		CHECK(cudaMemcpyAsync(host_count_z_arr ,
-			gpu_count_z_arr + size_ull * (stream_index),
+			gpu_count_z_arr +  (stream_index),
 			size_ull, cudaMemcpyDeviceToHost, streams[stream_index]));
 		CHECK(cudaMemcpyAsync(host_count_zz_arr ,
-			gpu_count_zz_arr + size_ull * (stream_index),
+			gpu_count_zz_arr + (stream_index),
 			size_ull, cudaMemcpyDeviceToHost, streams[stream_index]));
 	
 		//printf("第一列z,第二列zz");
