@@ -24,12 +24,12 @@ REAL*8,EXTERNAL::g1,g2,g3,g4,g5,g6,f1,f2,f3,f4,f5,f6,E1,E2,QQ
 REAL*8 E(2*n),my_QQ(2*n)
 
 !open(file='interaction.DAT',unit=20)
-open(file='E.DAT',unit=21)
+! open(file='E.DAT',unit=21)
 
-open(file='E_2t.DAT',unit=22)
-open(file='E1.DAT',unit=23)
-open(file='E2.DAT',unit=24)
-open(file='QQ.DAT',unit=25)
+! open(file='E_2t.DAT',unit=22)
+! open(file='E1.DAT',unit=23)
+! open(file='E2.DAT',unit=24)
+! open(file='QQ.DAT',unit=25)
 
 
 !------------Ar--------------------
@@ -52,6 +52,16 @@ h=(2.d0*n1+n2)*t0/dble(n)
 
 tp=0.8d0
 
+open(file='EE0.DAT',unit=25)
+
+do jj=1,21,1
+
+EE0=2.742*10**3.d0*sqrt((10.d0**(12.d0+dble(jj-1)*0.2d0)) )
+!EE0=2.742*10**3.d0*sqrt((jj*2.d0)*(10**13.D0))    
+EE0=EE0/(5.1421*(10**11.D0))
+write(25,'(1X,21(1X,F15.10))') EE0
+enddo
+
 
 
 
@@ -63,11 +73,11 @@ do i=1,(2*N)
 t1=h*i * 0.5
 E(i)=sqrt(E1(t1,t0,ee0,w1,w2,n1,n2,tao,tp)**2.d0+E2(t1,t0,ee0,w1,w2,n1,n2,tao,tp)**2.d0)
 my_QQ(i) = QQ(t1,t0,ee0,w1,w2,n1,n2,tao,tp)
-write(22,'(1X,21(1X,F15.10))')t1/t0,E1(t1,t0,ee0,w1,w2,n1,n2,tao,tp),E2(t1,t0,ee0,w1,w2,n1,n2,tao,tp),E(i)
+! write(22,'(1X,21(1X,F15.10))')t1/t0,E1(t1,t0,ee0,w1,w2,n1,n2,tao,tp),E2(t1,t0,ee0,w1,w2,n1,n2,tao,tp),E(i)
 
-write(23,'(1X,21(1X,F15.10))') E1(t1,t0,ee0,w1,w2,n1,n2,tao,tp)
-write(24,'(1X,21(1X,F15.10))') E2(t1,t0,ee0,w1,w2,n1,n2,tao,tp)
-write(25,'(1X,21(1X,F15.10))') my_QQ(i)
+! write(23,'(1X,21(1X,F15.10))') E1(t1,t0,ee0,w1,w2,n1,n2,tao,tp)
+! write(24,'(1X,21(1X,F15.10))') E2(t1,t0,ee0,w1,w2,n1,n2,tao,tp)
+! write(25,'(1X,21(1X,F15.10))') my_QQ(i)
 enddo
     
 end

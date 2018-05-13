@@ -662,7 +662,7 @@ void compute_on_gpu_one(const long pairs,const char* file_name)
 	//CHECK(cudaMemcpy(host_e_check, gpu_e_check, bytes_of_e_laser, cudaMemcpyDeviceToHost));
 	//PrintArray(host_e_check, 2 * two_steps_in_host, "e_check", 0);
  
-	NucleiSecondStepWholeLaserNoStream(gpu_second, pairs, gpu_qq);
+	NucleiSecondStepWholeLaser(gpu_second, pairs, gpu_qq);
 
 
 
