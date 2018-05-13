@@ -13,7 +13,7 @@ int main()
 	printf("Starting...\n");
 
 	//选择设备
-	int dev = 1;
+	int dev = 0;
 	cudaDeviceProp deviceProp;
 	CHECK(cudaGetDeviceProperties(&deviceProp, dev));
 	printf("Using Device %d: %s\n", dev, deviceProp.name);
@@ -21,7 +21,7 @@ int main()
 
 	long pairs = 1000000;
 	
-	compute_on_gpu_one(pairs,"");
+	compute_on_gpu_one(pairs,"TwoElec");
 
 	return 0;
 }
