@@ -548,7 +548,8 @@ void NucleiSecondStepLaserOnce(nuclei* first_array, const long size, double* QQ,
 		host_second_filter = (nuclei*)malloc(nBytes);
 		CHECK(cudaMemcpy(host_second_filter, gpu_second_filter_once, nBytes, cudaMemcpyDeviceToHost));
 		
-		const std::string filename = "second_filter_when_jj_" + std::to_string(jj_index);
+		char jj = jj_index + '0';
+		const std::string filename = "second_filter_when_jj_" + jj;
 		PrintStruct(host_second_filter, size, filename.c_str() , 2);
 
 		CHECK(cudaFree(gpu_second_arr_once));
