@@ -2,7 +2,7 @@
 #define GLOBAL_FUNCS_H
 
 #include "nucleus.hpp"
-
+#include <string>
 void compute_on_gpu_one(const long pairs,const char* file_name);
 
 void get_min_r_min_p(int nx, int ny, double& min_r, double& min_p);
