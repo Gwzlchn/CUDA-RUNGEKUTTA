@@ -13,6 +13,7 @@
 #include <cmath>
 #include <vector_types.h>
 #include <cuda_runtime.h>
+#include <string>
 
 
 //生成双精度01均匀分布随机数
@@ -471,7 +472,8 @@ void NucleiSecondStepWholeLaserNoStream(nuclei* first_array, const long size, do
 			gpu_count_zz_arr + (stream_index),
 			size_ull, cudaMemcpyDeviceToHost));
 
-
+		CHECK(cudaFree(gpu_second_arr_once));
+		CHECK(cudaFree(gpu_second_filter_once));
 
 
 		//printf("第一列z,第二列zz");
@@ -484,6 +486,87 @@ void NucleiSecondStepWholeLaserNoStream(nuclei* first_array, const long size, do
 	CHECK(cudaGetLastError());
 	//CHECK(cudaDeviceSynchronize());
 }
+
+void NucleiSecondStepLaserOnce(nuclei* first_array, const long size, double* QQ,int jj_index)
+{
+	//int n_streams = 1;
+
+
+	unsigned long long *host_count_z_arr, *host_count_zz_arr;
+	unsigned long long *gpu_count_z_arr, *gpu_count_zz_arr;
+	const int size_ull = sizeof(unsigned long long);
+
+	CHECK(cudaMalloc((void**)&gpu_count_z_arr,  size_ull));
+	CHECK(cudaMalloc((void**)&gpu_count_zz_arr,  size_ull));
+
+	//在CPU上分配页锁定内存  
+	CHECK(cudaHostAlloc((void**)&host_count_z_arr, size_ull, cudaHostAllocDefault));
+	CHECK(cudaHostAlloc((void**)&host_count_zz_arr,  size_ull, cudaHostAllocDefault));
+	
+		double *gpu_e1, *gpu_e2;
+		long bytes_of_e_laser = sizeof(double) * 2 * two_steps_in_host;
+		CHECK(cudaMalloc((void **)(&gpu_e1), bytes_of_e_laser));
+		CHECK(cudaMalloc((void **)(&gpu_e2), bytes_of_e_laser));
+
+		double EE0 = 2.742*pow(10, 3)*sqrt(pow(10.0, (12.0 + double(jj_index)*0.2)));
+		EE0 = EE0 / (5.1421*(pow(10.0, 11.0)));
+
+		int pre_dimx = 512;
+		dim3 pre_block(pre_dimx);
+		dim3 pre_grid((2 * two_steps_in_host + pre_block.x - 1) / pre_block.x, 1);
+		pre_second_step_e1 << < pre_grid, pre_block, 0, 0 >> > (QQ, EE0, gpu_e1);
+		pre_second_step_e2 << < pre_grid, pre_block, 0, 0 >> > (QQ, EE0, gpu_e2);
+
+
+		//计算第二步 一个激光场
+		int dimx = 32;
+		dim3 block(dimx);
+		dim3 grid((size + block.x - 1) / block.x, 1);
+
+		nuclei* gpu_second_arr_once, *gpu_second_filter_once;
+
+		long long nBytes = size * sizeof(nuclei);
+		CHECK(cudaMalloc((void **)(&gpu_second_arr_once), nBytes));
+		CHECK(cudaMalloc((void **)(&gpu_second_filter_once), nBytes));
+
+		CHECK(cudaMemcpy(gpu_second_arr_once, first_array, nBytes, cudaMemcpyDeviceToDevice));
+
+		second_step_on_gpu << < grid, block, 0, 0 >> > (gpu_second_arr_once, size, gpu_e1, gpu_e2);
+
+		second_step_on_gpu_fliter << < grid, block, 0, 0 >> > (gpu_second_arr_once,
+			gpu_second_filter_once, size, gpu_count_z_arr, gpu_count_zz_arr );
+
+		CHECK(cudaMemcpy(host_count_z_arr ,
+			gpu_count_z_arr ,
+			size_ull, cudaMemcpyDeviceToHost));
+		CHECK(cudaMemcpy(host_count_zz_arr,
+			gpu_count_zz_arr ,
+			size_ull, cudaMemcpyDeviceToHost));
+
+
+		nuclei* host_second_filter;
+		host_second_filter = (nuclei*)malloc(nBytes);
+		CHECK(cudaMemcpy(host_second_filter, gpu_second_filter_once, nBytes, cudaMemcpyDeviceToHost));
+		
+		const std::string filename = "second_filter_when_jj_" + std::to_string(jj_index);
+		PrintStruct(host_second_filter, size, filename.c_str() , 2);
+
+		CHECK(cudaFree(gpu_second_arr_once));
+		CHECK(cudaFree(gpu_second_filter_once));
+
+
+		//printf("第一列z,第二列zz");
+		printf("%.10f\t", EE0);
+		printf("z: %lld \t", *host_count_z_arr);
+		printf("zz: %lld \n", *host_count_zz_arr);
+		CHECK(cudaGetLastError());
+		CHECK(cudaDeviceSynchronize());
+
+	CHECK(cudaGetLastError());
+	//CHECK(cudaDeviceSynchronize());
+}
+
+
 
 
 
@@ -594,8 +677,8 @@ void compute_on_gpu_one(const long pairs,const char* file_name)
 	nuclei *host_init,*host_first,*host_second,*host_second_fliter;
 	host_init = (nuclei*)malloc(nBytes);
 	host_first = (nuclei*)malloc(nBytes);
-	host_second = (nuclei*)malloc(nBytes);
-	host_second_fliter = (nuclei*)malloc(nBytes);
+	//host_second = (nuclei*)malloc(nBytes);
+	//host_second_fliter = (nuclei*)malloc(nBytes);
 
 
 	//初始化！
