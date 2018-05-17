@@ -177,7 +177,7 @@ __global__ void pre_second_step_e2(const double* QQ, const double EE0, double* E
 
 
 
-__global__ void second_step_on_gpu(nuclei* second_arr , const long size, double* E1,double* E2)
+__global__ void second_step_on_gpu(nuclei* second_arr , const long size, double* E1,double* E2,double* e1_e2)
 {
 	const int idx = threadIdx.x + blockIdx.x * blockDim.x;
 	double e1_laser_t1 = 0.0, e1_laser_t2 = 0.0, e1_laser_t3 = 0.0, e1_laser_t4 = 0.0;
@@ -221,6 +221,8 @@ __global__ void second_step_on_gpu(nuclei* second_arr , const long size, double*
 			double4 e2_laser = make_double4(e2_laser_t1, e2_laser_t2, e2_laser_t3, e2_laser_t4);
 			update_step_two(second_arr[idx].first, second_arr[idx].second,
 							e1_laser,e2_laser);
+			e1_e2[i] = CalculationE1(second_arr[idx].first, second_arr[idx].second);
+			e1_e2[i+1] = CalculationE1()
 			now_t = now_t + DX;
 			/*if(idx_of_ds == -1 )
 				update_step_two(second_arr[idx].first, second_arr[idx].second,
@@ -526,12 +528,21 @@ void NucleiSecondStepLaserOnce(nuclei* first_array, const long size, double* QQ,
 		nuclei* gpu_second_arr_once, *gpu_second_filter_once;
 
 		long long nBytes = size * sizeof(nuclei);
+		
+
+
+		//for e1 E2
+		double* gpu_e1_e2,*host_e1_e2;
+		CHECK(cudaMalloc((void**)(&gpu_e1_e2), bytes_of_e_laser));
+		host_e1_e2 = (double*)malloc(bytes_of_e_laser);
+
+
 		CHECK(cudaMalloc((void **)(&gpu_second_arr_once), nBytes));
 		CHECK(cudaMalloc((void **)(&gpu_second_filter_once), nBytes));
 
 		CHECK(cudaMemcpy(gpu_second_arr_once, first_array, nBytes, cudaMemcpyDeviceToDevice));
 
-		second_step_on_gpu << < grid, block, 0, 0 >> > (gpu_second_arr_once, size, gpu_e1, gpu_e2);
+		second_step_on_gpu << < grid, block, 0, 0 >> > (gpu_second_arr_once, size, gpu_e1, gpu_e2,gpu_e1_e2);
 
 		second_step_on_gpu_fliter << < grid, block, 0, 0 >> > (gpu_second_arr_once,
 			gpu_second_filter_once, size, gpu_count_z_arr, gpu_count_zz_arr );
@@ -542,6 +553,12 @@ void NucleiSecondStepLaserOnce(nuclei* first_array, const long size, double* QQ,
 		CHECK(cudaMemcpy(host_count_zz_arr,
 			gpu_count_zz_arr ,
 			size_ull, cudaMemcpyDeviceToHost));
+
+		CHECK(cudaMemcpy(host_e1_e2, gpu_e1_e2, bytes_of_e_laser, cudaMemcpyDeviceToHost));
+
+		PrintE1_E2(host_e1_e2, 2 * two_steps_in_host, "E1_E2");
+
+
 
 
 		nuclei* host_second_filter;

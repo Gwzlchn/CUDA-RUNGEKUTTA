@@ -126,3 +126,21 @@ void PrintArray(double* array, long long n, const char* FileName, int choose)
 }
 
 
+
+void PrintE1_E2(double *e1_e2,long long size,char* file_name)
+{
+	FILE *outFile;
+	outFile = fopen(file_name, "w");
+	if (!outFile)
+	{
+		perror("cannot open the file");
+	}
+	for(long i = 0;i<size;i=i+2)
+	{
+		fprintf(outFile,"%d\t%-.10lf\t%-.10lf\n",int(i/2),e1_e2[i],e1_e2[i+1])
+	}
+	fclose(outFile);
+	return;
+
+}
+
