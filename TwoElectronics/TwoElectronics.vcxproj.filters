@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="include">
+      <UniqueIdentifier>{f4191157-82f7-4920-8812-7dbb4fdb052b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source">
+      <UniqueIdentifier>{0aede862-9c42-4704-a1e2-77e75b365780}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <CudaCompile Include="source\kernel.cu">
+      <Filter>source</Filter>
+    </CudaCompile>
+    <CudaCompile Include="source\Runge_Kutta.cu">
+      <Filter>source</Filter>
+    </CudaCompile>
+    <CudaCompile Include="source\Init_First_Second.cu">
+      <Filter>source</Filter>
+    </CudaCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\Struct_Defines.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Runge_Kutta.cuh">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Erorr_Check.hpp">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Sci_Constant.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Init_First_Second.cuh">
+      <Filter>include</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
