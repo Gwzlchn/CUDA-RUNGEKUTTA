@@ -9,9 +9,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <CudaCompile Include="source\kernel.cu">
-      <Filter>source</Filter>
-    </CudaCompile>
     <CudaCompile Include="source\Runge_Kutta.cu">
       <Filter>source</Filter>
     </CudaCompile>
@@ -35,5 +32,10 @@
     <ClInclude Include="include\Init_First_Second.cuh">
       <Filter>include</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="source\main.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

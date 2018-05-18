@@ -74,7 +74,7 @@
 
 
 //粒子数
-#define Units 100000
+#define Units 100000UL
 
 
 

@@ -86,7 +86,6 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
     </CudaCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <CudaCompile Include="source\kernel.cu" />
     <CudaCompile Include="source\Runge_Kutta.cu" />
     <CudaCompile Include="source\Init_First_Second.cu" />
   </ItemGroup>
@@ -96,6 +95,9 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
     <ClInclude Include="include\Runge_Kutta.cuh" />
     <ClInclude Include="include\Sci_Constant.h" />
     <ClInclude Include="include\Struct_Defines.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="source\main.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
