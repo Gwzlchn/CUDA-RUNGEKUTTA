@@ -86,12 +86,14 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
     </CudaCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <CudaCompile Include="source\Laser.cu" />
     <CudaCompile Include="source\Runge_Kutta.cu" />
     <CudaCompile Include="source\Init_First_Second.cu" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Erorr_Check.hpp" />
     <ClInclude Include="include\Init_First_Second.cuh" />
+    <ClInclude Include="include\Laser.cuh" />
     <ClInclude Include="include\Runge_Kutta.cuh" />
     <ClInclude Include="include\Sci_Constant.h" />
     <ClInclude Include="include\Struct_Defines.h" />

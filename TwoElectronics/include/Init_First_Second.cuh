@@ -15,9 +15,6 @@ __device__ void distribution(nucleus& first, nucleus& second,
 
 
 
-//两核之间距离的平方
-//返回（x1-x2)^2 +（y1-y2)^2 +（z1-z2)^2
-__device__  double nucleus_distance(const nucleus& first, const nucleus& second);
 
 
 //第一个核，三个坐标的一阶导
