@@ -18,6 +18,9 @@
     <CudaCompile Include="source\Laser.cu">
       <Filter>source</Filter>
     </CudaCompile>
+    <CudaCompile Include="source\Compute_On_GPU.cu">
+      <Filter>source</Filter>
+    </CudaCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Struct_Defines.h">
@@ -38,9 +41,24 @@
     <ClInclude Include="include\Laser.cuh">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="include\PrintStruct.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Compute_On_GPU.cuh">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Call_GPU.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\main.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="source\PrintStruct.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Call_GPU.cpp">
       <Filter>source</Filter>
     </ClCompile>
   </ItemGroup>

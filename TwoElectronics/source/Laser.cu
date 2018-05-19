@@ -7,7 +7,78 @@
 
 
 
-__device__ double CalculationE1(const nucleus& first, const nucleus& second)
+
+
+__global__ void pre_second_step_E_forcheck(const double* E1, const double* E2, double* E_check)
+{
+	int idx = threadIdx.x + blockIdx.x * blockDim.x;
+	if (idx < 2 * two_steps)
+	{
+		E_check[idx] = sqrt(pow(E1[idx], 2) + pow(E2[idx], 2));
+	}
+}
+
+
+
+
+
+
+
+
+__global__ void pre_second_step_e1(const double* QQ, const double EE0, double* E1)
+{
+	int idx = threadIdx.x + blockIdx.x * blockDim.x;
+	if (idx < 2 * two_steps)
+	{
+		double t1 = 0.5 * DX * idx;
+		/*curandStatePhilox4_32_10_t s;
+		curand_init(idx, 0, 0, &s);
+		double random = curand_uniform_double(&s);
+		double tao = 2.0 * random * PI;*/
+		double tao = 0.0;
+		E1[idx] = (EE0 / (1.0 + TP_const)) * QQ[idx] * sin(Omega1 * t1 + tao) -
+			(EE0*TP_const / (1.0 + TP_const)) * QQ[idx] * sin(Omega2 * t1 + 2 * tao);
+
+	}
+
+}
+
+
+__global__ void pre_second_step_e2(const double* QQ, const double EE0, double* E2)
+{
+	int idx = threadIdx.x + blockIdx.x * blockDim.x;
+	if (idx < 2 * two_steps)
+	{
+		double t1 = 0.5 * DX * idx;
+		/*	curandStatePhilox4_32_10_t s;
+		curand_init(idx, 0, 0, &s);
+		double random = curand_uniform_double(&s);
+		double tao = 2.0 * random * PI;*/
+		double tao = 0.0;
+
+		E2[idx] = (EE0 / (1.0 + TP_const)) * QQ[idx] * cos(Omega1 * t1 + tao) +
+			(EE0*TP_const / (1.0 + TP_const)) * QQ[idx] * cos(Omega2 * t1 + 2 * tao);
+
+	}
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+__device__ double CalculationE1(const particle& first, const particle& second)
 {
 	//坐标平方和
 	const double loc_squre_sum_first = pow(first.x, 2) + pow(first.y, 2) + pow(first.z, 2);
@@ -26,7 +97,7 @@ __device__ double CalculationE1(const nucleus& first, const nucleus& second)
 		1.0 / sqrt(distance_squre) / 2.0;
 }
 
-__device__ double CalculationE2(const nucleus& first, const nucleus& second)
+__device__ double CalculationE2(const particle& first, const particle& second)
 {
 	//坐标平方和
 	//const double loc_squre_sum_first = pow(first.x, 2) + pow(first.y, 2) + pow(first.z, 2);

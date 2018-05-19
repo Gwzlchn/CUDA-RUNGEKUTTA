@@ -5,6 +5,63 @@
 
 
 
+
+
+void get_min_r_min_p(int nx, int ny, double& min_r, double& min_p)
+{
+	double *R_Arr = (double*)malloc(nx * sizeof(double));
+	double *P_Arr = (double*)malloc(ny * sizeof(double));
+
+	for (int i = 0; i < nx; i++)
+		R_Arr[i] = 0.5 + 0.01 * i;
+	for (int i = 0; i < ny; i++)
+		P_Arr[i] = 0.0 + 0.01*i;
+
+
+	double** mat = new double*[nx];
+	for (int i = 0; i<nx; i++)
+		mat[i] = new double[ny];
+
+	double Vh, Vk, Ek;
+	for (int i = 0; i<nx; i++)
+	{
+		for (int j = 0; j<ny; j++)
+		{
+			Vh = pow(Q_constant, 2) / (4.0*A_hardness*pow(R_Arr[i], 2)) *
+				exp(A_hardness * (1.0 - pow((R_Arr[i] * P_Arr[j] / Q_constant), 4)));
+			Vk = -2.0 / R_Arr[i];
+			Ek = P_Arr[j] * P_Arr[j] / 2.0;
+			mat[i][j] = Vh + Vk + Ek + 1.065;
+		}
+	}
+
+	int min_x_index, min_y_index;
+	double min = mat[0][0];
+	for (int i = 0; i<nx; i++)
+	{
+		for (int j = 0; j<ny; j++)
+		{
+			if (min > mat[i][j])
+			{
+				min = mat[i][j];
+				min_x_index = i;
+				min_y_index = j;
+			}
+		}
+	}
+
+	min_r = R_Arr[min_x_index];
+	min_p = P_Arr[min_y_index];
+
+	return;
+}
+
+
+
+
+
+
+
 __device__ void get_six_random(double2& two_random, double4& four_random, const int& seed)
 {
 	curandStatePhilox4_32_10_t s;
@@ -30,8 +87,8 @@ __device__ void get_six_random(double2& two_random, double4& four_random, const 
 }
 
 
-__device__ void distribution(nucleus& first, nucleus& second,
-                             const int& seed, const double& min_r, const double& min_p)
+__device__ void distribution(particle& first, particle& second,
+                              int seed,  double min_r, double min_p)
 {
 
 	double2 two_rand;
@@ -66,14 +123,14 @@ __device__ void distribution(nucleus& first, nucleus& second,
 }
 
 
-__device__  double nucleus_distance(const nucleus& first, const nucleus& second)
+__device__  double nucleus_distance(const particle& first, const particle& second)
 {
 	return (pow((first.x - second.x), 2) + pow((first.y - second.y), 2) + pow((first.z - second.z), 2));
 }
 
 
 //第一个核，三个坐标的一阶导
-__device__ double3 gx_gy_gz_first_nucleus(const nucleus& first, const nucleus& second)
+__device__ double3 gx_gy_gz_first_nucleus(const particle& first, const particle& second)
 {
 	double Q_squre = pow(Q_constant, 2);
 	//坐标平方和
@@ -99,7 +156,7 @@ __device__ double3 gx_gy_gz_first_nucleus(const nucleus& first, const nucleus& s
 }
 
 //第二个核，三个坐标的一阶导
-__device__ double3 gx_gy_gz_second_nucleus(const nucleus& first, const nucleus& second)
+__device__ double3 gx_gy_gz_second_nucleus(const particle& first, const particle& second)
 {
 	const double Q_squre = pow(Q_constant, 2);
 
@@ -126,7 +183,7 @@ __device__ double3 gx_gy_gz_second_nucleus(const nucleus& first, const nucleus& 
 }
 
 //第一个核，三个坐标的二阶导
-__device__ double3 fx_fy_fz_first_nucleus(const nucleus& first, const nucleus& second)
+__device__ double3 fx_fy_fz_first_nucleus(const particle& first, const particle& second)
 {
 	const double Q_squre = pow(Q_constant, 2);
 
@@ -169,7 +226,7 @@ __device__ double3 fx_fy_fz_first_nucleus(const nucleus& first, const nucleus& s
 
 
 //第二个核，三个坐标的二阶导
-__device__ double3 fx_fy_fz_second_nucleus(const nucleus& first, const nucleus& second)
+__device__ double3 fx_fy_fz_second_nucleus(const particle& first, const particle& second)
 {
 	const double Q_squre = pow(Q_constant, 2);
 

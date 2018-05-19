@@ -38,7 +38,7 @@
 //龙哥库塔用到变量
 #define   one_steps  10000
 
-#define two_stwps 40000
+#define two_steps 40000
 
 
 #define PI  3.1415926535897932384626433832795	//圆周率

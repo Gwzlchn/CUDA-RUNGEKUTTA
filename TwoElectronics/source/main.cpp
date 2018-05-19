@@ -22,7 +22,7 @@ int main()
 	CHECK(cudaSetDevice(dev));
 
 
-	//compute_on_gpu_one(pairs, "TwoElec");
+	compute_on_gpu_one(pairs, "TwoElec");
 
 	return 0;
 }

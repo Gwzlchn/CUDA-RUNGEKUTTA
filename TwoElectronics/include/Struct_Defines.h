@@ -13,7 +13,7 @@ struct derivative
 };
 
 
-struct nucleus {
+struct particle {
 	double x;
 	double y;
 	double z;
@@ -23,9 +23,9 @@ struct nucleus {
 	double pz;
 };
 
-struct  nuclei {
-	nucleus first;
-	nucleus second;
+struct  particle_pair {
+	particle first;
+	particle second;
 };
 
 

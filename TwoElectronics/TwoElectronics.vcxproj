@@ -86,20 +86,26 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
     </CudaCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <CudaCompile Include="source\Compute_On_GPU.cu" />
     <CudaCompile Include="source\Laser.cu" />
     <CudaCompile Include="source\Runge_Kutta.cu" />
     <CudaCompile Include="source\Init_First_Second.cu" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\Call_GPU.h" />
+    <ClInclude Include="include\Compute_On_GPU.cuh" />
     <ClInclude Include="include\Erorr_Check.hpp" />
     <ClInclude Include="include\Init_First_Second.cuh" />
     <ClInclude Include="include\Laser.cuh" />
+    <ClInclude Include="include\PrintStruct.h" />
     <ClInclude Include="include\Runge_Kutta.cuh" />
     <ClInclude Include="include\Sci_Constant.h" />
     <ClInclude Include="include\Struct_Defines.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="source\Call_GPU.cpp" />
     <ClCompile Include="source\main.cpp" />
+    <ClCompile Include="source\PrintStruct.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
