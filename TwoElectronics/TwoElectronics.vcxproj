@@ -92,7 +92,7 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
     <CudaCompile Include="source\Init_First_Second.cu" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\Call_GPU.h" />
+    <ClInclude Include="include\Call_GPU.cuh" />
     <ClInclude Include="include\Compute_On_GPU.cuh" />
     <ClInclude Include="include\Erorr_Check.hpp" />
     <ClInclude Include="include\Init_First_Second.cuh" />
@@ -103,7 +103,7 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
     <ClInclude Include="include\Struct_Defines.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="source\Call_GPU.cpp" />
+    <ClCompile Include="source\Call_GPU.cu" />
     <ClCompile Include="source\main.cpp" />
     <ClCompile Include="source\PrintStruct.cpp" />
   </ItemGroup>

@@ -3,7 +3,7 @@
 #include "../include/Init_First_Second.cuh"
 #include "../include/Runge_Kutta.cuh"
 #include "../include/Laser.cuh"
-#include "sm_35_intrinsics.h"
+
 #include <cstdlib>
 #include <cuda_runtime.h>
 
@@ -22,13 +22,11 @@ __global__ void pairs_init(particle_pair* pair_array, const long size,
 }
 
 
-__global__ void first_step_on_gpu(particle_pair* first_setp_pair_array, const long size)
+__global__ void pairs_first_step_on_gpu(particle_pair* first_setp_pair_array, const long size)
 {
 	int idx = threadIdx.x + blockIdx.x * blockDim.x;
-	//printf("%p\n", &first_arr);
 	if (idx<size)
 	{
-		//printf("%d\n", idx);
 		for (int i = 0; i < one_steps; i++)
 			update_step_one(first_setp_pair_array[idx].first, first_setp_pair_array[idx].second);
 	}
@@ -36,66 +34,47 @@ __global__ void first_step_on_gpu(particle_pair* first_setp_pair_array, const lo
 
 }
 
-
-__global__ void pre_second_step_qq_arr(double* QQ_array)
+__global__ void pre_second_step_qq_arr(double * QQ_array)
 {
-	int idx = threadIdx.x + blockIdx.x * blockDim.x;
+	unsigned long idx = threadIdx.x + blockIdx.x * blockDim.x;
 	if (idx < 2 * two_steps)
 	{
-
-		double t1 = 0.5 * DX * (idx + 1);
-		QQ_array[idx] = pow((sin(Omega1 / 2.0 / (2 * N1_const + N2_const)*t1)), 2);
-		//QQ[idx] = t1;
+		QQ_array[idx] = compute_qq_single(idx);
 	}
-
 }
+
+
+
 
 __global__ void pre_second_step_E_arr_check
 (const double* E1_array, const double* E2_array, double* E_check_array)
 {
-	int idx = threadIdx.x + blockIdx.x * blockDim.x;
+	unsigned long idx = threadIdx.x + blockIdx.x * blockDim.x;
 	if (idx < 2 * two_steps)
 	{
-		E_check_array[idx] = sqrt(pow(E1_array[idx], 2) + pow(E2_array[idx], 2));
+		E_check_array[idx] = compute_e_for_check(idx, E1_array[idx], E2_array[idx]);
 	}
 }
 
 
 
-__global__ void pre_second_step_e1(const double* QQ_array, const double EE0, double* E1_array)
+__global__ void pre_second_step_e1_arr(const double* QQ_array, const double EE0, double* E1_array)
 {
 	int idx = threadIdx.x + blockIdx.x * blockDim.x;
 	if (idx < 2 * two_steps)
 	{
-		double t1 = 0.5 * DX * idx;
-		/*curandStatePhilox4_32_10_t s;
-		curand_init(idx, 0, 0, &s);
-		double random = curand_uniform_double(&s);
-		double tao = 2.0 * random * PI;*/
-		double tao = 0.0;
-		E1_array[idx] = (EE0 / (1.0 + TP_const)) * QQ_array[idx] * sin(Omega1 * t1 + tao) -
-			(EE0*TP_const / (1.0 + TP_const)) * QQ_array[idx] * sin(Omega2 * t1 + 2 * tao);
-
+		E1_array[idx] = compute_e1_single(idx, QQ_array[idx], EE0);
 	}
 
 }
 
 
-__global__ void pre_second_step_e2(const double* QQ_array, const double EE0, double* E2_array)
+__global__ void pre_second_step_e2_arr(const double* QQ_array, const double EE0, double* E2_array)
 {
 	int idx = threadIdx.x + blockIdx.x * blockDim.x;
 	if (idx < 2 * two_steps)
 	{
-		double t1 = 0.5 * DX * idx;
-		/*	curandStatePhilox4_32_10_t s;
-		curand_init(idx, 0, 0, &s);
-		double random = curand_uniform_double(&s);
-		double tao = 2.0 * random * PI;*/
-		double tao = 0.0;
-
-		E2_array[idx] = (EE0 / (1.0 + TP_const)) * QQ_array[idx] * cos(Omega1 * t1 + tao) +
-			(EE0*TP_const / (1.0 + TP_const)) * QQ_array[idx] * cos(Omega2 * t1 + 2 * tao);
-
+		E2_array[idx] = compute_e2_single(idx, QQ_array[idx], EE0);
 	}
 
 }
@@ -103,7 +82,7 @@ __global__ void pre_second_step_e2(const double* QQ_array, const double EE0, dou
 
 
 
-__global__ void second_step_on_gpu
+__global__ void pairs_second_step_on_gpu
 (particle_pair* second_arr, const long size, double* E1_array, double* E2_array)
 {
 	const int idx = threadIdx.x + blockIdx.x * blockDim.x;
@@ -167,7 +146,7 @@ __global__ void second_step_on_gpu
 
 
 
-__global__ void second_step_on_gpu_fliter
+__global__ void pairs_second_step_on_gpu_fliter
 (const particle_pair* second_step_pair_array, particle_pair* second_step_pair_array_filter,
  const long size, unsigned long long* count_z, unsigned long long* count_zz)
 {

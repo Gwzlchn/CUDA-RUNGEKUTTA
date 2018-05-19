@@ -3,6 +3,10 @@
 #include "../include/Sci_Constant.h"
 
 
+
+
+
+
 //第一个粒子 K1~K4 第一步循环
 __device__ derivative fisrt_k_one_to_four_fisrt_step(const particle& first, const particle& second)
 {

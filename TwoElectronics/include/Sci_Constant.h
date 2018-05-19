@@ -3,7 +3,7 @@
 #define __SCI_CONSTANT_H
 
 #include "device_launch_parameters.h"
-
+#include "Struct_Defines.h"
 
 
 
@@ -76,8 +76,14 @@
 //粒子数
 #define Units 100000UL
 
+//激光场迭代次数
+
+#define Iter_Count  21
 
 
+
+unsigned long long Bytes_Of_Pairs = (Units) * sizeof(particle_pair);
+unsigned long long Bytes_Of_Array_Laser = sizeof(double) * 2 * (two_steps);
 
 
 

@@ -47,7 +47,7 @@
     <ClInclude Include="include\Compute_On_GPU.cuh">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="include\Call_GPU.h">
+    <ClInclude Include="include\Call_GPU.cuh">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>
@@ -58,7 +58,7 @@
     <ClCompile Include="source\PrintStruct.cpp">
       <Filter>source</Filter>
     </ClCompile>
-    <ClCompile Include="source\Call_GPU.cpp">
+    <ClCompile Include="source\Call_GPU.cu">
       <Filter>source</Filter>
     </ClCompile>
   </ItemGroup>
