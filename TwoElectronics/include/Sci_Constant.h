@@ -81,7 +81,7 @@
 #define Iter_Count  21
 
 //最开始  ee0 输出检查时
-double EE0_Check = (sqrt(1e15 / 3.51e16));
+#define  EE0_Check  (sqrt(1e15 / 3.51e16))
 
 size_t Bytes_Of_Pairs = (Pairs_Total) * sizeof(particle_pair);
 size_t Bytes_Of_Array_Laser = sizeof(double) * 2 * (two_steps);
