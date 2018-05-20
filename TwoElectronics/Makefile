@@ -33,4 +33,5 @@ ${DIR_OBJ}/%.o:${DIR_SRC}/%.cpp
 	
 .PHONY:clean
 clean:
-	find ${DIR_OBJ} -name *.o -exec rm -rf {}
+	@find ${DIR_OBJ} -name *.o -exec rm -rf {} \;
+	@find ${TARGET} -exec rm -rf {} \;
