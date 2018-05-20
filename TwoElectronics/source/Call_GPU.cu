@@ -8,6 +8,8 @@
 #include <cstdio>
 #include <cuda_runtime_api.h>
 
+typedef unsigned long long size_t;
+
 dim3 get_pre_block(int dimx)
 {
 	return dim3(dimx);
