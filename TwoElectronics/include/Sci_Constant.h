@@ -91,6 +91,7 @@ const std::string init_file_name = "Initialization.dat";
 const std::string first_file_name = "After_First_Step.dat";
 const std::string ion_rate_file_name = "Ionization_Rate_Count.dat";
 const std::string laser_array_file_name = "Laser_Array_Check.dat";
+const std::string qq_array_file_name = "QQ_Array_Check.dat";
 
 
 

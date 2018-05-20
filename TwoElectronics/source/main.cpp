@@ -24,7 +24,7 @@ void check_laser_array_on_gpu()
 	//-------------------计算QQ------------------------
 	Prepare_Laser_QQ_array(qq_arr_gpu);
 	//保存
-	SaveArraysWhichOnGPU(qq_arr_gpu, array_size, "QQ_Array");
+	SaveArraysWhichOnGPU(qq_arr_gpu, array_size, qq_array_file_name.c_str());
 
 	//---------------计算E1 E2 E_Check-------------------
 	Prepare_Laser_E1_array(qq_arr_gpu, e1_arr_gpu);
@@ -102,8 +102,7 @@ void compute_on_gpu_all(size_t pairs)
 
 int main()
 {
-	//计时
-	double Start, Elaps;
+	
 
 	printf("Starting...\n");
 

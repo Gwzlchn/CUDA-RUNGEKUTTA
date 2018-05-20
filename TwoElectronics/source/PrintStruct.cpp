@@ -86,7 +86,7 @@ void PrintLaserArrays(double* e1_arr, double* e2_arr, double* e_check_arr, size_
 	if (!file) perror("cannot open file");
 
 
-	for (int i = 0; i<size; i++)
+	for (size_t i = 0; i<size; i++)
 	{
 		double t1 = DX * i * 0.5;
 		fprintf(file, "%.10lf \t %.10lf\t %.10lf \t %.10lf \n",(t1/T0_const) , e1_arr[i], e2_arr[i], e_check_arr[i]);
