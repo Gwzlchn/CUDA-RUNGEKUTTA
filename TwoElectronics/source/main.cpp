@@ -3,6 +3,16 @@
 #include <cstdlib>
 
 #include "../include/Erorr_Check.hpp"
+#include "../include/Sci_Constant.h"
+
+
+void compute_on_gpu_all(size_t pairs)
+{
+	
+}
+
+
+
 
 
 
@@ -22,7 +32,7 @@ int main()
 	CHECK(cudaSetDevice(dev));
 
 
-	compute_on_gpu_one(pairs, "TwoElec");
+	compute_on_gpu_all(Pairs_Total);
 
 	return 0;
 }

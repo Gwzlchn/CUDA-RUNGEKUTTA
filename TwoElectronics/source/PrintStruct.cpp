@@ -7,7 +7,7 @@
 #include "../include/PrintStruct.h"
 #define BUFLEN 255   
 
-void PrintStruct(particle_pair* ToSaveNuclei, long long n, const char* FileName, int choose)
+void PrintStruct(particle_pair* ToSaveNuclei, long long n, const char* FileName)
 {
 	//format date and time. 
 	struct tm *ptr;
@@ -80,7 +80,7 @@ void PrintStruct(particle_pair* ToSaveNuclei, long long n, const char* FileName,
 }
 
 
-void PrintArray(double* array, long long n, const char* FileName, int choose)
+void PrintArray(double* array, long long n, const char* FileName)
 {
 	//format date and time. 
 	struct tm *ptr;
@@ -127,3 +127,14 @@ void PrintArray(double* array, long long n, const char* FileName, int choose)
 }
 
 
+void Print_Count_Array(double* ee0_array,unsigned long long * z_arr,unsigned long long * zz_arr,int size,const char* file_name)
+{
+	FILE* file;
+	file = fopen(file_name, "w");
+	if (!file) perror("cannot open file");
+	for(int i = 0;i<size;i++)
+	{
+		fprintf(file, "%d\t %.10lf\t %lld \t %lld \n", i, ee0_array[i], z_arr[i], zz_arr[i]);
+	}
+	fclose(file);
+}

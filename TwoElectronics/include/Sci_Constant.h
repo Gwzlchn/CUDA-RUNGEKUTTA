@@ -4,7 +4,7 @@
 
 #include "device_launch_parameters.h"
 #include "Struct_Defines.h"
-
+#include <string>
 
 
 //随机数有关
@@ -74,7 +74,7 @@
 
 
 //粒子数
-#define Units 100000UL
+#define Pairs_Total 100000UL
 
 //激光场迭代次数
 
@@ -82,8 +82,14 @@
 
 
 
-unsigned long long Bytes_Of_Pairs = (Units) * sizeof(particle_pair);
+unsigned long long Bytes_Of_Pairs = (Pairs_Total) * sizeof(particle_pair);
 unsigned long long Bytes_Of_Array_Laser = sizeof(double) * 2 * (two_steps);
+const int size_ull = sizeof(unsigned long long);
+
+std::string init_file_name = "Initialization.dat";
+std::string first_file_name = "After_First_Step.dat";
+std::string ion_rate_file_name = "Ionization_Rate_Count.dat";
+
 
 
 

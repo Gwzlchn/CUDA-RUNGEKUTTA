@@ -10,29 +10,31 @@ dim3 get_compute_block(int dimx = 32);
 dim3 get_grid(long size,const dim3& block);
 
 
-void SaveArraysWhichOnGPU(double* array, long int size, char* file_name);
+void SaveArraysWhichOnGPU(double* gpu_array, long int byte_size, const char* file_name);
 
-void SavePairsWhichOnGPU(particle_pair* array, long int size, char* file_name);
+void SavePairsWhichOnGPU(particle_pair* gpu_array, long int byte_size,const char* file_name);
 
-double* AllocArayOnGPU(long int size);
+double* AllocArayOnGPU(long long size);
 
-particle_pair* AllocPairsOnGPU(long int size);
+particle_pair* AllocPairsOnGPU(long long size);
 
 
 
 //用于双核粒子的随机数化  初始化
 void Pairs_Init_Call_GPU(particle_pair* pair_array_gpu, const long size);
 
-void Pairs_First_Steo_Call_GPU(particle_pair* pair_array_gpu, const long size);
-
+void Pairs_First_Step_Call_GPU(particle_pair* pair_array_gpu, const long size);
 
 void Prepare_Laser_QQ_array(double* qq_array_gpu);
 
-void Prepare_Laser_One_E1_array(double* e1_array_gpu, const double* qq_array_gpu, const int laser_index);
+void Pairs_Second_Step_Once_Call_GPU(particle_pair * pair_array_first_step_gpu, double* qq_array_gpu, const long size, const int index, unsigned long long&
+                                     count_z_once, unsigned long long& count_zz_once);
 
-void Prepare_Laser_One_E2_array(double* e2_array_gpu, const double* qq_array_gpu, const int laser_index);
+void Pairs_Second_Step_Filter_Call_GPU(particle_pair* pair_array_sec_step_gpu, particle_pair* pair_array_filtered, long long size, unsigned long long& count_z, unsigned long
+                                       long& count_zz);
 
-void Pairs_Second_Step_Call_GPU(particle_pair* pair_array_gpu, const long size);
+
+void Pairs_Second_Step_Whole_Call_GPU(particle_pair* pair_array_gpu, const long size, const int iter_times);
 
 
 
