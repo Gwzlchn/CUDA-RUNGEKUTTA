@@ -21,7 +21,7 @@ __device__ double compute_e1_single(const size_t& now_step,const double& qq_now_
  __device__ double compute_e2_single(const size_t& now_step, const double& qq_now_single, const double& EE0);
 
 
- __host__ __device__ double compute_ee0_by_index(const int index);
+ __host__  double compute_ee0_by_index(const int index);
 
 #endif
 

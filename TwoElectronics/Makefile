@@ -12,7 +12,7 @@ OBJ := $(patsubst %.cpp, $(DIR_OBJ)/%.o, $(OBJ))
 TARGET = TwoElec.out
 
 
-NVCC = /usr/local/cuda/bin/nvcc
+NVCC = nvcc
 NVCC_FLAGS =  -Xcompiler -Wall -O2  -lcurand -rdc=true -I $(DIR_INC) 
 
 

@@ -88,7 +88,7 @@ __device__ double compute_e2_single(const size_t& now_step, const double& qq_now
 
 }
 
-__host__ __device__ double compute_ee0_by_index(const int index)
+__host__  double compute_ee0_by_index(const int index)
 {
 	double EE0 = 2.742*pow(10, 3)*sqrt(pow(10.0, (12.0 + double(index)*0.2)));
 	EE0 = EE0 / (5.1421*(pow(10.0, 11.0)));
