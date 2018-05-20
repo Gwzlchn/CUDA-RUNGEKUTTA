@@ -34,7 +34,7 @@ __global__ void pairs_first_step_on_gpu(particle_pair* first_setp_pair_array, co
 
 }
 
-__global__ void pre_second_step_qq_arr(double * QQ_array)
+__global__ void pre_second_step_qq(double * QQ_array)
 {
 	size_t idx = threadIdx.x + blockIdx.x * blockDim.x;
 	if (idx < 2 * two_steps)
