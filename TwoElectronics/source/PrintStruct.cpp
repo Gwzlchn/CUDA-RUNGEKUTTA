@@ -7,7 +7,7 @@
 #include "../include/PrintStruct.h"
 #define BUFLEN 255   
 
-void PrintStruct(particle_pair* ToSaveNuclei, long long n, const char* FileName)
+void PrintStruct(particle_pair* ToSaveNuclei, size_t n, const char* FileName)
 {
 	//format date and time. 
 	struct tm *ptr;
@@ -62,7 +62,7 @@ void PrintStruct(particle_pair* ToSaveNuclei, long long n, const char* FileName)
 	
 
 	if (!file) perror("cannot open file");
-	for (long i = 0; i < n; i++)
+	for (size_t i = 0; i < n; i++)
 	{
 		fprintf(file, "%-.10lf\t%-.10lf\t%-.10lf\t%-.10lf\t%-.10lf\t%-.10lf\t%-.10lf\t%-.10lf\t%-.10lf\t%-.10lf\t%-.10lf\t%-.10lf\t",
 			ToSaveNuclei[i].first.x, ToSaveNuclei[i].first.y, ToSaveNuclei[i].first.z,
@@ -80,7 +80,7 @@ void PrintStruct(particle_pair* ToSaveNuclei, long long n, const char* FileName)
 }
 
 
-void PrintArray(double* array, long long n, const char* FileName)
+void PrintArray(double* array, size_t n, const char* FileName)
 {
 	//format date and time. 
 	struct tm *ptr;
@@ -115,7 +115,7 @@ void PrintArray(double* array, long long n, const char* FileName)
 	}
 
 	if (!file) perror("cannot open file");
-	for (long i = 0; i < n; i++)
+	for (size_t i = 0; i < n; i++)
 	{
 		fprintf(file, "%-.10lf\n",array[i]);
 	}
@@ -127,7 +127,7 @@ void PrintArray(double* array, long long n, const char* FileName)
 }
 
 
-void Print_Count_Array(double* ee0_array,unsigned long long * z_arr,unsigned long long * zz_arr,int size,const char* file_name)
+void Print_Count_Array(double* ee0_array,size_t * z_arr,size_t * zz_arr,int size,const char* file_name)
 {
 	FILE* file;
 	file = fopen(file_name, "w");

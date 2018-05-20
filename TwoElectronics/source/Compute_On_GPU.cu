@@ -8,7 +8,7 @@
 #include <cuda_runtime.h>
 
 
-__global__ void pairs_init(particle_pair* pair_array, const long size,
+__global__ void pairs_init(particle_pair* pair_array, const size_t size,
                            const double min_r, const double min_p)
 {
 
@@ -22,7 +22,7 @@ __global__ void pairs_init(particle_pair* pair_array, const long size,
 }
 
 
-__global__ void pairs_first_step_on_gpu(particle_pair* first_setp_pair_array, const long size)
+__global__ void pairs_first_step_on_gpu(particle_pair* first_setp_pair_array, const size_t size)
 {
 	int idx = threadIdx.x + blockIdx.x * blockDim.x;
 	if (idx<size)
@@ -36,7 +36,7 @@ __global__ void pairs_first_step_on_gpu(particle_pair* first_setp_pair_array, co
 
 __global__ void pre_second_step_qq_arr(double * QQ_array)
 {
-	unsigned long idx = threadIdx.x + blockIdx.x * blockDim.x;
+	size_t idx = threadIdx.x + blockIdx.x * blockDim.x;
 	if (idx < 2 * two_steps)
 	{
 		QQ_array[idx] = compute_qq_single(idx);
@@ -49,7 +49,7 @@ __global__ void pre_second_step_qq_arr(double * QQ_array)
 __global__ void pre_second_step_E_arr_check
 (const double* E1_array, const double* E2_array, double* E_check_array)
 {
-	unsigned long idx = threadIdx.x + blockIdx.x * blockDim.x;
+	size_t idx = threadIdx.x + blockIdx.x * blockDim.x;
 	if (idx < 2 * two_steps)
 	{
 		E_check_array[idx] = compute_e_for_check(idx, E1_array[idx], E2_array[idx]);
@@ -83,7 +83,7 @@ __global__ void pre_second_step_e2_arr(const double* QQ_array, const double EE0,
 
 
 __global__ void pairs_second_step_on_gpu
-(particle_pair* second_arr, const long size, double* E1_array, double* E2_array)
+(particle_pair* second_arr, const size_t size, double* E1_array, double* E2_array)
 {
 	const int idx = threadIdx.x + blockIdx.x * blockDim.x;
 	double e1_laser_t1 = 0.0, e1_laser_t2 = 0.0, e1_laser_t3 = 0.0, e1_laser_t4 = 0.0;
@@ -148,7 +148,7 @@ __global__ void pairs_second_step_on_gpu
 
 __global__ void pairs_second_step_on_gpu_fliter
 (const particle_pair* second_step_pair_array, particle_pair* second_step_pair_array_filter,
- const long size, unsigned long long* count_z, unsigned long long* count_zz)
+ const size_t size, size_t* count_z, size_t* count_zz)
 {
 	const int idx = threadIdx.x + blockIdx.x * blockDim.x;
 	if (idx < size)
@@ -162,7 +162,7 @@ __global__ void pairs_second_step_on_gpu_fliter
 		}
 		if ((ee1 > 0) && (ee2 > 0))
 		{
-			unsigned long long temp_idx = atomicAdd(count_zz, 1);
+			size_t temp_idx = atomicAdd(count_zz, 1);
 			/*nuclei temp;
 			temp.first = second_arr[idx].first;
 			temp.second = second_arr[idx].second;

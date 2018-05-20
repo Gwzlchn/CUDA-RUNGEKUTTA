@@ -59,19 +59,19 @@ __device__ double CalculationE2(const particle& first, const particle& second)
 
 
 
-__device__ double compute_qq_single(const unsigned long& now_step)
+__device__ double compute_qq_single(const size_t& now_step)
 {
 	double t1 = 0.5 * DX * (now_step + 1);
 	return  pow((sin(Omega1 / 2.0 / (2 * N1_const + N2_const)*t1)), 2);
 
 }
 
-__device__ double compute_e_for_check(const unsigned long& now_step, const double& e1_single, const double& e2_single)
+__device__ double compute_e_for_check(const size_t& now_step, const double& e1_single, const double& e2_single)
 {
 	return  sqrt(pow(e1_single, 2) + pow(e2_single, 2));
 }
 
-__device__ double compute_e1_single(const unsigned long& now_step, const double& qq_now_single, const double& EE0)
+__device__ double compute_e1_single(const size_t& now_step, const double& qq_now_single, const double& EE0)
 {
 	double tao = 0.0;
 	double t1 = 0.5 * DX * (now_step + 1);
@@ -79,7 +79,7 @@ __device__ double compute_e1_single(const unsigned long& now_step, const double&
 		(EE0*TP_const / (1.0 + TP_const)) * qq_now_single * sin(Omega2 * t1 + 2 * tao);
 }
 
-__device__ double compute_e2_single(const unsigned long& now_step, const double& qq_now_single, const double& EE0)
+__device__ double compute_e2_single(const size_t& now_step, const double& qq_now_single, const double& EE0)
 {
 	double tao = 0.0;
 	double t1 = 0.5 * DX * (now_step + 1);

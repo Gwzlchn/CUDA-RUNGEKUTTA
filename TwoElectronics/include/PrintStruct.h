@@ -9,13 +9,13 @@
 #include "./Struct_Defines.h"
 
 
-void PrintStruct(particle_pair* ToSaveNuclei, long long n, const char* FileName);
+void PrintStruct(particle_pair* ToSaveNuclei, size_t n, const char* FileName);
 
 
 //0 aw     1 ds
-void PrintArray(double* array, long long n, const char* FileName);
+void PrintArray(double* array, size_t n, const char* FileName);
 
-void Print_Count_Array(double* ee0_array, unsigned long long * z_arr, unsigned long long * zz_arr, int size, const char* file_name);
+void Print_Count_Array(double* ee0_array, size_t * z_arr, size_t * zz_arr, int size, const char* file_name);
 #endif //PRINTSTRUCT_HPP
 
 

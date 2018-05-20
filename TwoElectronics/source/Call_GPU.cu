@@ -18,12 +18,12 @@ dim3 get_compute_block(int dimx)
 	return dim3(dimx);
 }
 
-dim3 get_grid(long size, const dim3& block)
+dim3 get_grid(size_t size, const dim3& block)
 {
 	return dim3((size + block.x - 1) / block.x, 1);
 }
 
-void SaveArraysWhichOnGPU(double* gpu_array, long size, const char* file_name)
+void SaveArraysWhichOnGPU(double* gpu_array, size_t size, const char* file_name)
 {
 	double* host_array = (double*)malloc(sizeof(double) * size);
 	CHECK(cudaMemcpy(host_array, gpu_array, sizeof(double) * size , cudaMemcpyDeviceToHost));
@@ -31,7 +31,7 @@ void SaveArraysWhichOnGPU(double* gpu_array, long size, const char* file_name)
 
 }
 
-void SavePairsWhichOnGPU(particle_pair* gpu_array, long size, const char* file_name)
+void SavePairsWhichOnGPU(particle_pair* gpu_array, size_t size, const char* file_name)
 {
 	particle_pair* host_pairs = (particle_pair*)malloc(Bytes_Of_Pairs);
 	CHECK(cudaMemcpy(host_pairs, gpu_array, size, cudaMemcpyDeviceToHost));
@@ -39,7 +39,7 @@ void SavePairsWhichOnGPU(particle_pair* gpu_array, long size, const char* file_n
 }
 
 
-void Pairs_Init_Call_GPU(particle_pair * pair_array_gpu, const long size)
+void Pairs_Init_Call_GPU(particle_pair * pair_array_gpu, const size_t size)
 {
 	//计算最小 r p;
 	double min_r, min_p;
@@ -55,7 +55,7 @@ void Pairs_Init_Call_GPU(particle_pair * pair_array_gpu, const long size)
 
 }
 
-void Pairs_First_Step_Call_GPU(particle_pair * pair_array_gpu, const long size)
+void Pairs_First_Step_Call_GPU(particle_pair * pair_array_gpu, const size_t size)
 {
 
 
@@ -78,8 +78,8 @@ void Prepare_Laser_QQ_array(double* qq_array_gpu)
 }
 
 void Pairs_Second_Step_Once_Call_GPU
-(particle_pair * pair_array_first_step_gpu, double* qq_array_gpu, const long size, const int index, 
-	unsigned long long& count_z_once, unsigned long long& count_zz_once)
+(particle_pair * pair_array_first_step_gpu, double* qq_array_gpu, const size_t size, const int index, 
+	size_t& count_z_once, size_t& count_zz_once)
 {
 	double *gpu_e1, *gpu_e2;
 	CHECK(cudaMalloc((void **)(&gpu_e1), Bytes_Of_Array_Laser));
@@ -104,7 +104,7 @@ void Pairs_Second_Step_Once_Call_GPU
 	//第二步循环后过滤
 	particle_pair* second_array_filter_gpu;
 	CHECK(cudaMalloc((void **)(&second_array_filter_gpu), Bytes_Of_Pairs));
-	unsigned long long count_z, count_zz;
+	size_t count_z, count_zz;
 	Pairs_Second_Step_Filter_Call_GPU(second_array_gpu, second_array_filter_gpu, size, count_z, count_zz);
 	count_z_once = count_z;
 	count_zz_once = count_zz;
@@ -124,11 +124,11 @@ void Pairs_Second_Step_Once_Call_GPU
 
 void Pairs_Second_Step_Filter_Call_GPU
 (particle_pair * pair_array_sec_step_gpu, particle_pair * pair_array_filtered_gpu,
- long long size, unsigned long long& count_z, unsigned long long& count_zz)
+ size_t size, size_t& count_z, size_t& count_zz)
 {
 	count_z = 0;
 	count_zz = 0;
-	unsigned long long *gpu_count_z_arr, *gpu_count_zz_arr;
+	size_t *gpu_count_z_arr, *gpu_count_zz_arr;
 	CHECK(cudaMalloc((void**)&gpu_count_z_arr, size_ull));
 	CHECK(cudaMalloc((void**)&gpu_count_zz_arr, size_ull));
 
@@ -144,7 +144,7 @@ void Pairs_Second_Step_Filter_Call_GPU
 
 }
 
-void Pairs_Second_Step_Whole_Call_GPU(particle_pair* pair_array_gpu, const long size, const int iter_times)
+void Pairs_Second_Step_Whole_Call_GPU(particle_pair* pair_array_gpu, const size_t size, const int iter_times)
 {
 
 	double* qq_array_gpu;
@@ -152,14 +152,14 @@ void Pairs_Second_Step_Whole_Call_GPU(particle_pair* pair_array_gpu, const long 
 	Prepare_Laser_QQ_array(qq_array_gpu);
 
 	//保存每次迭代的z,zz
-	unsigned long long* z_count_arr = new unsigned long long[iter_times];
-	unsigned long long* zz_count_arr = new unsigned long long[iter_times];
+	size_t* z_count_arr = new size_t[iter_times];
+	size_t* zz_count_arr = new size_t[iter_times];
 	//保存每次迭代的ee0
 	double* ee0_arr = new double[iter_times];
 	for(int i = 0;i<iter_times;i++)
 	{
 		ee0_arr[i]= compute_ee0_by_index(i);
-		unsigned long long z_once, zz_once;
+		size_t z_once, zz_once;
 		Pairs_Second_Step_Once_Call_GPU(pair_array_gpu, qq_array_gpu, size, i,
 										z_once,zz_once);
 		z_count_arr[i] = z_once;
