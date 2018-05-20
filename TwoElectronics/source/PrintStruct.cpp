@@ -19,6 +19,7 @@ void PrintStruct(particle_pair* ToSaveNuclei, size_t n, const char* FileName)
 	strftime(str, 9, "%m%d%H%M", ptr);
 
 	FILE* file;
+	file = fopen(FileName,"w");
 	
 
 	if (!file) perror("cannot open file");
@@ -51,6 +52,7 @@ void PrintArray(double* array, size_t n, const char* FileName)
 	strftime(str, 9, "%m%d%H%M", ptr);
 
 	FILE* file;
+	file = fopen(FileName, "w");
 	
 	if (!file) perror("cannot open file");
 	for (size_t i = 0; i < n; i++)

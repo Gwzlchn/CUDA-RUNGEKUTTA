@@ -35,7 +35,7 @@ void get_min_r_min_p(int nx, int ny, double& min_r, double& min_p)
 		}
 	}
 
-	int min_x_index, min_y_index;
+	int min_x_index = 0, min_y_index = 0;
 	double min = mat[0][0];
 	for (int i = 0; i<nx; i++)
 	{

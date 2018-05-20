@@ -13,7 +13,7 @@ TARGET = TwoElec.out
 
 
 NVCC = /usr/local/cuda/bin/nvcc
-NVCC_FLAGS =  -Xcompiler  -O2 -arch=sm_35 -lcurand -rdc=true -I $(DIR_INC)
+NVCC_FLAGS =  -Xcompiler -Wall -O2  -lcurand -rdc=true -I $(DIR_INC) 
 
 
 #test:
