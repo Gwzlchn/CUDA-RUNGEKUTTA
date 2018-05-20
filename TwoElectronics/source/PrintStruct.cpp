@@ -19,47 +19,6 @@ void PrintStruct(particle_pair* ToSaveNuclei, size_t n, const char* FileName)
 	strftime(str, 9, "%m%d%H%M", ptr);
 
 	FILE* file;
-	switch (choose)
-	{
-		case 0:
-		{
-			char init_file_name[15] = "TestData/init_";
-			///*strcat((char*)(FileName), tmpBuf);
-			strcat(init_file_name, FileName);
-			strcat(init_file_name, str);
-			strcat(init_file_name, ".dat");
-			file = fopen(init_file_name, "w");
-			break; 
-		}
-		case 1:
-		{
-			char step_one_file_name[20] = "TestData/step_one_";
-			strcat(step_one_file_name, FileName);
-			strcat(step_one_file_name, str);
-			strcat(step_one_file_name, ".dat");
-			file = fopen(step_one_file_name, "w");
-			break;  
-		}
-		case 2:
-		{
-			char step_two_file_name[23] = "TestData/step_two_ALL_";
-			strcat(step_two_file_name, FileName);
-			strcat(step_two_file_name, str);
-			strcat(step_two_file_name, ".dat");
-			file = fopen(step_two_file_name, "w");
-			break;
-		}
-		case 3:
-		{
-			char step_two_file_name[26] = "TestData/step_two_fliter_";
-			strcat(step_two_file_name, FileName);
-			strcat(step_two_file_name, str);
-			strcat(step_two_file_name, ".dat");
-			file = fopen(step_two_file_name, "w");
-			break;
-		}
-
-	}
 	
 
 	if (!file) perror("cannot open file");
@@ -92,29 +51,7 @@ void PrintArray(double* array, size_t n, const char* FileName)
 	strftime(str, 9, "%m%d%H%M", ptr);
 
 	FILE* file;
-	switch (choose)
-	{
-		case 0:
-		{
-			char init_file_name[15] = "TestData/AW_";
-			///*strcat((char*)(FileName), tmpBuf);
-			strcat(init_file_name, FileName);
-			strcat(init_file_name, str);
-			strcat(init_file_name, ".dat");
-			file = fopen(init_file_name, "w");
-			break;
-		}
-		case 1:
-		{
-			char step_one_file_name[20] = "TestData/DS_";
-			strcat(step_one_file_name, FileName);
-			strcat(step_one_file_name, str);
-			strcat(step_one_file_name, ".dat");
-			file = fopen(step_one_file_name, "w");
-			break;
-		}
-	}
-
+	
 	if (!file) perror("cannot open file");
 	for (size_t i = 0; i < n; i++)
 	{
