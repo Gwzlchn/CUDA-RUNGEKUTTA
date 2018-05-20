@@ -8,7 +8,7 @@
 #include <cstdio>
 #include <cuda_runtime_api.h>
 
-typedef unsigned long long size_t;
+//typedef unsigned long long size_t;
 
 dim3 get_pre_block(int dimx)
 {
@@ -132,8 +132,8 @@ void Prepare_Laser_E_Check_array(double* e1_array_gpu, double* e2_array_gpu, dou
 }
 
 void Pairs_Second_Step_Once_Call_GPU
-(particle_pair * pair_array_first_step_gpu, double* qq_array_gpu, const size_t size, const int index, 
-	size_t& count_z_once, size_t& count_zz_once)
+(particle_pair * pair_array_first_step_gpu, double* qq_array_gpu, const size_t size, const int index,
+ unsigned long long& count_z_once, unsigned long long& count_zz_once)
 {
 	double *gpu_e1, *gpu_e2;
 	CHECK(cudaMalloc((void **)(&gpu_e1), Bytes_Of_Array_Laser));
@@ -178,22 +178,22 @@ void Pairs_Second_Step_Once_Call_GPU
 
 void Pairs_Second_Step_Filter_Call_GPU
 (particle_pair * pair_array_sec_step_gpu, particle_pair * pair_array_filtered_gpu,
- size_t size, size_t& count_z, size_t& count_zz)
+ size_t size, unsigned long long& count_z, unsigned long long& count_zz)
 {
 	count_z = 0;
 	count_zz = 0;
-	size_t *gpu_count_z_arr, *gpu_count_zz_arr;
-	CHECK(cudaMalloc((void**)&gpu_count_z_arr, size_ull));
-	CHECK(cudaMalloc((void**)&gpu_count_zz_arr, size_ull));
+	unsigned long long  *gpu_count_z, *gpu_count_zz;
+	CHECK(cudaMalloc((void**)&gpu_count_z, size_ull));
+	CHECK(cudaMalloc((void**)&gpu_count_zz, size_ull));
 
 	dim3 com_block = get_compute_block();
 	dim3 com_grid = get_grid(size, com_block);
 	pairs_second_step_on_gpu_fliter << < com_grid, com_block, 0, 0 >> > (pair_array_sec_step_gpu,
-	                                                                     pair_array_filtered_gpu, size, gpu_count_z_arr , gpu_count_zz_arr );
+	                                                                     pair_array_filtered_gpu, size, gpu_count_z , gpu_count_zz );
 
-	CHECK(cudaMemcpy(&count_z , gpu_count_z_arr ,
+	CHECK(cudaMemcpy(&count_z , gpu_count_z ,
 		size_ull, cudaMemcpyDeviceToHost));
-	CHECK(cudaMemcpy(&count_zz,gpu_count_zz_arr ,
+	CHECK(cudaMemcpy(&count_zz,gpu_count_zz,
 		size_ull, cudaMemcpyDeviceToHost));
 
 }
@@ -206,16 +206,16 @@ void Pairs_Second_Step_Whole_Call_GPU(particle_pair* pair_array_gpu, const size_
 	Prepare_Laser_QQ_array(qq_array_gpu);
 
 	//保存每次迭代的z,zz
-	size_t* z_count_arr = new size_t[iter_times];
-	size_t* zz_count_arr = new size_t[iter_times];
+	unsigned long long* z_count_arr = new unsigned long long[iter_times];
+	unsigned long long* zz_count_arr = new unsigned long long[iter_times];
 	//保存每次迭代的ee0
 	double* ee0_arr = new double[iter_times];
 	for(int i = 0;i<iter_times;i++)
 	{
 		ee0_arr[i]= compute_ee0_by_index(i);
-		size_t z_once, zz_once;
+		unsigned long long z_once, zz_once;
 		Pairs_Second_Step_Once_Call_GPU(pair_array_gpu, qq_array_gpu, size, i,
-										z_once,zz_once);
+		                                z_once,zz_once);
 		z_count_arr[i] = z_once;
 		zz_count_arr[i] = zz_once;
 	}

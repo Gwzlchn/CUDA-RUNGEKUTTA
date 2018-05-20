@@ -39,11 +39,11 @@ void Prepare_Laser_E_Check_array(double* e1_array_gpu,double* e2_array_gpu,doubl
 
 
 
-void Pairs_Second_Step_Once_Call_GPU(particle_pair * pair_array_first_step_gpu, double* qq_array_gpu, const size_t size, const int index, 
-									size_t& count_z_once, size_t& count_zz_once);
+void Pairs_Second_Step_Once_Call_GPU(particle_pair * pair_array_first_step_gpu, double* qq_array_gpu, const size_t size, const int index,
+                                     unsigned long long& count_z_once, unsigned long long& count_zz_once);
 
-void Pairs_Second_Step_Filter_Call_GPU(particle_pair* pair_array_sec_step_gpu, particle_pair* pair_array_filtered, size_t size, 
-									size_t& count_z, size_t& count_zz);
+void Pairs_Second_Step_Filter_Call_GPU(particle_pair* pair_array_sec_step_gpu, particle_pair* pair_array_filtered, size_t size,
+                                       unsigned long long& count_z, unsigned long long& count_zz);
 
 
 void Pairs_Second_Step_Whole_Call_GPU(particle_pair* pair_array_gpu, const size_t size, const int iter_times);
