@@ -5,6 +5,7 @@
 #include <ctime>
 
 #include "../include/PrintStruct.h"
+#include "../include/Sci_Constant.h"
 #define BUFLEN 255   
 
 void PrintStruct(particle_pair* ToSaveNuclei, size_t n, const char* FileName)
@@ -135,6 +136,21 @@ void Print_Count_Array(double* ee0_array,size_t * z_arr,size_t * zz_arr,int size
 	for(int i = 0;i<size;i++)
 	{
 		fprintf(file, "%d\t %.10lf\t %lld \t %lld \n", i, ee0_array[i], z_arr[i], zz_arr[i]);
+	}
+	fclose(file);
+}
+
+void PrintLaserArrays(double* e1_arr, double* e2_arr, double* e_check_arr, size_t size, const char* file_name)
+{
+	FILE* file;
+	file = fopen(file_name, "w");
+	if (!file) perror("cannot open file");
+
+
+	for (int i = 0; i<size; i++)
+	{
+		double t1 = DX * i * 0.5;
+		fprintf(file, "%.10lf \t %.10lf\t %.10lf \t %.10lf \n",(t1/T0_const) , e1_arr[i], e2_arr[i], e_check_arr[i]);
 	}
 	fclose(file);
 }

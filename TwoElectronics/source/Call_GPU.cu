@@ -31,6 +31,26 @@ void SaveArraysWhichOnGPU(double* gpu_array, size_t size, const char* file_name)
 
 }
 
+void SaveLaserArraysWhichOnGPU(double* e1_array, double* e2_array, double* e_check_array, size_t size,
+	const char* file_name)
+{
+	size_t bytes_of_arr = sizeof(double) * size ;
+
+	double* e1_host_array = (double*)malloc(bytes_of_arr);
+	double* e2_host_array = (double*)malloc(bytes_of_arr);
+	double* e_check_host_array = (double*)malloc(bytes_of_arr);
+
+	CHECK(cudaMemcpy(e1_host_array, e1_array, bytes_of_arr, cudaMemcpyDeviceToHost));
+	CHECK(cudaMemcpy(e2_host_array, e2_array, bytes_of_arr, cudaMemcpyDeviceToHost));
+	CHECK(cudaMemcpy(e_check_host_array, e_check_array, bytes_of_arr, cudaMemcpyDeviceToHost));
+
+	PrintLaserArrays(e1_host_array,e2_host_array,e_check_host_array, size, file_name);
+
+
+
+
+}
+
 void SavePairsWhichOnGPU(particle_pair* gpu_array, size_t size, const char* file_name)
 {
 	particle_pair* host_pairs = (particle_pair*)malloc(Bytes_Of_Pairs);
@@ -73,6 +93,38 @@ void Prepare_Laser_QQ_array(double* qq_array_gpu)
 	dim3 block = get_pre_block();;
 	dim3 grid = get_grid((2 * two_steps), block);
 	pre_second_step_qq << < grid, block >> > (qq_array_gpu);
+	CHECK(cudaGetLastError());
+	CHECK(cudaDeviceSynchronize());
+}
+
+void Prepare_Laser_E1_array(double* qq_array_gpu,double* e1_array_gpu)
+{
+	dim3 block = get_pre_block();;
+	dim3 grid = get_grid((2 * two_steps), block);
+
+	pre_second_step_e1_arr << < grid, block >> > (qq_array_gpu,EE0_Check,e1_array_gpu);
+	CHECK(cudaGetLastError());
+	CHECK(cudaDeviceSynchronize());
+
+}
+
+void Prepare_Laser_E2_array(double* qq_array_gpu,double * e2_array_gpu)
+{
+
+	dim3 block = get_pre_block();;
+	dim3 grid = get_grid((2 * two_steps), block);
+
+	pre_second_step_e2_arr << < grid, block >> > (qq_array_gpu, EE0_Check, e2_array_gpu);
+	CHECK(cudaGetLastError());
+	CHECK(cudaDeviceSynchronize());
+}
+
+void Prepare_Laser_E_Check_array(double* e1_array_gpu, double* e2_array_gpu, double* e_check_array_gpu)
+{
+
+	dim3 block = get_pre_block();;
+	dim3 grid = get_grid((2 * two_steps), block);
+	pre_second_step_E_arr_check << < grid, block >> > (e1_array_gpu,e2_array_gpu,e_check_array_gpu);
 	CHECK(cudaGetLastError());
 	CHECK(cudaDeviceSynchronize());
 }

@@ -80,7 +80,8 @@
 
 #define Iter_Count  21
 
-
+//最开始  ee0 输出检查时
+double EE0_Check = (sqrt(1e15 / 3.51e16));
 
 size_t Bytes_Of_Pairs = (Pairs_Total) * sizeof(particle_pair);
 size_t Bytes_Of_Array_Laser = sizeof(double) * 2 * (two_steps);
@@ -89,7 +90,7 @@ const int size_ull = sizeof(size_t);
 std::string init_file_name = "Initialization.dat";
 std::string first_file_name = "After_First_Step.dat";
 std::string ion_rate_file_name = "Ionization_Rate_Count.dat";
-
+std::string laser_array_file_name = "Laser_Array_Check.dat";
 
 
 

@@ -12,6 +12,9 @@ dim3 get_grid(size_t size,const dim3& block);
 
 void SaveArraysWhichOnGPU(double* gpu_array, size_t  size, const char* file_name);
 
+void SaveLaserArraysWhichOnGPU(double* e1_array, double* e2_array, double* e_check_array, size_t size, const char* file_name);
+
+
 void SavePairsWhichOnGPU(particle_pair* gpu_array, size_t  size,const char* file_name);
 
 double* AllocArayOnGPU(size_t size);
@@ -26,6 +29,15 @@ void Pairs_Init_Call_GPU(particle_pair* pair_array_gpu, const size_t size);
 void Pairs_First_Step_Call_GPU(particle_pair* pair_array_gpu, const size_t size);
 
 void Prepare_Laser_QQ_array(double* qq_array_gpu);
+
+void Prepare_Laser_E1_array(double* qq_array_gpu,double* e1_array_gpu);
+
+void Prepare_Laser_E2_array(double* qq_array_gpu,double* e2_array_gpu);
+
+void Prepare_Laser_E_Check_array(double* e1_array_gpu,double* e2_array_gpu,double* e_check_array);
+
+
+
 
 void Pairs_Second_Step_Once_Call_GPU(particle_pair * pair_array_first_step_gpu, double* qq_array_gpu, const size_t size, const int index, 
 									size_t& count_z_once, size_t& count_zz_once);
