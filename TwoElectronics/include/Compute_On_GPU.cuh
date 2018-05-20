@@ -30,7 +30,7 @@ __global__ void pairs_second_step_on_gpu
 
 __global__ void pairs_second_step_on_gpu_fliter
 (const particle_pair* second_step_pair_array, particle_pair* second_step_pair_array_filter,
-	const size_t size, size_t* count_z, size_t* count_zz);
+ const size_t size, unsigned long long* count_z, unsigned long long* count_zz);
 
 
 #endif //CALL_CPU_CUH

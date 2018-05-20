@@ -148,13 +148,15 @@ __global__ void pairs_second_step_on_gpu
 
 __global__ void pairs_second_step_on_gpu_fliter
 (const particle_pair* second_step_pair_array, particle_pair* second_step_pair_array_filter,
- const size_t size, size_t* count_z, size_t* count_zz)
+ const size_t size, unsigned long long* count_z, unsigned long long* count_zz)
 {
 	const int idx = threadIdx.x + blockIdx.x * blockDim.x;
 	if (idx < size)
 	{
 		double ee1 = CalculationE1(second_step_pair_array[idx].first, second_step_pair_array[idx].second);
 		double ee2 = CalculationE2(second_step_pair_array[idx].first, second_step_pair_array[idx].second);
+
+
 
 		if (ee1*ee2 < 0)
 		{

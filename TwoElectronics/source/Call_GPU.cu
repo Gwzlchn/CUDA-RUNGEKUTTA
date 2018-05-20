@@ -187,7 +187,7 @@ void Pairs_Second_Step_Filter_Call_GPU
 	dim3 com_block = get_compute_block();
 	dim3 com_grid = get_grid(size, com_block);
 	pairs_second_step_on_gpu_fliter << < com_grid, com_block, 0, 0 >> > (pair_array_sec_step_gpu,
-		pair_array_filtered_gpu, size, gpu_count_z_arr , gpu_count_zz_arr );
+	                                                                     pair_array_filtered_gpu, size, gpu_count_z_arr , gpu_count_zz_arr );
 
 	CHECK(cudaMemcpy(&count_z , gpu_count_z_arr ,
 		size_ull, cudaMemcpyDeviceToHost));
