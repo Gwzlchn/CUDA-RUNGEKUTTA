@@ -158,7 +158,7 @@ void Pairs_Second_Step_Once_Call_GPU
 	//第二步循环后过滤
 	particle_pair* second_array_filter_gpu;
 	CHECK(cudaMalloc((void **)(&second_array_filter_gpu), Bytes_Of_Pairs));
-	size_t count_z, count_zz;
+	unsigned long long count_z, count_zz;
 	Pairs_Second_Step_Filter_Call_GPU(second_array_gpu, second_array_filter_gpu, size, count_z, count_zz);
 	count_z_once = count_z;
 	count_zz_once = count_zz;
