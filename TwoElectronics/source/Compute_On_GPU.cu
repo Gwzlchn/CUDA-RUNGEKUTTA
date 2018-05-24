@@ -126,6 +126,23 @@ __global__ void pairs_second_step_on_gpu_every_step
 			every_step_arr[i].second.pz = second_arr[idx].second.pz;
 
 		}
+
+		for(int i = 0;i<two_steps;i++)
+		{
+			every_step_arr[i].first.x = 1;
+			every_step_arr[i].first.y = 2;
+			every_step_arr[i].first.z = 3;
+			every_step_arr[i].first.px = second_arr[idx].first.px;
+			every_step_arr[i].first.py = second_arr[idx].first.py;
+			every_step_arr[i].first.pz = second_arr[idx].first.pz;
+
+			every_step_arr[i].second.x = second_arr[idx].second.x;
+			every_step_arr[i].second.y = second_arr[idx].second.y;
+			every_step_arr[i].second.z = second_arr[idx].second.z;
+			every_step_arr[i].second.px = second_arr[idx].second.px;
+			every_step_arr[i].second.py = second_arr[idx].second.py;
+			every_step_arr[i].second.pz = second_arr[idx].second.pz;
+		}
 	}
 }
 
