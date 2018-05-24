@@ -294,6 +294,6 @@ void every_step(int pairs)
 	//Pairs_Second_Step_Whole_Call_GPU(pairs_array_single_step_gpu, pairs, Iter_Count);
 	dim3 block = get_compute_block();;
 	dim3 grid = get_grid(1, block);
-	pairs_second_step_on_gpu_every_step << < grid, block >> > (pairs_array_single_step_gpu, 1, gpu_e1, gpu_e2, pairs_array_every_step_gpu);
+	pairs_second_step_on_gpu_every_step << < 1,1 >> > (pairs_array_single_step_gpu, 1, gpu_e1, gpu_e2, pairs_array_every_step_gpu);
 	SavePairsWhichOnGPU(pairs_array_every_step_gpu, two_steps, "every_step.dat");
 }
