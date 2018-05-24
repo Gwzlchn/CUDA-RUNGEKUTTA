@@ -6,7 +6,7 @@
 
 #include <cstdlib>
 #include <cuda_runtime.h>
-
+#include <cstdio>
 
 __global__ void pairs_init(particle_pair* pair_array, const size_t size,
                            const double min_r, const double min_p)
