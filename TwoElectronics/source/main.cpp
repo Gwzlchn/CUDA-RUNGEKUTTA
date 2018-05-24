@@ -79,13 +79,13 @@ void compute_on_gpu_all(size_t pairs)
 
 	//---------------------------第二步----------------------------
 	//计时
-	//start = seconds();
+	start = seconds();
 	//计算 后保存电离率
 	//Pairs_Second_Step_Whole_Call_GPU(pairs_array_single_step_gpu, pairs, Iter_Count);
-	
+	Pairs_Second_Step_Once(pairs_array_single_step_gpu, pairs);
 	//第二步完成
-	//elapse = seconds();
-	//printf("SecondStep compltete %lf\n", elapse - start);
+	elapse = seconds();
+	printf("SecondStep compltete %lf\n", elapse - start);
 
 
 	//整理工作 释放内存

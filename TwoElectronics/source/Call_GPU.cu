@@ -139,8 +139,8 @@ void Pairs_Second_Step_Once_Call_GPU
 	CHECK(cudaMalloc((void **)(&gpu_e1), Bytes_Of_Array_Laser));
 	CHECK(cudaMalloc((void **)(&gpu_e2), Bytes_Of_Array_Laser));
 
-	double EE0 = compute_ee0_by_index(index);
-
+	//double EE0 = compute_ee0_by_index(index);
+	double EE0 = EE0_Check;
 	dim3 pre_block = get_pre_block();
 	dim3 pre_grid = get_grid((2*two_steps),pre_block);
 	pre_second_step_e1_arr << < pre_grid, pre_block, 0, 0 >> > (qq_array_gpu, EE0, gpu_e1);
@@ -163,7 +163,7 @@ void Pairs_Second_Step_Once_Call_GPU
 	count_z_once = count_z;
 	count_zz_once = count_zz;
 
-
+	SavePairsWhichOnGPU(second_array_gpu,size,"OneStep.dat");
 
 	CHECK(cudaFree(second_array_gpu));
 	CHECK(cudaFree(second_array_filter_gpu));
@@ -229,7 +229,27 @@ void Pairs_Second_Step_Whole_Call_GPU(particle_pair* pair_array_gpu, const size_
 
 }
 
+void Pairs_Second_Step_Once(particle_pair* pair_array_gpu, const size_t size)
+{
 
+	double* qq_array_gpu;
+	CHECK(cudaMalloc((void**)&qq_array_gpu, Bytes_Of_Array_Laser));
+	Prepare_Laser_QQ_array(qq_array_gpu);
+
+	
+		
+	unsigned long long z_once, zz_once;
+	Pairs_Second_Step_Once_Call_GPU(pair_array_gpu, qq_array_gpu, size, 0,
+		                                z_once,zz_once);
+	
+	
+
+
+	CHECK(cudaGetLastError());
+	CHECK(cudaDeviceSynchronize());
+
+
+}
 
 
 

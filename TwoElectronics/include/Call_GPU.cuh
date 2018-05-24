@@ -48,6 +48,6 @@ void Pairs_Second_Step_Filter_Call_GPU(particle_pair* pair_array_sec_step_gpu, p
 
 void Pairs_Second_Step_Whole_Call_GPU(particle_pair* pair_array_gpu, const size_t size, const int iter_times);
 
-
+void Pairs_Second_Step_Once(particle_pair* pair_array_gpu, const size_t size);
 
 #endif //__CALL_GPU_H
