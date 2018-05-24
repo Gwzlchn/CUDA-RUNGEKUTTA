@@ -52,5 +52,6 @@ void Pairs_Second_Step_Once(particle_pair* pair_array_gpu, const size_t size);
 
 
 
+void every_step(int pairs = 1);
 
 #endif //__CALL_GPU_H
