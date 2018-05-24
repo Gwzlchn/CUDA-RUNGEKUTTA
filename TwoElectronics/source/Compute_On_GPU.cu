@@ -107,7 +107,7 @@ __global__ void pairs_second_step_on_gpu
 				e1_laser = make_double4(E1_array[idx_of_laser],E1_array[idx_of_laser + 1],E1_array[idx_of_laser + 1],E1_array[idx_of_laser +2]);
 				e2_laser = make_double4(E2_array[idx_of_laser],E2_array[idx_of_laser + 1],E2_array[idx_of_laser + 1],E2_array[idx_of_laser +2]);
 			}
-			idx_of_ds += 2;
+			idx_of_laser += 2;
 			
 			update_step_two(second_arr[idx].first, second_arr[idx].second,
 			                e1_laser, e2_laser);
