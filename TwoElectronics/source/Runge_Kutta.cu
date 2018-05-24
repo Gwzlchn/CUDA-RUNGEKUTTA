@@ -162,9 +162,9 @@ __device__ derivative second_k_one_to_four_second_step
 	const double3 second_fx = fx_fy_fz_second_nucleus(first, second);
 	const double3 second_gx = gx_gy_gz_second_nucleus(first, second);
 	derivative second_px_fx;
-	second_px_fx.px = second.px;
-	second_px_fx.py = second.py;
-	second_px_fx.pz = second.pz;
+	second_px_fx.px = second_gx.x;
+	second_px_fx.py = second_gx.y;
+	second_px_fx.pz = second_gx.z;
 	second_px_fx.fx = second_fx.x;
 	second_px_fx.fy = second_fx.y - e2_laser;
 	second_px_fx.fz = second_fx.z - e1_laser;
