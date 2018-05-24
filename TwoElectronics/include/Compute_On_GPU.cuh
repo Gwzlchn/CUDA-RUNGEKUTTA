@@ -28,6 +28,14 @@ __global__ void pairs_second_step_on_gpu
 (particle_pair* second_arr, const size_t size, double* E1_array, double* E2_array);
 
 
+
+
+__global__ void pairs_second_step_on_gpu_every_step
+(particle_pair* second_arr, const size_t size, double* E1_array, double* E2_array,
+	particle_pair* every_step_arr);
+
+
+
 __global__ void pairs_second_step_on_gpu_fliter
 (const particle_pair* second_step_pair_array, particle_pair* second_step_pair_array_filter,
  const size_t size, unsigned long long* count_z, unsigned long long* count_zz);

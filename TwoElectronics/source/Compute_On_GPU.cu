@@ -81,6 +81,48 @@ __global__ void pre_second_step_e2_arr(const double* QQ_array, const double EE0,
 
 
 
+__global__ void pairs_second_step_on_gpu_every_step
+(particle_pair* second_arr, const size_t size, double* E1_array, double* E2_array,
+	particle_pair* every_step_arr)
+{
+	const int idx = threadIdx.x + blockIdx.x * blockDim.x;
+
+	double4 e1_laser = make_double4(0.0, 0.0, 0.0, 0.0);
+	double4 e2_laser = make_double4(0.0, 0.0, 0.0, 0.0);
+	int idx_of_laser = -1; // 相当于nn
+						   //double t1 = 0.0, t2 = 0.0, t3 = 0.0, t4 = 0.0;
+						   //double now_t = 0.0; //当前时间，相当于t(1)
+	if (idx < size)
+	{
+		for (int i = 0; i < two_steps; i++)
+		{
+
+			if (idx_of_laser == -1)
+			{
+				e1_laser = make_double4(0.0, E1_array[0], E1_array[0], E1_array[1]);
+				e2_laser = make_double4(0.0, E2_array[0], E2_array[0], E2_array[1]);
+			}
+			else
+			{
+				e1_laser = make_double4(E1_array[idx_of_laser], E1_array[idx_of_laser + 1], E1_array[idx_of_laser + 1], E1_array[idx_of_laser + 2]);
+				e2_laser = make_double4(E2_array[idx_of_laser], E2_array[idx_of_laser + 1], E2_array[idx_of_laser + 1], E2_array[idx_of_laser + 2]);
+			}
+			idx_of_laser += 2;
+
+			update_step_two(second_arr[idx].first, second_arr[idx].second,
+				e1_laser, e2_laser);
+			every_step_arr[i].first = second_arr[idx].first;
+			every_step_arr[i].second = second_arr[idx].second;
+
+		}
+	}
+}
+
+
+
+
+
+
 
 __global__ void pairs_second_step_on_gpu
 (particle_pair* second_arr, const size_t size, double* E1_array, double* E2_array)
