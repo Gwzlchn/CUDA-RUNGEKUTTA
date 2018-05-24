@@ -97,7 +97,7 @@ __global__ void pairs_second_step_on_gpu
 		for (int i = 0; i < two_steps; i++)
 		{
 			
-			if(idx_of_ds == -1 )
+			if(idx_of_laser == -1 )
 			{
 				e1_laser = make_double4(0.0,E1_array[0],E1_array[0],E1_array[1]);
 				e2_laser = make_double4(0.0,E2_array[0],E2_array[0],E2_array[1]);
