@@ -74,7 +74,7 @@
 
 
 //粒子数
-#define Pairs_Total 10000UL
+#define Pairs_Total 1UL
 
 //激光场迭代次数
 
