@@ -13,7 +13,7 @@ TARGET = TwoElec.out
 
 
 NVCC = nvcc
-NVCC_FLAGS =  -Xcompiler -Wall -O2  -lcurand -rdc=true -I $(DIR_INC) 
+NVCC_FLAGS =  -Xcompiler -Wall -O4  -lcurand -rdc=true -I $(DIR_INC) 
 
 
 #test:
