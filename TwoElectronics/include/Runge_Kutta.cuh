@@ -47,4 +47,8 @@ __device__ derivative second_k_one_to_four_second_step
 (const particle& first, const particle& second, const double& e1_laser, const double& e2_laser);
 
 
+//每一步都保存
+__device__ void update_step_two_every_step(particle& step_one_first, particle& step_one_second,
+	const double4 e1_laser_now, const double4 e2_laser_now, particle_pair& every_step)
+
 #endif // RUNGEKUTTA
