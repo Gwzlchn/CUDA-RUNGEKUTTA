@@ -111,6 +111,7 @@ __global__ void pairs_second_step_on_gpu_every_step
 
 			update_step_two(second_arr[0].first, second_arr[0].second,
 				e1_laser, e2_laser);
+			printf("%.10lf", second_arr[0].first.x);
 			every_step_arr[i].first.x = second_arr[0].first.x;
 			every_step_arr[i].first.y = second_arr[0].first.y;
 			every_step_arr[i].first.z = second_arr[0].first.z;
