@@ -235,6 +235,18 @@ __device__ void update_step_two_every_step(particle& step_one_first, particle& s
 	k_one_to_four_add(first_k1, first_k2, first_k3, first_k4, step_one_first);
 	k_one_to_four_add(second_k1, second_k2, second_k3, second_k4, step_one_second);
 
-	every_step.first = step_one_first;
-	every_step.second = step_one_second;
+	every_step.first.x = step_one_first.x;
+	every_step.first.y = step_one_first.y;
+	every_step.first.z = step_one_first.z;
+	every_step.first.px = step_one_first.px;
+	every_step.first.py = step_one_first.py;
+	every_step.first.pz = step_one_first.pz;
+
+
+	every_step.second.x = step_one_second.x;
+	every_step.second.y = step_one_second.y;
+	every_step.second.z = step_one_second.z;
+	every_step.second.px = step_one_second.px;
+	every_step.second.py = step_one_second.py;
+	every_step.second.pz = step_one_second.pz;
 }
