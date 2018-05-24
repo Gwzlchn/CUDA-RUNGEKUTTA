@@ -55,7 +55,7 @@ void SaveLaserArraysWhichOnGPU(double* e1_array, double* e2_array, double* e_che
 
 void SavePairsWhichOnGPU(particle_pair* gpu_array, size_t size, const char* file_name)
 {
-	particle_pair* host_pairs = (particle_pair*)malloc(Bytes_Of_Pairs);
+	particle_pair* host_pairs = (particle_pair*)malloc(size * sizeof(particle_pair));
 	CHECK(cudaMemcpy(host_pairs, gpu_array, Bytes_Of_Pairs, cudaMemcpyDeviceToHost));
 	PrintStruct(host_pairs, size, file_name);
 }
