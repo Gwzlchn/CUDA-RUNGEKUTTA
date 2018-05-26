@@ -64,7 +64,7 @@
 
 //下面的10000为one_steps
 
-#define   DX    ((2.0*N1_const + N2_const) * T0_const / (40000))
+#define   DX    ((2.0*N1_const + N2_const) * T0_const / (two_steps))
 
 #define  TP_const 0.8
 
