@@ -139,7 +139,27 @@ void PrintStruct(particle_pair* ToSaveNuclei, size_t n, const char* FileName)
 	return;
 }
 
+void PrintK1K2K3K4(double4* array,size_t size,const char* FileName)
+{
+	FILE* file;
+	file = fopen(FileName, "w");
 
+
+	if (!file) perror("cannot open file");
+	for (size_t i = 0; i < size; i++)
+	{
+		fprintf(file, "%-.10lf\t%-.10lf\t%-.10lf\t%-.10lf\t ",
+			array[i].x,array[i].y,array[i].z,array[i].w
+		);
+		fprintf(file, "\n");
+	}
+
+
+	fclose(file);
+
+	return;
+	
+}
 
 
 
@@ -437,7 +457,7 @@ void PrintStruct(particle_pair* ToSaveNuclei, size_t n, const char* FileName)
 
 
    void update_step_one(particle& step_one_first, particle& step_one_second,
-	   particle_pair& every_step)
+	   particle_pair& every_step,double4* every_step_k)
    {
 	   //计算K1
 	   const derivative first_k1 = fisrt_k_one_to_four_fisrt_step(step_one_first, step_one_second);
@@ -481,17 +501,79 @@ void PrintStruct(particle_pair* ToSaveNuclei, size_t n, const char* FileName)
 	   every_step.second.pz = step_one_second.pz;
 
 
+//g1	
+	every_step_k->x = first_k1.px;
+	every_step_k->y = first_k2.px;
+	every_step_k->z = first_k3.px;
+	every_step_k->w = first_k4.px;
+//f1
+	(every_step_k + 1)->x = first_k1.fx;
+	(every_step_k + 1)->y = first_k2.fx;
+	(every_step_k + 1)->z = first_k3.fx;
+	(every_step_k + 1)->w = first_k4.fx;
+//g2
 
+	(every_step_k + 2)->x = second_k1.px;
+	(every_step_k + 2)->y = second_k2.px;
+	(every_step_k + 2)->z = second_k3.px;
+	(every_step_k + 2)->w = second_k4.px;
+//f2
 
+	(every_step_k + 3)->x = second_k1.fx;
+	(every_step_k + 3)->y = second_k2.fx;
+	(every_step_k + 3)->z = second_k3.fx;
+	(every_step_k + 3)->w = second_k4.fx;
+//g3
+	(every_step_k + 4)->x = first_k1.py;
+	(every_step_k + 4)->y = first_k2.py;
+	(every_step_k + 4)->z = first_k3.py;
+	(every_step_k + 4)->w = first_k4.py;
+	
+//f3
+	(every_step_k + 5)->x = first_k1.fy;
+	(every_step_k + 5)->y = first_k2.fy;
+	(every_step_k + 5)->z = first_k3.fy;
+	(every_step_k + 5)->w = first_k4.fy;
 
+//g4
+	(every_step_k + 6)->x = second_k1.py;
+	(every_step_k + 6)->y = second_k2.py;
+	(every_step_k + 6)->z = second_k3.py;
+	(every_step_k + 6)->w = second_k4.py;	
+	
+	
+	
+//f4
+	(every_step_k + 7)->x = second_k1.fy;
+	(every_step_k + 7)->y = second_k2.fy;
+	(every_step_k + 7)->z = second_k3.fy;
+	(every_step_k + 7)->w = second_k4.fy;
+	
+	
+//g5
+	(every_step_k + 8)->x = first_k1.pz;
+	(every_step_k + 8)->y = first_k2.pz;
+	(every_step_k + 8)->z = first_k3.pz;
+	(every_step_k + 8)->w = first_k4.pz;
+	
+	
+//f5
+	(every_step_k + 9)->x = first_k1.fz;
+	(every_step_k + 9)->y = first_k2.fz;
+	(every_step_k + 9)->z = first_k3.fz;
+	(every_step_k + 9)->w = first_k4.fz;
+//g6
+	(every_step_k + 10)->x = second_k1.pz;
+	(every_step_k + 10)->y = second_k2.pz;
+	(every_step_k + 10)->z = second_k3.pz;
+	(every_step_k + 10)->w = second_k4.pz;
+//f6
+	(every_step_k + 11)->x = second_k1.fz;
+	(every_step_k + 11)->y = second_k2.fz;
+	(every_step_k + 11)->z = second_k3.fz;
+	(every_step_k + 11)->w = second_k4.fz;
 
-
-
-
-
-
-
-
+	
 	   return;
    }
 
@@ -544,11 +626,11 @@ void PrintStruct(particle_pair* ToSaveNuclei, size_t n, const char* FileName)
  }
 
 
- void first_step_every_step(particle_pair init,particle_pair* every_step)
+ void first_step_every_step(particle_pair init,particle_pair* every_step,double4* every_step_k)
 {
 	for(size_t i =0 ;i<one_steps;i++)
 	{
-		update_step_one(init.first, init.second, every_step[i]);
+		update_step_one(init.first, init.second, every_step[i],&every_step_k[12 * i]);
 	}
 }
 
@@ -660,9 +742,12 @@ void PrintStruct(particle_pair* ToSaveNuclei, size_t n, const char* FileName)
 
 
 	 particle_pair* every_step = new particle_pair[one_steps];
-
+	 double4* every_step_k = new double4[12 * one_steps];
 
 	 //pairs_second_step_on_gpu_every_step(init, 1, e1_arr, e2_arr, every_step);
-	 first_step_every_step(init, every_step);
-	 PrintStruct(every_step, one_steps, "no_laser_every_step.dat");
+	 first_step_every_step(init, every_step,every_step_k);
+	 PrintK1K2K3K4(every_step_k,12*one_steps,"K1K2K3K4.dat");
+	 //PrintStruct(every_step, one_steps, "no_laser_every_step.dat");
+	
+ 
  }
