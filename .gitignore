@@ -271,3 +271,4 @@ __pycache__/
 *.exp
 *.lib
 *.txt
+/TwoElectronics/every_step_test/dx_1_10.zip

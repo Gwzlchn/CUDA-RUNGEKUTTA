@@ -47,8 +47,8 @@ double4 make_double4(double x, double y, double z, double w)
 #define   T0_const    (2 * PI / Omega1)
 
 //下面的10000为one_steps
-
-#define   DX    ((2.0*N1_const + N2_const) * T0_const / (two_steps))
+#define DX 1
+//#define   DX    ((2.0*N1_const + N2_const) * T0_const / (two_steps))
 
 #define  TP_const 0.8
 
@@ -109,7 +109,7 @@ struct  particle_pair {
 
 
 
-void PrintStruct(particle_pair* ToSaveNuclei, size_t n, const char* FileName)
+void PrintStruct(particle_pair* ToSaveNuclei, size_t n, const char* FileName) //输出的粒子的信息
 {
 	//format date and time. 
 	struct tm *ptr;
@@ -146,12 +146,15 @@ void PrintK1K2K3K4(double4* array,size_t size,const char* FileName)
 
 
 	if (!file) perror("cannot open file");
-	for (size_t i = 0; i < size; i++)
+	for (size_t i = 0;  (i < size); i=i+12)
 	{
-		fprintf(file, "%-.10lf\t%-.10lf\t%-.10lf\t%-.10lf\t ",
+		
+
+		fprintf(file, "%-.12lf\t%-.12lf\t%-.12lf\t%-.12lf\t ",
 			array[i].x,array[i].y,array[i].z,array[i].w
 		);
 		fprintf(file, "\n");
+	
 	}
 
 
@@ -731,7 +734,7 @@ void PrintK1K2K3K4(double4* array,size_t size,const char* FileName)
 
 	 for (size_t i = 0; i<2 * two_steps; i++)
 	 {
-		 qq_arr[i] = compute_qq_single(i);
+		 qq_arr[i] = compute_qq_single(i); 
 	 }
 
 	 for (size_t i = 0; i<2 * two_steps; i++)
