@@ -104,7 +104,6 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\Call_GPU.cu" />
-    <ClCompile Include="source\every_step.cpp" />
     <ClCompile Include="source\main.cpp" />
     <ClCompile Include="source\PrintStruct.cpp" />
   </ItemGroup>

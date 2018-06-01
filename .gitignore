@@ -272,3 +272,4 @@ __pycache__/
 *.lib
 *.txt
 /TwoElectronics/every_step_test/dx_1_10.zip
+*.opj

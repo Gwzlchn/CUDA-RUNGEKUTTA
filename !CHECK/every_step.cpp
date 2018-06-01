@@ -124,7 +124,7 @@ void PrintStruct(particle_pair* ToSaveNuclei, size_t n, const char* FileName) //
 	if (!file) perror("cannot open file");
 	for (size_t i = 0; i < n; i++)
 	{
-		fprintf(file, "%-.10lf\t%-.10lf\t%-.10lf\t%-.10lf\t%-.10lf\t%-.10lf\t%-.10lf\t%-.10lf\t%-.10lf\t%-.10lf\t%-.10lf\t%-.10lf\t",
+		fprintf(file, "%-.12lf\t%-.12lf\t%-.12lf\t%-.12lf\t%-.12lf\t%-.12lf\t%-.12lf\t%-.12lf\t%-.12lf\t%-.12lf\t%-.12lf\t%-.12lf\t",
 			ToSaveNuclei[i].first.x, ToSaveNuclei[i].first.y, ToSaveNuclei[i].first.z,
 			ToSaveNuclei[i].first.px, ToSaveNuclei[i].first.py, ToSaveNuclei[i].first.pz,
 			ToSaveNuclei[i].second.x, ToSaveNuclei[i].second.y, ToSaveNuclei[i].second.z,
@@ -764,8 +764,8 @@ void PrintK1K2K3K4(double4* array,size_t size,const char* FileName)
 
 	 //pairs_second_step_on_gpu_every_step(init, 1, e1_arr, e2_arr, every_step);
 	 first_step_every_step(init, every_step,every_step_k);
-	PrintK1K2K3K4(every_step_k,12*one_steps,"K1K2K3K4_add.dat");
-	 //PrintStruct(every_step, one_steps, "no_laser_every_step.dat");
+	//PrintK1K2K3K4(every_step_k,12*one_steps,"K1K2K3K4_add.dat");
+	 PrintStruct(every_step, one_steps, "no_laser_every_step.dat");
 	
  
  }
