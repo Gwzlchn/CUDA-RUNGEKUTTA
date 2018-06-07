@@ -267,18 +267,19 @@ void Pairs_Second_Step_Once_Use_E0_Call_GPU(
 void Pairs_Second_Step_Once(particle_pair* pair_array_gpu, const size_t size)
 {
 
+
 	double* qq_array_gpu;
 	CHECK(cudaMalloc((void**)&qq_array_gpu, Bytes_Of_Array_Laser));
 	Prepare_Laser_QQ_array(qq_array_gpu);
-
-	
-		
+	printf("second init");
 	unsigned long long z_once, zz_once;
 	Pairs_Second_Step_Once_Use_E0_Call_GPU(pair_array_gpu, qq_array_gpu, size, EE0_now,
-		                                z_once,zz_once);
-	
+		z_once, zz_once);
+
+	printf("second done");
 	
 
+	CHECK(cudaFree(qq_array_gpu));
 
 	CHECK(cudaGetLastError());
 	CHECK(cudaDeviceSynchronize());
