@@ -96,6 +96,7 @@ const std::string first_file_name = folder_name + "After_First_Step.dat";
 const std::string ion_rate_file_name = folder_name + "Ionization_Rate_Count.dat";
 const std::string laser_array_file_name = folder_name + "Laser_Array_Check.dat";
 const std::string qq_array_file_name = folder_name + "QQ_Array_Check.dat";
+const std::string second_step_file_name = folder_name + "Second_Step_Filter_ZZ.dat";
 
 
 

@@ -168,6 +168,9 @@ void Pairs_Second_Step_Filter_Call_GPU
 	pairs_second_step_on_gpu_fliter << < com_grid, com_block, 0, 0 >> > (pair_array_sec_step_gpu,
 	                                                                     pair_array_filtered_gpu, size, gpu_count_z , gpu_count_zz );
 
+	
+	
+	
 	CHECK(cudaMemcpy(&count_z , gpu_count_z ,
 		size_ull, cudaMemcpyDeviceToHost));
 	CHECK(cudaMemcpy(&count_zz,gpu_count_zz,
@@ -241,6 +244,8 @@ void Pairs_Second_Step_Once_Use_E0_Call_GPU(
 	count_z_once = count_z;
 	count_zz_once = count_zz;
 
+	SavePairsWhichOnGPU(second_array_filter_gpu, count_zz_once, second_step_file_name.c_str());
+
 	//SavePairsWhichOnGPU(second_array_gpu,size,"OneStep.dat");
 
 	CHECK(cudaFree(second_array_gpu));
@@ -266,7 +271,7 @@ void Pairs_Second_Step_Once(particle_pair* pair_array_gpu, const size_t size)
 	
 		
 	unsigned long long z_once, zz_once;
-	Pairs_Second_Step_Once_Call_GPU(pair_array_gpu, qq_array_gpu, size, 0,
+	Pairs_Second_Step_Once_Use_E0_Call_GPU(pair_array_gpu, qq_array_gpu, size, EE0_now,
 		                                z_once,zz_once);
 	
 	
