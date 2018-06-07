@@ -356,7 +356,7 @@ void NucleiPreRandom(nuclei* Array, const long size)
 }
 
 
-void NucleiFisrtStep(nuclei* first_array, const long size)
+void NucleiFirstStep(nuclei* first_array, const long size)
 {
 	int dimx = 32;
 	dim3 block(dimx);
@@ -724,7 +724,7 @@ void compute_on_gpu_one(const long pairs,const char* file_name)
 	//first空间在之前申请过了
 	 start = seconds();
 	//计算
-	NucleiFisrtStep(gpu_first, pairs);
+	NucleiFirstStep(gpu_first, pairs);
 	
 
 	//把值赋给第二步(也申请了第二步的空间)

@@ -8,7 +8,7 @@
 
 
 //第一个粒子 K1~K4 第一步循环
-__device__ derivative fisrt_k_one_to_four_fisrt_step(const particle& first, const particle& second)
+__device__ derivative first_k_one_to_four_first_step(const particle& first, const particle& second)
 {
 	//二阶导 三个数
 	const double3 first_fx = fx_fy_fz_first_nucleus(first, second);
@@ -29,7 +29,7 @@ __device__ derivative fisrt_k_one_to_four_fisrt_step(const particle& first, cons
 }
 
 
-__device__ derivative second_k_one_to_four_fisrt_step(const particle& first, const particle& second)
+__device__ derivative second_k_one_to_four_first_step(const particle& first, const particle& second)
 {
 	//二阶导 三个数
 	double3 second_fx = fx_fy_fz_second_nucleus(first, second);
@@ -106,26 +106,26 @@ __device__ void k_one_to_four_add(const derivative& K1, const derivative& K2, co
 __device__ void update_step_one(particle& step_one_first, particle& step_one_second)
 {
 	//计算K1
-	const derivative first_k1 = fisrt_k_one_to_four_fisrt_step(step_one_first, step_one_second);
-	const derivative second_k1 = second_k_one_to_four_fisrt_step(step_one_first, step_one_second);
+	const derivative first_k1 = first_k_one_to_four_first_step(step_one_first, step_one_second);
+	const derivative second_k1 = second_k_one_to_four_first_step(step_one_first, step_one_second);
 	const particle first_k1_add = first_and_second_k_add_dx_div(first_k1, step_one_first);
 	const particle second_k1_add = first_and_second_k_add_dx_div(second_k1, step_one_second);
 
 	//K2
-	const derivative first_k2 = fisrt_k_one_to_four_fisrt_step(first_k1_add, second_k1_add);
-	const derivative second_k2 = second_k_one_to_four_fisrt_step(first_k1_add, second_k1_add);
+	const derivative first_k2 = first_k_one_to_four_first_step(first_k1_add, second_k1_add);
+	const derivative second_k2 = second_k_one_to_four_first_step(first_k1_add, second_k1_add);
 	const particle first_k2_add = first_and_second_k_add_dx_div(first_k2, step_one_first);
 	const particle second_k2_add = first_and_second_k_add_dx_div(second_k2, step_one_second);
 
 	//K3
-	const derivative first_k3 = fisrt_k_one_to_four_fisrt_step(first_k2_add, second_k2_add);
-	const derivative second_k3 = second_k_one_to_four_fisrt_step(first_k2_add, second_k2_add);
+	const derivative first_k3 = first_k_one_to_four_first_step(first_k2_add, second_k2_add);
+	const derivative second_k3 = second_k_one_to_four_first_step(first_k2_add, second_k2_add);
 	const particle first_k3_add = first_and_second_k_add_dx_raw(first_k3, step_one_first);
 	const particle second_k3_add = first_and_second_k_add_dx_raw(second_k3, step_one_second);
 
 	//K4
-	const derivative first_k4 = fisrt_k_one_to_four_fisrt_step(first_k3_add, second_k3_add);
-	const derivative second_k4 = second_k_one_to_four_fisrt_step(first_k3_add, second_k3_add);
+	const derivative first_k4 = first_k_one_to_four_first_step(first_k3_add, second_k3_add);
+	const derivative second_k4 = second_k_one_to_four_first_step(first_k3_add, second_k3_add);
 
 	k_one_to_four_add(first_k1, first_k2, first_k3, first_k4, step_one_first);
 	k_one_to_four_add(second_k1, second_k2, second_k3, second_k4, step_one_second);
@@ -138,7 +138,7 @@ __device__ void update_step_one(particle& step_one_first, particle& step_one_sec
 
 
 //第一个粒子 K1~K4 第二步循环
-__device__ derivative fisrt_k_one_to_four_second_step
+__device__ derivative first_k_one_to_four_second_step
 (const particle& first, const particle& second, const double& e1_laser, const double& e2_laser)
 {
 	const double3 first_fx = fx_fy_fz_first_nucleus(first, second);
@@ -182,25 +182,25 @@ __device__ void update_step_two(particle& step_one_first, particle& step_one_sec
 	const double4 e1_laser_now, const double4 e2_laser_now)
 {
 	//计算K1
-	const derivative first_k1 = fisrt_k_one_to_four_second_step(step_one_first, step_one_second, e1_laser_now.x, e2_laser_now.x);
+	const derivative first_k1 = first_k_one_to_four_second_step(step_one_first, step_one_second, e1_laser_now.x, e2_laser_now.x);
 	const derivative second_k1 = second_k_one_to_four_second_step(step_one_first, step_one_second, e1_laser_now.x, e2_laser_now.x);
 	const particle first_k1_add = first_and_second_k_add_dx_div(first_k1, step_one_first);
 	const particle second_k1_add = first_and_second_k_add_dx_div(second_k1, step_one_second);
 
 	//K2
-	const derivative first_k2 = fisrt_k_one_to_four_second_step(first_k1_add, second_k1_add, e1_laser_now.y, e2_laser_now.y);
+	const derivative first_k2 = first_k_one_to_four_second_step(first_k1_add, second_k1_add, e1_laser_now.y, e2_laser_now.y);
 	const derivative second_k2 = second_k_one_to_four_second_step(first_k1_add, second_k1_add, e1_laser_now.y, e2_laser_now.y);
 	const particle first_k2_add = first_and_second_k_add_dx_div(first_k2, step_one_first);
 	const particle second_k2_add = first_and_second_k_add_dx_div(second_k2, step_one_second);
 
 	//K3
-	const derivative first_k3 = fisrt_k_one_to_four_second_step(first_k2_add, second_k2_add, e1_laser_now.z, e2_laser_now.z);
+	const derivative first_k3 = first_k_one_to_four_second_step(first_k2_add, second_k2_add, e1_laser_now.z, e2_laser_now.z);
 	const derivative second_k3 = second_k_one_to_four_second_step(first_k2_add, second_k2_add, e1_laser_now.z, e2_laser_now.z);
 	const particle first_k3_add = first_and_second_k_add_dx_raw(first_k3, step_one_first);
 	const particle second_k3_add = first_and_second_k_add_dx_raw(second_k3, step_one_second);
 
 	//K4
-	const derivative first_k4 = fisrt_k_one_to_four_second_step(first_k3_add, second_k3_add, e1_laser_now.w, e2_laser_now.w);
+	const derivative first_k4 = first_k_one_to_four_second_step(first_k3_add, second_k3_add, e1_laser_now.w, e2_laser_now.w);
 	const derivative second_k4 = second_k_one_to_four_second_step(first_k3_add, second_k3_add, e1_laser_now.w, e2_laser_now.w);
 
 	k_one_to_four_add(first_k1, first_k2, first_k3, first_k4, step_one_first);
@@ -211,25 +211,25 @@ __device__ void update_step_two_every_step(particle& step_one_first, particle& s
 	const double4 e1_laser_now, const double4 e2_laser_now,particle_pair& every_step)
 {
 	//计算K1
-	const derivative first_k1 = fisrt_k_one_to_four_second_step(step_one_first, step_one_second, e1_laser_now.x, e2_laser_now.x);
+	const derivative first_k1 = first_k_one_to_four_second_step(step_one_first, step_one_second, e1_laser_now.x, e2_laser_now.x);
 	const derivative second_k1 = second_k_one_to_four_second_step(step_one_first, step_one_second, e1_laser_now.x, e2_laser_now.x);
 	const particle first_k1_add = first_and_second_k_add_dx_div(first_k1, step_one_first);
 	const particle second_k1_add = first_and_second_k_add_dx_div(second_k1, step_one_second);
 
 	//K2
-	const derivative first_k2 = fisrt_k_one_to_four_second_step(first_k1_add, second_k1_add, e1_laser_now.y, e2_laser_now.y);
+	const derivative first_k2 = first_k_one_to_four_second_step(first_k1_add, second_k1_add, e1_laser_now.y, e2_laser_now.y);
 	const derivative second_k2 = second_k_one_to_four_second_step(first_k1_add, second_k1_add, e1_laser_now.y, e2_laser_now.y);
 	const particle first_k2_add = first_and_second_k_add_dx_div(first_k2, step_one_first);
 	const particle second_k2_add = first_and_second_k_add_dx_div(second_k2, step_one_second);
 
 	//K3
-	const derivative first_k3 = fisrt_k_one_to_four_second_step(first_k2_add, second_k2_add, e1_laser_now.z, e2_laser_now.z);
+	const derivative first_k3 = first_k_one_to_four_second_step(first_k2_add, second_k2_add, e1_laser_now.z, e2_laser_now.z);
 	const derivative second_k3 = second_k_one_to_four_second_step(first_k2_add, second_k2_add, e1_laser_now.z, e2_laser_now.z);
 	const particle first_k3_add = first_and_second_k_add_dx_raw(first_k3, step_one_first);
 	const particle second_k3_add = first_and_second_k_add_dx_raw(second_k3, step_one_second);
 
 	//K4
-	const derivative first_k4 = fisrt_k_one_to_four_second_step(first_k3_add, second_k3_add, e1_laser_now.w, e2_laser_now.w);
+	const derivative first_k4 = first_k_one_to_four_second_step(first_k3_add, second_k3_add, e1_laser_now.w, e2_laser_now.w);
 	const derivative second_k4 = second_k_one_to_four_second_step(first_k3_add, second_k3_add, e1_laser_now.w, e2_laser_now.w);
 
 	k_one_to_four_add(first_k1, first_k2, first_k3, first_k4, step_one_first);

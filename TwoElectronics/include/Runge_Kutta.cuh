@@ -21,10 +21,10 @@ __device__ void update_step_two(particle& step_one_first, particle& step_one_sec
 
 
 //第一个粒子 K1~K4 第一步循环
-__device__ derivative fisrt_k_one_to_four_fisrt_step
+__device__ derivative first_k_one_to_four_first_step
 (const particle& first, const particle& second);
 //第二个粒子 K1~K4 第一步循环
-__device__ derivative second_k_one_to_four_fisrt_step
+__device__ derivative second_k_one_to_four_first_step
 (const particle& first, const particle& second);
 
 //计算完 K3 更新下一步参数用，K3 不除以2
@@ -39,7 +39,7 @@ __device__ void k_one_to_four_add
 
 
 //第二步runge-kutta
-__device__ derivative fisrt_k_one_to_four_second_step
+__device__ derivative first_k_one_to_four_second_step
 (const particle& first, const particle& second, const double& e1_laser, const double& e2_laser);
 
 
