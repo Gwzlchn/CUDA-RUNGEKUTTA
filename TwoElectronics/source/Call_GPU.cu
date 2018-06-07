@@ -219,6 +219,7 @@ void Pairs_Second_Step_Whole_Call_GPU(particle_pair* pair_array_gpu, const size_
 		z_count_arr[i] = z_once;
 		zz_count_arr[i] = zz_once;
 	}
+
 	Print_Count_Array(ee0_arr, z_count_arr, zz_count_arr, iter_times, ion_rate_file_name.c_str());
 
 	CHECK(cudaFree(qq_array_gpu));
@@ -228,6 +229,9 @@ void Pairs_Second_Step_Whole_Call_GPU(particle_pair* pair_array_gpu, const size_
 
 
 }
+
+
+
 
 void Pairs_Second_Step_Once(particle_pair* pair_array_gpu, const size_t size)
 {
