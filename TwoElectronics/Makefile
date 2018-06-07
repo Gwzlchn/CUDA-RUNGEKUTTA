@@ -19,8 +19,6 @@ NVCC_FLAGS =  -Xcompiler -Wall -O4  -lcurand -rdc=true -I $(DIR_INC)
 
 dummy_build_folder := $(shell mkdir -p $(DIR_OBJ))
 
-$(sort $(DIR_OBJ)) :
-	mkdir -p $@
 
 #test:
 #	 @echo $(SRC)
