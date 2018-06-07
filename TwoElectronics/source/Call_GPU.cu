@@ -240,16 +240,16 @@ void Pairs_Second_Step_Once_Use_E0_Call_GPU(
 	particle_pair* second_array_filter_gpu;
 	CHECK(cudaMalloc((void **)(&second_array_filter_gpu), Bytes_Of_Pairs));
 	
-	printf("filter done");
+
 
 	Pairs_Second_Step_Filter_Call_GPU(second_array_gpu, second_array_filter_gpu, size, count_z_once, count_zz_once);
 	
-
+	Print_Count_Array_Once( EE0_now, count_z_once, count_zz_once, 1, ion_rate_file_name.c_str());
 	
 
 	SavePairsWhichOnGPU(second_array_filter_gpu, count_zz_once, second_step_file_name.c_str());
 
-	printf("save done");
+
 	//SavePairsWhichOnGPU(second_array_gpu,size,"OneStep.dat");
 
 	CHECK(cudaFree(second_array_gpu));
@@ -268,16 +268,16 @@ void Pairs_Second_Step_Once_Use_E0_Call_GPU(
 void Pairs_Second_Step_Once(particle_pair* pair_array_gpu, const size_t size)
 {
 
-	printf("qq init");
+
 	double* qq_array_gpu;
 	CHECK(cudaMalloc((void**)&qq_array_gpu, Bytes_Of_Array_Laser));
 	Prepare_Laser_QQ_array(qq_array_gpu);
-	printf("second init");
+
 	unsigned long long z_once, zz_once;
 	Pairs_Second_Step_Once_Use_E0_Call_GPU(pair_array_gpu, qq_array_gpu, size, EE0_now,
 		z_once, zz_once);
 
-	printf("second done");
+
 	
 
 	CHECK(cudaFree(qq_array_gpu));

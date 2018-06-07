@@ -85,6 +85,23 @@ void Print_Count_Array(double* ee0_array, unsigned long long* z_arr, unsigned lo
 	fclose(file);
 }
 
+
+void Print_Count_Array_Once(double ee0, unsigned long long z, unsigned long long zz, int size, const char* file_name)
+{
+	CreateDir(folder_name.c_str());
+	FILE* file;
+	file = fopen(file_name, "w");
+	if (!file) perror("cannot open file");
+	for (int i = 0; i<size; i++)
+	{
+		fprintf(file, "%d\t %.10lf\t %lld \t %lld \n", i, ee0, z, zz);
+	}
+	fclose(file);
+}
+
+
+
+
 void PrintLaserArrays(double* e1_arr, double* e2_arr, double* e_check_arr, size_t size, const char* file_name)
 {
 	CreateDir(folder_name.c_str());
