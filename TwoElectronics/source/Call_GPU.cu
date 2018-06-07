@@ -163,7 +163,7 @@ void Pairs_Second_Step_Once_Call_GPU
 	count_z_once = count_z;
 	count_zz_once = count_zz;
 
-	SavePairsWhichOnGPU(second_array_gpu,size,"OneStep.dat");
+	//SavePairsWhichOnGPU(second_array_gpu,size,"OneStep.dat");
 
 	CHECK(cudaFree(second_array_gpu));
 	CHECK(cudaFree(second_array_filter_gpu));
