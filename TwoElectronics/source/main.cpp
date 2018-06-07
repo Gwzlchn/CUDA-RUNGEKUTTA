@@ -114,7 +114,7 @@ int main()
 	printf("Starting...\n");
 
 	//选择设备
-	int dev = 1;
+	int dev = 0;
 	cudaDeviceProp deviceProp;
 	
 	CHECK(cudaGetDeviceProperties(&deviceProp, dev));

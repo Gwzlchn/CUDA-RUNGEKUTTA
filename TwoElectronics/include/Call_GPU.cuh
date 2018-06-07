@@ -6,7 +6,7 @@
 
 
 dim3 get_pre_block(int dimx = 512);
-dim3 get_compute_block(int dimx = 32);
+dim3 get_compute_block(int dimx = 16);
 dim3 get_grid(size_t size,const dim3& block);
 
 
