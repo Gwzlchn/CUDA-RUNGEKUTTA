@@ -268,7 +268,7 @@ void Pairs_Second_Step_Once_Use_E0_Call_GPU(
 void Pairs_Second_Step_Once(particle_pair* pair_array_gpu, const size_t size)
 {
 
-
+	printf("qq init");
 	double* qq_array_gpu;
 	CHECK(cudaMalloc((void**)&qq_array_gpu, Bytes_Of_Array_Laser));
 	Prepare_Laser_QQ_array(qq_array_gpu);
