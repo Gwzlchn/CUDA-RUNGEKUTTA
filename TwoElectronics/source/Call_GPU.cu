@@ -240,11 +240,12 @@ void Pairs_Second_Step_Once_Use_E0_Call_GPU(
 	particle_pair* second_array_filter_gpu;
 	CHECK(cudaMalloc((void **)(&second_array_filter_gpu), Bytes_Of_Pairs));
 	
+	printf("filter done");
 
 	Pairs_Second_Step_Filter_Call_GPU(second_array_gpu, second_array_filter_gpu, size, count_z_once, count_zz_once);
 	
 
-	printf("filter done");
+	
 
 	SavePairsWhichOnGPU(second_array_filter_gpu, count_zz_once, second_step_file_name.c_str());
 
