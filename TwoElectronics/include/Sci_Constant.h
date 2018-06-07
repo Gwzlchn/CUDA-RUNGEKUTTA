@@ -83,7 +83,7 @@
 //最开始  ee0 输出检查时
 #define  EE0_Check  (sqrt(1e15 / 3.51e16))
 
-#define EE0_now (0.0)
+#define EE0_now (sqrt(1e15 / 3.51e16))
 
 const size_t Bytes_Of_Pairs = (Pairs_Total) * sizeof(particle_pair);
 const size_t Bytes_Of_Array_Laser = sizeof(double) * 2 * (two_steps);
