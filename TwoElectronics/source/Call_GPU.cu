@@ -116,7 +116,7 @@ void Prepare_Laser_E2_array(double* qq_array_gpu,double * e2_array_gpu)
 	dim3 block = get_pre_block();;
 	dim3 grid = get_grid((2 * two_steps), block);
 
-	pre_second_step_e2_arr << < grid, block >> > (qq_array_gpu, EE0_Check, e2_array_gpu);
+	pre_second_step_e2_arr <<< grid, block >>> (qq_array_gpu, EE0_Check, e2_array_gpu);
 	CHECK(cudaGetLastError());
 	CHECK(cudaDeviceSynchronize());
 }

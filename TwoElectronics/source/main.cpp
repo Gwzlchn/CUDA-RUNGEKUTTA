@@ -122,9 +122,9 @@ int main()
 	CHECK(cudaSetDevice(dev));
 
 
-	//compute_on_gpu_all(Pairs_Total);
-	//check_laser_array_on_gpu();
-	every_step(1);
+	compute_on_gpu_all(Pairs_Total);
+	check_laser_array_on_gpu();
+	//every_step(1);
 	return 0;
 }
 

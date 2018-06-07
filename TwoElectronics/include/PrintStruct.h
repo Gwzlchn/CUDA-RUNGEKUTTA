@@ -19,6 +19,8 @@ void Print_Count_Array(double* ee0_array, unsigned long long* z_arr, unsigned lo
 
 
 void PrintLaserArrays(double* e1_arr, double* e2_arr, double* e_check_arr, size_t size, const char* file_name);
+
+void CreateDir(const char* dir_name);
 #endif //PRINTSTRUCT_HPP
 
 

@@ -216,30 +216,27 @@ void PrintK1K2K3K4(double4* array,size_t size,const char* FileName)
  //第一个核，三个坐标的一阶导
    double3 gx_gy_gz_first_nucleus(const particle& first, const particle& second)
  {
-	//  double Q_squre = pow(Q_constant, 2);
-	//  //坐标平方和
-	//  double loc_squre_sum_first = pow(first.x, 2) + pow(first.y, 2) + pow(first.z, 2);
+	 double Q_squre = pow(Q_constant, 2);
+	 //坐标平方和
+	 double loc_squre_sum_first = pow(first.x, 2) + pow(first.y, 2) + pow(first.z, 2);
 
-	//  //一阶导平方和
-	//  double px_py_pz_squre_sum_first = pow(first.px, 2) + pow(first.py, 2) + pow(first.pz, 2);
+	 //一阶导平方和
+	 double px_py_pz_squre_sum_first = pow(first.px, 2) + pow(first.py, 2) + pow(first.pz, 2);
 
 
 
-	//  //第一个核 一阶导三个计算公式 对应 g1 g3 g5
-	//  double3 gx_gy_gz;
-	//  gx_gy_gz.x = first.px * (1.0 - 1.0 / Q_squre * loc_squre_sum_first * px_py_pz_squre_sum_first
-	// 	 * exp(A_hardness * (1.0 - pow(loc_squre_sum_first * px_py_pz_squre_sum_first / Q_squre, 2))));
+	 //第一个核 一阶导三个计算公式 对应 g1 g3 g5
+	 double3 gx_gy_gz;
+	 gx_gy_gz.x = first.px * (1.0 - 1.0 / Q_squre * loc_squre_sum_first * px_py_pz_squre_sum_first
+		 * exp(A_hardness * (1.0 - pow(loc_squre_sum_first * px_py_pz_squre_sum_first / Q_squre, 2))));
 
-	//  gx_gy_gz.y = first.py * (1.0 - 1.0 / Q_squre * loc_squre_sum_first * px_py_pz_squre_sum_first
-	// 	 * exp(A_hardness * (1.0 - pow(loc_squre_sum_first * px_py_pz_squre_sum_first / Q_squre, 2))));
+	 gx_gy_gz.y = first.py * (1.0 - 1.0 / Q_squre * loc_squre_sum_first * px_py_pz_squre_sum_first
+		 * exp(A_hardness * (1.0 - pow(loc_squre_sum_first * px_py_pz_squre_sum_first / Q_squre, 2))));
 
-	//  gx_gy_gz.z = first.pz * (1.0 - 1.0 / Q_squre * loc_squre_sum_first * px_py_pz_squre_sum_first
-	// 	 * exp(A_hardness * (1.0 - pow(loc_squre_sum_first * px_py_pz_squre_sum_first / Q_squre, 2))));
+	 gx_gy_gz.z = first.pz * (1.0 - 1.0 / Q_squre * loc_squre_sum_first * px_py_pz_squre_sum_first
+		 * exp(A_hardness * (1.0 - pow(loc_squre_sum_first * px_py_pz_squre_sum_first / Q_squre, 2))));
 
-	//  return gx_gy_gz;
- 
-	return {first.px,0,0};
- 
+	 return gx_gy_gz;
  }
 
  //第二个核，三个坐标的一阶导
@@ -266,8 +263,7 @@ void PrintK1K2K3K4(double4* array,size_t size,const char* FileName)
 	 gx_gy_gz.z = second.pz * (1.0 - 1.0 / Q_squre * loc_squre_sum_second * px_py_pz_squre_sum_second
 		 * exp(A_hardness * (1.0 - pow(loc_squre_sum_second * px_py_pz_squre_sum_second / Q_squre, 2))));
 
-	 //return gx_gy_gz;
-	 return {0.0,0.0,0.0};
+	 return gx_gy_gz;
  }
 
  //第一个核，三个坐标的二阶导
@@ -309,9 +305,7 @@ void PrintK1K2K3K4(double4* array,size_t size,const char* FileName)
 		 * exp(A_hardness * (1.0 - temp2)) - 2.0 / loc_1_5_power_first)
 		 + (first.z - second.z) / distance_1_5_power;
 
-	// return  fx_fy_fz;
-
-	return {-cos(first.x),0.0,0.0};
+	 return  fx_fy_fz;
  }
 
 
@@ -355,8 +349,8 @@ void PrintK1K2K3K4(double4* array,size_t size,const char* FileName)
 		 * exp(A_hardness * (1.0 - temp2)) - 2.0 / loc_1_5_power_second)
 		 - (first.z - second.z) / distance_1_5_power;
 
-	 //return  fx_fy_fz;
-	return {0.0,0.0,0.0};
+	 return  fx_fy_fz;
+
  }
 
 
@@ -747,37 +741,21 @@ void PrintK1K2K3K4(double4* array,size_t size,const char* FileName)
 
  int main()
  {
-	//  particle_pair init = {
-	// 	 0.6499352856,
-	// 	 -0.6063439233,
-	// 	 -0.3058286632,
-	// 	 -0.0390684108,
-	// 	 -0.1062714257,
-	// 	 -1.2950598609,
-	// 	 -0.6499352856,
-	// 	 0.6063439233,
-	// 	 0.3058286632,
-	// 	 1.1479844474,
-	// 	 0.2725119169,
-	// 	 0.5457737293
-	//  };
+	 particle_pair init = {
+		 0.6499352856,
+		 -0.6063439233,
+		 -0.3058286632,
+		 -0.0390684108,
+		 -0.1062714257,
+		 -1.2950598609,
+		 -0.6499352856,
+		 0.6063439233,
+		 0.3058286632,
+		 1.1479844474,
+		 0.2725119169,
+		 0.5457737293
+	 };
 
-
-	particle_pair init = {
-		1.0,
-		0,
-		0,
-		0,
-		0,
-		0,
-		0.0,
-		0.0,
-		0.0,
-		0.0,
-		0.0,
-		0.0
-
-	};
 	 double* qq_arr = new double[2 * two_steps];
 	 double* e1_arr = new double[2 * two_steps];
 	 double* e2_arr = new double[2 * two_steps];

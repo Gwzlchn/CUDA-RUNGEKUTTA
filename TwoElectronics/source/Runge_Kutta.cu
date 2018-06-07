@@ -23,7 +23,7 @@ __device__ derivative fisrt_k_one_to_four_fisrt_step(const particle& first, cons
 	first_px_fx.fx = first_fx.x;
 	first_px_fx.fy = first_fx.y;
 	first_px_fx.fz = first_fx.z;
-
+	
 	return first_px_fx;
 
 }

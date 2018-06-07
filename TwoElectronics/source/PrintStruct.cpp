@@ -4,12 +4,16 @@
 #include <cstring>
 #include <ctime>
 
+#include <sys/types.h>  
+#include <sys/stat.h>  
+
 #include "../include/PrintStruct.h"
 #include "../include/Sci_Constant.h"
 #define BUFLEN 255   
 
 void PrintStruct(particle_pair* ToSaveNuclei, size_t n, const char* FileName)
-{
+{	
+	CreateDir(folder_name.c_str());
 	//format date and time. 
 	struct tm *ptr;
 	time_t lt;
@@ -43,6 +47,7 @@ void PrintStruct(particle_pair* ToSaveNuclei, size_t n, const char* FileName)
 
 void PrintArray(double* array, size_t n, const char* FileName)
 {
+	CreateDir(folder_name.c_str());
 	//format date and time. 
 	struct tm *ptr;
 	time_t lt;
@@ -69,6 +74,7 @@ void PrintArray(double* array, size_t n, const char* FileName)
 
 void Print_Count_Array(double* ee0_array, unsigned long long* z_arr, unsigned long long* zz_arr, int size, const char* file_name)
 {
+	CreateDir(folder_name.c_str());
 	FILE* file;
 	file = fopen(file_name, "w");
 	if (!file) perror("cannot open file");
@@ -81,6 +87,7 @@ void Print_Count_Array(double* ee0_array, unsigned long long* z_arr, unsigned lo
 
 void PrintLaserArrays(double* e1_arr, double* e2_arr, double* e_check_arr, size_t size, const char* file_name)
 {
+	CreateDir(folder_name.c_str());
 	FILE* file;
 	file = fopen(file_name, "w");
 	if (!file) perror("cannot open file");
@@ -92,4 +99,13 @@ void PrintLaserArrays(double* e1_arr, double* e2_arr, double* e_check_arr, size_
 		fprintf(file, "%.10lf \t %.10lf\t %.10lf \t %.10lf \n",(t1/T0_const) , e1_arr[i], e2_arr[i], e_check_arr[i]);
 	}
 	fclose(file);
+}
+
+void CreateDir(const char * dir_name)
+{
+
+	int isCreate = mkdir(dir_name, S_IRUSR | S_IWUSR | S_IXUSR | S_IRWXG | S_IRWXO);
+	if (!isCreate)
+		printf("create path:%s\n", dir_name);
+
 }

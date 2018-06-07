@@ -16,6 +16,11 @@ NVCC = nvcc
 NVCC_FLAGS =  -Xcompiler -Wall -O4  -lcurand -rdc=true -I $(DIR_INC) 
 
 
+
+
+$(sort $(DIR_OBJ)) :
+	mkdir -p $@
+
 #test:
 #	 @echo $(SRC)
 #	 @echo $(NO_DIR)
