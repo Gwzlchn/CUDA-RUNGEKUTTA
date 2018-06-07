@@ -48,6 +48,10 @@ void Pairs_Second_Step_Filter_Call_GPU(particle_pair* pair_array_sec_step_gpu, p
 
 void Pairs_Second_Step_Whole_Call_GPU(particle_pair* pair_array_gpu, const size_t size, const int iter_times);
 
+void Pairs_Second_Step_Once_Use_E0_Call_GPU(
+	particle_pair * pair_array_first_step_gpu, double* qq_array_gpu, const size_t size, double EE0,
+	unsigned long long& count_z_once, unsigned long long& count_zz_once);
+
 void Pairs_Second_Step_Once(particle_pair* pair_array_gpu, const size_t size);
 
 

@@ -216,10 +216,10 @@ __global__ void pairs_second_step_on_gpu_fliter
 		if ((ee1 > 0) && (ee2 > 0))
 		{
 			size_t temp_idx = atomicAdd(count_zz, 1);
-			/*nuclei temp;
-			temp.first = second_arr[idx].first;
-			temp.second = second_arr[idx].second;
-			second__arr_filter[temp_idx - 1] = temp;*/
+			particle_pair temp;
+			temp.first = second_step_pair_array[idx].first;
+			temp.second = second_step_pair_array[idx].second;
+			second_step_pair_array_filter[temp_idx - 1] = temp;
 		}
 	}
 

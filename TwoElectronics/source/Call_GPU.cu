@@ -135,46 +135,23 @@ void Pairs_Second_Step_Once_Call_GPU
 (particle_pair * pair_array_first_step_gpu, double* qq_array_gpu, const size_t size, const int index,
  unsigned long long& count_z_once, unsigned long long& count_zz_once)
 {
-	double *gpu_e1, *gpu_e2;
-	CHECK(cudaMalloc((void **)(&gpu_e1), Bytes_Of_Array_Laser));
-	CHECK(cudaMalloc((void **)(&gpu_e2), Bytes_Of_Array_Laser));
+	
 
-	//double EE0 = compute_ee0_by_index(index);
-	double EE0 = EE0_Check;
-	dim3 pre_block = get_pre_block();
-	dim3 pre_grid = get_grid((2*two_steps),pre_block);
-	pre_second_step_e1_arr << < pre_grid, pre_block, 0, 0 >> > (qq_array_gpu, EE0, gpu_e1);
-	pre_second_step_e2_arr << < pre_grid, pre_block, 0, 0 >> > (qq_array_gpu, EE0, gpu_e2);
-
-	//计算第二步循环
-	particle_pair* second_array_gpu;
-	dim3 com_block = get_compute_block();
-	dim3 com_grid = get_grid(size, com_block);
-	CHECK(cudaMalloc((void **)(&second_array_gpu), Bytes_Of_Pairs));
-	CHECK(cudaMemcpy(second_array_gpu, pair_array_first_step_gpu, Bytes_Of_Pairs, cudaMemcpyDeviceToDevice));
-	pairs_second_step_on_gpu <<<com_grid,com_block>>> (second_array_gpu, size, gpu_e1, gpu_e2);
+	double EE0 = compute_ee0_by_index(index);
+	Pairs_Second_Step_Once_Use_E0_Call_GPU(pair_array_first_step_gpu, qq_array_gpu, size, EE0,
+		count_z_once, count_zz_once);
 
 
-	//第二步循环后过滤
-	particle_pair* second_array_filter_gpu;
-	CHECK(cudaMalloc((void **)(&second_array_filter_gpu), Bytes_Of_Pairs));
-	unsigned long long count_z, count_zz;
-	Pairs_Second_Step_Filter_Call_GPU(second_array_gpu, second_array_filter_gpu, size, count_z, count_zz);
-	count_z_once = count_z;
-	count_zz_once = count_zz;
-
-	//SavePairsWhichOnGPU(second_array_gpu,size,"OneStep.dat");
-
-	CHECK(cudaFree(second_array_gpu));
-	CHECK(cudaFree(second_array_filter_gpu));
-
-	CHECK(cudaGetLastError());
-	CHECK(cudaDeviceSynchronize());
-
-	//释放内存
 
 
 }
+
+
+
+
+
+
+
 
 void Pairs_Second_Step_Filter_Call_GPU
 (particle_pair * pair_array_sec_step_gpu, particle_pair * pair_array_filtered_gpu,
@@ -229,6 +206,52 @@ void Pairs_Second_Step_Whole_Call_GPU(particle_pair* pair_array_gpu, const size_
 
 
 }
+
+
+
+void Pairs_Second_Step_Once_Use_E0_Call_GPU(
+	particle_pair * pair_array_first_step_gpu, double* qq_array_gpu, const size_t size, double EE0,
+	unsigned long long& count_z_once, unsigned long long& count_zz_once)
+{
+	double *gpu_e1, *gpu_e2;
+	CHECK(cudaMalloc((void **)(&gpu_e1), Bytes_Of_Array_Laser));
+	CHECK(cudaMalloc((void **)(&gpu_e2), Bytes_Of_Array_Laser));
+
+	//double EE0 = compute_ee0_by_index(index);
+	//double EE0 = EE0_Check;
+	dim3 pre_block = get_pre_block();
+	dim3 pre_grid = get_grid((2 * two_steps), pre_block);
+	pre_second_step_e1_arr << < pre_grid, pre_block, 0, 0 >> > (qq_array_gpu, EE0, gpu_e1);
+	pre_second_step_e2_arr << < pre_grid, pre_block, 0, 0 >> > (qq_array_gpu, EE0, gpu_e2);
+
+	//计算第二步循环
+	particle_pair* second_array_gpu;
+	dim3 com_block = get_compute_block();
+	dim3 com_grid = get_grid(size, com_block);
+	CHECK(cudaMalloc((void **)(&second_array_gpu), Bytes_Of_Pairs));
+	CHECK(cudaMemcpy(second_array_gpu, pair_array_first_step_gpu, Bytes_Of_Pairs, cudaMemcpyDeviceToDevice));
+	pairs_second_step_on_gpu << <com_grid, com_block >> > (second_array_gpu, size, gpu_e1, gpu_e2);
+
+
+	//第二步循环后过滤
+	particle_pair* second_array_filter_gpu;
+	CHECK(cudaMalloc((void **)(&second_array_filter_gpu), Bytes_Of_Pairs));
+	unsigned long long count_z, count_zz;
+	Pairs_Second_Step_Filter_Call_GPU(second_array_gpu, second_array_filter_gpu, size, count_z, count_zz);
+	count_z_once = count_z;
+	count_zz_once = count_zz;
+
+	//SavePairsWhichOnGPU(second_array_gpu,size,"OneStep.dat");
+
+	CHECK(cudaFree(second_array_gpu));
+	CHECK(cudaFree(second_array_filter_gpu));
+
+	CHECK(cudaGetLastError());
+	CHECK(cudaDeviceSynchronize());
+
+
+}
+
 
 
 
