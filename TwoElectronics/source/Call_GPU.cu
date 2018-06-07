@@ -239,13 +239,16 @@ void Pairs_Second_Step_Once_Use_E0_Call_GPU(
 	//第二步循环后过滤
 	particle_pair* second_array_filter_gpu;
 	CHECK(cudaMalloc((void **)(&second_array_filter_gpu), Bytes_Of_Pairs));
-	unsigned long long count_z, count_zz;
-	Pairs_Second_Step_Filter_Call_GPU(second_array_gpu, second_array_filter_gpu, size, count_z, count_zz);
-	count_z_once = count_z;
-	count_zz_once = count_zz;
+	
+
+	Pairs_Second_Step_Filter_Call_GPU(second_array_gpu, second_array_filter_gpu, size, count_z_once, count_zz_once);
+	
+
+	printf("filter done");
 
 	SavePairsWhichOnGPU(second_array_filter_gpu, count_zz_once, second_step_file_name.c_str());
 
+	printf("save done");
 	//SavePairsWhichOnGPU(second_array_gpu,size,"OneStep.dat");
 
 	CHECK(cudaFree(second_array_gpu));
