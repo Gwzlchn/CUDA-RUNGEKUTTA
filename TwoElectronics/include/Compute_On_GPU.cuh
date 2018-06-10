@@ -1,4 +1,4 @@
-#ifndef __CALL_CPU_CUH
+﻿#ifndef __CALL_CPU_CUH
 #define __CALL_GPU_CUH
 
 #include "./Struct_Defines.h"
@@ -9,7 +9,7 @@
 __global__ void pairs_init(particle_pair* pair_array, const size_t size,
 	const double min_r, const double min_p);
 
-__global__ void  pairs_first_step_on_gpu(particle_pair* first_setp_pair_array, const size_t size);
+__global__ void  pairs_first_step_on_gpu(particle_pair* first_step_pair_array, const size_t size);
 
 
 __global__ void pre_second_step_qq(double* QQ_array);

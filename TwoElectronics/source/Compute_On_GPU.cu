@@ -22,13 +22,13 @@ __global__ void pairs_init(particle_pair* pair_array, const size_t size,
 }
 
 
-__global__ void pairs_first_step_on_gpu(particle_pair* first_setp_pair_array, const size_t size)
+__global__ void pairs_first_step_on_gpu(particle_pair* first_step_pair_array, const size_t size)
 {
 	int idx = threadIdx.x + blockIdx.x * blockDim.x;
 	if (idx<size)
 	{
 		for (int i = 0; i < one_steps; i++)
-			update_step_one(first_setp_pair_array[idx].first, first_setp_pair_array[idx].second);
+			update_step_one(first_step_pair_array[idx].first, first_step_pair_array[idx].second);
 	}
 
 
