@@ -22,6 +22,27 @@ __global__ void pairs_init(particle_pair* pair_array, const size_t size,
 }
 
 
+
+__global__ void pairs_first_step_every_step( particle_pair& init_one_pairs,particle_pair* every_step_arr ,size_t size)
+{
+
+	int idx = threadIdx.x + blockIdx.x * blockDim.x;
+	if( idx <size)
+	{
+		double t = 0;
+		for(int i = 0 ;i<size ;i++)
+		{
+			fill_every_step(init_one_pairs.first, init_one_pairs.second,every_step_arr[i],t);
+			t = t + DX;
+		}
+		
+	}
+}
+
+
+
+
+
 __global__ void pairs_first_step_on_gpu(particle_pair* first_step_pair_array, const size_t size)
 {
 	int idx = threadIdx.x + blockIdx.x * blockDim.x;
@@ -109,8 +130,8 @@ __global__ void pairs_second_step_on_gpu_every_step
 			}
 			idx_of_laser += 2;
 
-			update_step_two_every_step(second_arr[0].first, second_arr[0].second,
-				e1_laser, e2_laser, every_step_arr[i]);
+			// update_step_two_every_step(second_arr[0].first, second_arr[0].second,
+			//	e1_laser, e2_laser, every_step_arr[i]);
 			
 
 		}

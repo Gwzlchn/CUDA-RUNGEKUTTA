@@ -130,7 +130,7 @@ __device__  double nucleus_distance(const particle& first, const particle& secon
 
 
 //第一个核，三个坐标的一阶导
-__device__ double3 gx_gy_gz_first_nucleus(const particle& first, const particle& second)
+__device__ double3 gx_gy_gz_first_nucleus(const particle& first, const particle& second, const double& t)
 {
 	double Q_squre = pow(Q_constant, 2);
 	//坐标平方和
@@ -156,7 +156,7 @@ __device__ double3 gx_gy_gz_first_nucleus(const particle& first, const particle&
 }
 
 //第二个核，三个坐标的一阶导
-__device__ double3 gx_gy_gz_second_nucleus(const particle& first, const particle& second)
+__device__ double3 gx_gy_gz_second_nucleus(const particle& first, const particle& second,const double& t)
 {
 	const double Q_squre = pow(Q_constant, 2);
 
@@ -183,7 +183,7 @@ __device__ double3 gx_gy_gz_second_nucleus(const particle& first, const particle
 }
 
 //第一个核，三个坐标的二阶导
-__device__ double3 fx_fy_fz_first_nucleus(const particle& first, const particle& second)
+__device__ double3 fx_fy_fz_first_nucleus(const particle& first, const particle& second,const double& t)
 {
 	const double Q_squre = pow(Q_constant, 2);
 
@@ -226,7 +226,7 @@ __device__ double3 fx_fy_fz_first_nucleus(const particle& first, const particle&
 
 
 //第二个核，三个坐标的二阶导
-__device__ double3 fx_fy_fz_second_nucleus(const particle& first, const particle& second)
+__device__ double3 fx_fy_fz_second_nucleus(const particle& first, const particle& second, const double& t)
 {
 	const double Q_squre = pow(Q_constant, 2);
 

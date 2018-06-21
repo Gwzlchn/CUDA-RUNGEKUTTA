@@ -24,16 +24,16 @@ __device__ void distribution(particle& first, particle& second,
 
 
 //第一个核，三个坐标的一阶导
-__device__ double3 gx_gy_gz_first_nucleus(const particle& first, const particle& second);
+__device__ double3 gx_gy_gz_first_nucleus(const particle& first, const particle& second, const double& t);
 
 //第二个核，三个坐标的一阶导
-__device__ double3 gx_gy_gz_second_nucleus(const particle& first, const particle& second);
+__device__ double3 gx_gy_gz_second_nucleus(const particle& first, const particle& second, const double& t);
 
 //第一个核，三个坐标的二阶导
-__device__ double3 fx_fy_fz_first_nucleus(const particle& first, const particle& second);
+__device__ double3 fx_fy_fz_first_nucleus(const particle& first, const particle& second, const double& t);
 
 //第二个核，三个坐标的二阶导
-__device__ double3 fx_fy_fz_second_nucleus(const particle& first, const particle& second);
+__device__ double3 fx_fy_fz_second_nucleus(const particle& first, const particle& second, const double& t);
 
 
 

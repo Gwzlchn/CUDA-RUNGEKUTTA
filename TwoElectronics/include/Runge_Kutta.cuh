@@ -14,18 +14,18 @@ __device__  double nucleus_distance(const particle& first, const particle& secon
 
 
 //龙哥库塔方法
-__device__ void update_step_one(particle& step_one_first, particle& step_one_second);
+__device__ void update_step_one(particle& step_one_first, particle& step_one_second, const double& t=0 );
 __device__ void update_step_two(particle& step_one_first, particle& step_one_second,
-	const double4 e1_laser_now, const double4 e2_laser_now);
+	const double4 e1_laser_now, const double4 e2_laser_now, const double& t=0);
 
 
 
 //第一个粒子 K1~K4 第一步循环
 __device__ derivative first_k_one_to_four_first_step
-(const particle& first, const particle& second);
+(const particle& first, const particle& second, const double& t);
 //第二个粒子 K1~K4 第一步循环
 __device__ derivative second_k_one_to_four_first_step
-(const particle& first, const particle& second);
+(const particle& first, const particle& second, const double& t);
 
 //计算完 K3 更新下一步参数用，K3 不除以2
 __device__ particle first_and_second_k_add_dx_raw
@@ -40,15 +40,14 @@ __device__ void k_one_to_four_add
 
 //第二步runge-kutta
 __device__ derivative first_k_one_to_four_second_step
-(const particle& first, const particle& second, const double& e1_laser, const double& e2_laser);
+(const particle& first, const particle& second, const double& e1_laser, const double& e2_laser,const double& t);
 
 
 __device__ derivative second_k_one_to_four_second_step
-(const particle& first, const particle& second, const double& e1_laser, const double& e2_laser);
+(const particle& first, const particle& second, const double& e1_laser, const double& e2_laser, const double& t);
 
 
 //每一步都保存
-__device__ void update_step_two_every_step(particle& step_one_first, particle& step_one_second,
-	const double4 e1_laser_now, const double4 e2_laser_now, particle_pair& every_step);
+__device__ void fill_every_step(particle& init_step_first, particle& init_step_second, particle_pair& every_step_arr, const double& t);
 
 #endif // RUNGEKUTTA

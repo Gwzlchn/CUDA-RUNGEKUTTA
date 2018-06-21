@@ -9,8 +9,10 @@
 __global__ void pairs_init(particle_pair* pair_array, const size_t size,
 	const double min_r, const double min_p);
 
-__global__ void  pairs_first_step_on_gpu(particle_pair* first_step_pair_array, const size_t size);
+__global__   void pairs_first_step_every_step( particle_pair& init_one_pairs, particle_pair* every_step_arr, size_t size);
 
+
+__global__ void pairs_first_step_on_gpu(particle_pair* first_step_pair_array, const size_t size);
 
 __global__ void pre_second_step_qq(double* QQ_array);
 

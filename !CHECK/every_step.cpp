@@ -236,7 +236,7 @@ void PrintK1K2K3K4(double4* array,size_t size,const char* FileName)
 	//  gx_gy_gz.z = first.pz * (1.0 - 1.0 / Q_squre * loc_squre_sum_first * px_py_pz_squre_sum_first
 	// 	 * exp(A_hardness * (1.0 - pow(loc_squre_sum_first * px_py_pz_squre_sum_first / Q_squre, 2))));
 
-	//  return gx_gy_gz;
+	//  //return gx_gy_gz;
  
 	return {first.px,0,0};
  
@@ -271,7 +271,7 @@ void PrintK1K2K3K4(double4* array,size_t size,const char* FileName)
  }
 
  //第一个核，三个坐标的二阶导
-   double3 fx_fy_fz_first_nucleus(const particle& first, const particle& second)
+   double3 fx_fy_fz_first_nucleus(const particle& first, const particle& second,double t)
  {
 	 const double Q_squre = pow(Q_constant, 2);
 
@@ -309,9 +309,9 @@ void PrintK1K2K3K4(double4* array,size_t size,const char* FileName)
 		 * exp(A_hardness * (1.0 - temp2)) - 2.0 / loc_1_5_power_first)
 		 + (first.z - second.z) / distance_1_5_power;
 
-	// return  fx_fy_fz;
+	//return  fx_fy_fz;
 
-	return {-cos(first.x),0.0,0.0};
+	return {-(2*t)/pow(1+t*t,2),0.0,0.0};
  }
 
 
@@ -355,47 +355,47 @@ void PrintK1K2K3K4(double4* array,size_t size,const char* FileName)
 		 * exp(A_hardness * (1.0 - temp2)) - 2.0 / loc_1_5_power_second)
 		 - (first.z - second.z) / distance_1_5_power;
 
-	 //return  fx_fy_fz;
+	// return  fx_fy_fz;
 	return {0.0,0.0,0.0};
  }
 
 
 
 
- //第一个粒子 K1~K4 第二步循环
-   derivative fisrt_k_one_to_four_second_step
- (const particle& first, const particle& second, const double& e1_laser, const double& e2_laser)
- {
-	 const double3 first_fx = fx_fy_fz_first_nucleus(first, second);
-	 const double3 first_gx = gx_gy_gz_first_nucleus(first, second);
-	 derivative first_px_fx;
-	 first_px_fx.px = first_gx.x;
-	 first_px_fx.py = first_gx.y;
-	 first_px_fx.pz = first_gx.z;
-	 first_px_fx.fx = first_fx.x;
-	 first_px_fx.fy = first_fx.y - e2_laser;
-	 first_px_fx.fz = first_fx.z - e1_laser;
+//  //第一个粒子 K1~K4 第二步循环
+//    derivative fisrt_k_one_to_four_second_step
+//  (const particle& first, const particle& second, const double& e1_laser, const double& e2_laser,double t)
+//  {
+// 	 const double3 first_fx = fx_fy_fz_first_nucleus(first, second,t);
+// 	 const double3 first_gx = gx_gy_gz_first_nucleus(first, second);
+// 	 derivative first_px_fx;
+// 	 first_px_fx.px = first_gx.x;
+// 	 first_px_fx.py = first_gx.y;
+// 	 first_px_fx.pz = first_gx.z;
+// 	 first_px_fx.fx = first_fx.x;
+// 	 first_px_fx.fy = first_fx.y - e2_laser;
+// 	 first_px_fx.fz = first_fx.z - e1_laser;
 
-	 return first_px_fx;
+// 	 return first_px_fx;
 
- }
+//  }
 
- //第二个粒子 K1~K4 第二步循环
-   derivative second_k_one_to_four_second_step
- (const particle& first, const particle& second, const double& e1_laser, const double& e2_laser)
- {
-	 const double3 second_fx = fx_fy_fz_second_nucleus(first, second);
-	 const double3 second_gx = gx_gy_gz_second_nucleus(first, second);
-	 derivative second_px_fx;
-	 second_px_fx.px = second_gx.x;
-	 second_px_fx.py = second_gx.y;
-	 second_px_fx.pz = second_gx.z;
-	 second_px_fx.fx = second_fx.x;
-	 second_px_fx.fy = second_fx.y - e2_laser;
-	 second_px_fx.fz = second_fx.z - e1_laser;
-	 return second_px_fx;
+//  //第二个粒子 K1~K4 第二步循环
+//    derivative second_k_one_to_four_second_step
+//  (const particle& first, const particle& second, const double& e1_laser, const double& e2_laser)
+//  {
+// 	 const double3 second_fx = fx_fy_fz_second_nucleus(first, second);
+// 	 const double3 second_gx = gx_gy_gz_second_nucleus(first, second);
+// 	 derivative second_px_fx;
+// 	 second_px_fx.px = second_gx.x;
+// 	 second_px_fx.py = second_gx.y;
+// 	 second_px_fx.pz = second_gx.z;
+// 	 second_px_fx.fx = second_fx.x;
+// 	 second_px_fx.fy = second_fx.y - e2_laser;
+// 	 second_px_fx.fz = second_fx.z - e1_laser;
+// 	 return second_px_fx;
 
- }
+//  }
 
 
 
@@ -422,10 +422,10 @@ void PrintK1K2K3K4(double4* array,size_t size,const char* FileName)
  }
 
    //第一个粒子 K1~K4 第一步循环
- derivative fisrt_k_one_to_four_fisrt_step(const particle& first, const particle& second)
+ derivative fisrt_k_one_to_four_fisrt_step(const particle& first, const particle& second,double t)
    {
 	   //二阶导 三个数
-	   const double3 first_fx = fx_fy_fz_first_nucleus(first, second);
+	   const double3 first_fx = fx_fy_fz_first_nucleus(first, second,t);
 	   //一阶导 三个数
 	   const double3 first_gx = gx_gy_gz_first_nucleus(first, second);
 
@@ -473,32 +473,32 @@ void PrintK1K2K3K4(double4* array,size_t size,const char* FileName)
 
 
    void update_step_one(particle& step_one_first, particle& step_one_second,
-	   particle_pair& every_step,double4* every_step_k)
+	   particle_pair& every_step,double4* every_step_k,const double& t)
    {
 	   
 	   
-	   
+	   double temp =t;
 	   
 	   //计算K1
-	   const derivative first_k1 = fisrt_k_one_to_four_fisrt_step(step_one_first, step_one_second);
+	   const derivative first_k1 = fisrt_k_one_to_four_fisrt_step(step_one_first, step_one_second,temp);
 	   const derivative second_k1 = second_k_one_to_four_fisrt_step(step_one_first, step_one_second);
 	   const particle first_k1_add = first_and_second_k_add_dx_div(first_k1, step_one_first);
 	   const particle second_k1_add = first_and_second_k_add_dx_div(second_k1, step_one_second);
-
+		 temp = t + DX/2.0;
 	   //K2
-	   const derivative first_k2 = fisrt_k_one_to_four_fisrt_step(first_k1_add, second_k1_add);
+	   const derivative first_k2 = fisrt_k_one_to_four_fisrt_step(first_k1_add, second_k1_add,temp);
 	   const derivative second_k2 = second_k_one_to_four_fisrt_step(first_k1_add, second_k1_add);
 	   const particle first_k2_add = first_and_second_k_add_dx_div(first_k2, step_one_first);
 	   const particle second_k2_add = first_and_second_k_add_dx_div(second_k2, step_one_second);
 
 	   //K3
-	   const derivative first_k3 = fisrt_k_one_to_four_fisrt_step(first_k2_add, second_k2_add);
+	   const derivative first_k3 = fisrt_k_one_to_four_fisrt_step(first_k2_add, second_k2_add,temp);
 	   const derivative second_k3 = second_k_one_to_four_fisrt_step(first_k2_add, second_k2_add);
 	   const particle first_k3_add = first_and_second_k_add_dx_raw(first_k3, step_one_first);
 	   const particle second_k3_add = first_and_second_k_add_dx_raw(second_k3, step_one_second);
-
+		temp = t + DX ;
 	   //K4
-	   const derivative first_k4 = fisrt_k_one_to_four_fisrt_step(first_k3_add, second_k3_add);
+	   const derivative first_k4 = fisrt_k_one_to_four_fisrt_step(first_k3_add, second_k3_add,temp);
 	   const derivative second_k4 = second_k_one_to_four_fisrt_step(first_k3_add, second_k3_add);
 
 	   k_one_to_four_add(first_k1, first_k2, first_k3, first_k4, step_one_first);
@@ -621,53 +621,56 @@ void PrintK1K2K3K4(double4* array,size_t size,const char* FileName)
  void update_step_two_every_step(particle& step_one_first, particle& step_one_second,
 	 const double4 e1_laser_now, const double4 e2_laser_now, particle_pair& every_step)
  {
-	 //计算K1
-	 const derivative first_k1 = fisrt_k_one_to_four_second_step(step_one_first, step_one_second, e1_laser_now.x, e2_laser_now.x);
-	 const derivative second_k1 = second_k_one_to_four_second_step(step_one_first, step_one_second, e1_laser_now.x, e2_laser_now.x);
-	 const particle first_k1_add = first_and_second_k_add_dx_div(first_k1, step_one_first);
-	 const particle second_k1_add = first_and_second_k_add_dx_div(second_k1, step_one_second);
+	//  //计算K1
+	//  const derivative first_k1 = fisrt_k_one_to_four_second_step(step_one_first, step_one_second, e1_laser_now.x, e2_laser_now.x);
+	//  const derivative second_k1 = second_k_one_to_four_second_step(step_one_first, step_one_second, e1_laser_now.x, e2_laser_now.x);
+	//  const particle first_k1_add = first_and_second_k_add_dx_div(first_k1, step_one_first);
+	//  const particle second_k1_add = first_and_second_k_add_dx_div(second_k1, step_one_second);
 
-	 //K2
-	 const derivative first_k2 = fisrt_k_one_to_four_second_step(first_k1_add, second_k1_add, e1_laser_now.y, e2_laser_now.y);
-	 const derivative second_k2 = second_k_one_to_four_second_step(first_k1_add, second_k1_add, e1_laser_now.y, e2_laser_now.y);
-	 const particle first_k2_add = first_and_second_k_add_dx_div(first_k2, step_one_first);
-	 const particle second_k2_add = first_and_second_k_add_dx_div(second_k2, step_one_second);
+	//  //K2
+	//  const derivative first_k2 = fisrt_k_one_to_four_second_step(first_k1_add, second_k1_add, e1_laser_now.y, e2_laser_now.y);
+	//  const derivative second_k2 = second_k_one_to_four_second_step(first_k1_add, second_k1_add, e1_laser_now.y, e2_laser_now.y);
+	//  const particle first_k2_add = first_and_second_k_add_dx_div(first_k2, step_one_first);
+	//  const particle second_k2_add = first_and_second_k_add_dx_div(second_k2, step_one_second);
 
-	 //K3
-	 const derivative first_k3 = fisrt_k_one_to_four_second_step(first_k2_add, second_k2_add, e1_laser_now.z, e2_laser_now.z);
-	 const derivative second_k3 = second_k_one_to_four_second_step(first_k2_add, second_k2_add, e1_laser_now.z, e2_laser_now.z);
-	 const particle first_k3_add = first_and_second_k_add_dx_raw(first_k3, step_one_first);
-	 const particle second_k3_add = first_and_second_k_add_dx_raw(second_k3, step_one_second);
+	//  //K3
+	//  const derivative first_k3 = fisrt_k_one_to_four_second_step(first_k2_add, second_k2_add, e1_laser_now.z, e2_laser_now.z);
+	//  const derivative second_k3 = second_k_one_to_four_second_step(first_k2_add, second_k2_add, e1_laser_now.z, e2_laser_now.z);
+	//  const particle first_k3_add = first_and_second_k_add_dx_raw(first_k3, step_one_first);
+	//  const particle second_k3_add = first_and_second_k_add_dx_raw(second_k3, step_one_second);
 
-	 //K4
-	 const derivative first_k4 = fisrt_k_one_to_four_second_step(first_k3_add, second_k3_add, e1_laser_now.w, e2_laser_now.w);
-	 const derivative second_k4 = second_k_one_to_four_second_step(first_k3_add, second_k3_add, e1_laser_now.w, e2_laser_now.w);
+	//  //K4
+	//  const derivative first_k4 = fisrt_k_one_to_four_second_step(first_k3_add, second_k3_add, e1_laser_now.w, e2_laser_now.w);
+	//  const derivative second_k4 = second_k_one_to_four_second_step(first_k3_add, second_k3_add, e1_laser_now.w, e2_laser_now.w);
 
-	 k_one_to_four_add(first_k1, first_k2, first_k3, first_k4, step_one_first);
-	 k_one_to_four_add(second_k1, second_k2, second_k3, second_k4, step_one_second);
+	//  k_one_to_four_add(first_k1, first_k2, first_k3, first_k4, step_one_first);
+	//  k_one_to_four_add(second_k1, second_k2, second_k3, second_k4, step_one_second);
 
-	 every_step.first.x = step_one_first.x;
-	 every_step.first.y = step_one_first.y;
-	 every_step.first.z = step_one_first.z;
-	 every_step.first.px = step_one_first.px;
-	 every_step.first.py = step_one_first.py;
-	 every_step.first.pz = step_one_first.pz;
+	//  every_step.first.x = step_one_first.x;
+	//  every_step.first.y = step_one_first.y;
+	//  every_step.first.z = step_one_first.z;
+	//  every_step.first.px = step_one_first.px;
+	//  every_step.first.py = step_one_first.py;
+	//  every_step.first.pz = step_one_first.pz;
 
 
-	 every_step.second.x = step_one_second.x;
-	 every_step.second.y = step_one_second.y;
-	 every_step.second.z = step_one_second.z;
-	 every_step.second.px = step_one_second.px;
-	 every_step.second.py = step_one_second.py;
-	 every_step.second.pz = step_one_second.pz;
+	//  every_step.second.x = step_one_second.x;
+	//  every_step.second.y = step_one_second.y;
+	//  every_step.second.z = step_one_second.z;
+	//  every_step.second.px = step_one_second.px;
+	//  every_step.second.py = step_one_second.py;
+	//  every_step.second.pz = step_one_second.pz;
  }
 
 
  void first_step_every_step(particle_pair init,particle_pair* every_step,double4* every_step_k)
 {
+	double t = 0;
 	for(size_t i =0 ;i<one_steps;i++)
 	{
-		update_step_one(init.first, init.second, every_step[i],&every_step_k[12 * i]);
+		
+		update_step_one(init.first, init.second, every_step[i],&every_step_k[12 * i],t);
+		t = t + DX;
 	}
 }
 
@@ -676,77 +679,77 @@ void PrintK1K2K3K4(double4* array,size_t size,const char* FileName)
 
  
 
- double compute_qq_single(const size_t& now_step)
- {
-	 double t1 = 0.5 * DX * (now_step + 1);
-	 return  pow((sin(Omega1 / 2.0 / (2 * N1_const + N2_const)*t1)), 2);
+//  double compute_qq_single(const size_t& now_step)
+//  {
+// 	 double t1 = 0.5 * DX * (now_step + 1);
+// 	 return  pow((sin(Omega1 / 2.0 / (2 * N1_const + N2_const)*t1)), 2);
 
- }
-
-
- double compute_e1_single(const size_t& now_step, const double& qq_now_single, const double& EE0)
- {
-	 double tao = 0.0;
-	 double t1 = 0.5 * DX * (now_step + 1);
-	 return  (EE0 / (1.0 + TP_const)) * qq_now_single * sin(Omega1 * t1 + tao) -
-		 (EE0*TP_const / (1.0 + TP_const)) * qq_now_single * sin(Omega2 * t1 + 2 * tao);
- }
-
- double compute_e2_single(const size_t& now_step, const double& qq_now_single, const double& EE0)
- {
-	 double tao = 0.0;
-	 double t1 = 0.5 * DX * (now_step + 1);
-	 return  (EE0 / (1.0 + TP_const)) * qq_now_single * cos(Omega1 * t1 + tao) +
-		 (EE0*TP_const / (1.0 + TP_const)) * qq_now_single * cos(Omega2 * t1 + 2 * tao);
-
- }
+//  }
 
 
+//  double compute_e1_single(const size_t& now_step, const double& qq_now_single, const double& EE0)
+//  {
+// 	 double tao = 0.0;
+// 	 double t1 = 0.5 * DX * (now_step + 1);
+// 	 return  (EE0 / (1.0 + TP_const)) * qq_now_single * sin(Omega1 * t1 + tao) -
+// 		 (EE0*TP_const / (1.0 + TP_const)) * qq_now_single * sin(Omega2 * t1 + 2 * tao);
+//  }
+
+//  double compute_e2_single(const size_t& now_step, const double& qq_now_single, const double& EE0)
+//  {
+// 	 double tao = 0.0;
+// 	 double t1 = 0.5 * DX * (now_step + 1);
+// 	 return  (EE0 / (1.0 + TP_const)) * qq_now_single * cos(Omega1 * t1 + tao) +
+// 		 (EE0*TP_const / (1.0 + TP_const)) * qq_now_single * cos(Omega2 * t1 + 2 * tao);
+
+//  }
 
 
- void pairs_second_step_on_gpu_every_step
- (particle_pair second_arr, const size_t size, double* E1_array, double* E2_array,
-	 particle_pair* every_step_arr)
- {
+
+
+//  void pairs_second_step_on_gpu_every_step
+//  (particle_pair second_arr, const size_t size, double* E1_array, double* E2_array,
+// 	 particle_pair* every_step_arr)
+//  {
 	
 
-	 double4 e1_laser = make_double4(0.0, 0.0, 0.0, 0.0);
-	 double4 e2_laser = make_double4(0.0, 0.0, 0.0, 0.0);
-	 int idx_of_laser = -1; // 相当于nn
-							//double t1 = 0.0, t2 = 0.0, t3 = 0.0, t4 = 0.0;
-							//double now_t = 0.0; //当前时间，相当于t(1)
-
-
-	
-	
-		 for (int i = 0; i < two_steps; i++)
-		 {
-
-			 if (idx_of_laser == -1)
-			 {
-				 e1_laser = make_double4(0.0, E1_array[0], E1_array[0], E1_array[1]);
-				 e2_laser = make_double4(0.0, E2_array[0], E2_array[0], E2_array[1]);
-			 }
-			 else
-			 {
-				 e1_laser = make_double4(E1_array[idx_of_laser], E1_array[idx_of_laser + 1], E1_array[idx_of_laser + 1], E1_array[idx_of_laser + 2]);
-				 e2_laser = make_double4(E2_array[idx_of_laser], E2_array[idx_of_laser + 1], E2_array[idx_of_laser + 1], E2_array[idx_of_laser + 2]);
-			 }
-			 idx_of_laser += 2;
-
-			 update_step_two_every_step(second_arr.first, second_arr.second,
-				 e1_laser, e2_laser, every_step_arr[i]);
-
-
-		 }
+// 	 double4 e1_laser = make_double4(0.0, 0.0, 0.0, 0.0);
+// 	 double4 e2_laser = make_double4(0.0, 0.0, 0.0, 0.0);
+// 	 int idx_of_laser = -1; // 相当于nn
+// 							//double t1 = 0.0, t2 = 0.0, t3 = 0.0, t4 = 0.0;
+// 							//double now_t = 0.0; //当前时间，相当于t(1)
 
 
 	
- }
+	
+// 		 for (int i = 0; i < two_steps; i++)
+// 		 {
+
+// 			 if (idx_of_laser == -1)
+// 			 {
+// 				 e1_laser = make_double4(0.0, E1_array[0], E1_array[0], E1_array[1]);
+// 				 e2_laser = make_double4(0.0, E2_array[0], E2_array[0], E2_array[1]);
+// 			 }
+// 			 else
+// 			 {
+// 				 e1_laser = make_double4(E1_array[idx_of_laser], E1_array[idx_of_laser + 1], E1_array[idx_of_laser + 1], E1_array[idx_of_laser + 2]);
+// 				 e2_laser = make_double4(E2_array[idx_of_laser], E2_array[idx_of_laser + 1], E2_array[idx_of_laser + 1], E2_array[idx_of_laser + 2]);
+// 			 }
+// 			 idx_of_laser += 2;
+
+// 			 update_step_two_every_step(second_arr.first, second_arr.second,
+// 				 e1_laser, e2_laser, every_step_arr[i]);
+
+
+// 		 }
+
+
+	
+//  }
 
 
  int main()
- {
+  {
 	//  particle_pair init = {
 	// 	 0.6499352856,
 	// 	 -0.6063439233,
@@ -764,34 +767,34 @@ void PrintK1K2K3K4(double4* array,size_t size,const char* FileName)
 
 
 	particle_pair init = {
+		0.0,
+		0,
+		0,
 		1.0,
 		0,
 		0,
-		0,
-		0,
-		0,
-		0.0,
+		1.0,
 		0.0,
 		0.0,
 		0.0,
 		0.0,
 		0.0
-
 	};
-	 double* qq_arr = new double[2 * two_steps];
-	 double* e1_arr = new double[2 * two_steps];
-	 double* e2_arr = new double[2 * two_steps];
+	// };
+	//  double* qq_arr = new double[2 * two_steps];
+	//  double* e1_arr = new double[2 * two_steps];
+	//  double* e2_arr = new double[2 * two_steps];
 
-	 for (size_t i = 0; i<2 * two_steps; i++)
-	 {
-		 qq_arr[i] = compute_qq_single(i); 
-	 }
+	//  for (size_t i = 0; i<2 * two_steps; i++)
+	//  {
+	// 	 qq_arr[i] = compute_qq_single(i); 
+	//  }
 
-	 for (size_t i = 0; i<2 * two_steps; i++)
-	 {
-		 e1_arr[i] = compute_e1_single(i, qq_arr[i], EE0_Check);
-		 e2_arr[i] = compute_e2_single(i, qq_arr[i], EE0_Check);
-	 }
+	//  for (size_t i = 0; i<2 * two_steps; i++)
+	//  {
+	// 	 e1_arr[i] = compute_e1_single(i, qq_arr[i], EE0_Check);
+	// 	 e2_arr[i] = compute_e2_single(i, qq_arr[i], EE0_Check);
+	//  }
 
 
 	 particle_pair* every_step = new particle_pair[one_steps];

@@ -23,6 +23,7 @@ particle_pair* AllocPairsOnGPU(size_t size);
 
 
 
+
 //用于双核粒子的随机数化  初始化
 void Pairs_Init_Call_GPU(particle_pair* pair_array_gpu, const size_t size);
 
@@ -55,6 +56,8 @@ void Pairs_Second_Step_Once_Use_E0_Call_GPU(
 
 void Pairs_Second_Step_Once(particle_pair* pair_array_gpu, const size_t size);
 
-void every_step(int pairs = 1);
+
+//每一步记录
+void Pairs_First_Step_Every_Step(particle_pair& init_pair, particle_pair* pair_array_gpu, size_t steps);
 
 #endif //__CALL_GPU_H

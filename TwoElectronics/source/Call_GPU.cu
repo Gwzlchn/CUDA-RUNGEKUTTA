@@ -60,7 +60,13 @@ void SavePairsWhichOnGPU(particle_pair* gpu_array, size_t size, const char* file
 	PrintStruct(host_pairs, size, file_name);
 }
 
+void Pairs_First_Step_Every_Step( particle_pair& init_pair,particle_pair* pair_array_gpu,size_t steps)
+{
+	pairs_first_step_every_step <<<1, 1 >>> (init_pair, pair_array_gpu, steps);
+	CHECK(cudaGetLastError());
+	CHECK(cudaDeviceSynchronize());
 
+}
 void Pairs_Init_Call_GPU(particle_pair * pair_array_gpu, const size_t size)
 {
 	//计算最小 r p;
@@ -290,47 +296,40 @@ void Pairs_Second_Step_Once(particle_pair* pair_array_gpu, const size_t size)
 
 
 
-void every_step(int pairs)
+void every_step_runge_kutta()
 {
 
 	//申请显存空间
-	particle_pair *pairs_array_single_step_gpu;
-	CHECK(cudaMalloc((void **)(&pairs_array_single_step_gpu), sizeof(particle_pair)));
+	particle_pair init = {
+		1.0,
+		0,
+		0,
+		0,
+		0,
+		0,
+		0.0,
+		0.0,
+		0.0,
+		0.0,
+		0.0,
+		0.0
+
+	};
+	
 
 
-	//计时
-	double start = seconds();
-	//计算
-	Pairs_Init_Call_GPU(pairs_array_single_step_gpu, pairs);
-	//保存
-	SavePairsWhichOnGPU(pairs_array_single_step_gpu, pairs, init_file_name.c_str());
-	//初始化完成
-	double elapse = seconds();
-	printf("Inition compltete %lf\n", elapse - start);
-
-
-
-
-	double *gpu_e1, *gpu_e2, *qq_array_gpu;
-	CHECK(cudaMalloc((void **)(&gpu_e1), Bytes_Of_Array_Laser));
-	CHECK(cudaMalloc((void **)(&gpu_e2), Bytes_Of_Array_Laser));
-	CHECK(cudaMalloc((void **)(&qq_array_gpu), Bytes_Of_Array_Laser));
-
-	//double EE0 = compute_ee0_by_index(index);
-	double EE0 = EE0_Check;
-	dim3 pre_block = get_pre_block();
-	dim3 pre_grid = get_grid((2 * two_steps), pre_block);
-	pre_second_step_qq << < pre_grid, pre_block >> > (qq_array_gpu);
-	pre_second_step_e1_arr << < pre_grid, pre_block, 0, 0 >> > (qq_array_gpu, EE0, gpu_e1);
-	pre_second_step_e2_arr << < pre_grid, pre_block, 0, 0 >> > (qq_array_gpu, EE0, gpu_e2);
+	
+	particle_pair* pair_init_gpu;
+	CHECK(cudaMalloc((void **)(&pair_init_gpu), sizeof(particle_pair) ));
+	CHECK(cudaMemcpy(pair_init_gpu,&init,sizeof(particle_pair), cudaMemcpyHostToDevice));
+	
+	
 
 	particle_pair *pairs_array_every_step_gpu;
 	CHECK(cudaMalloc((void **)(&pairs_array_every_step_gpu), sizeof(particle_pair) * two_steps));
-	start = seconds();
-	//计算 后保存电离率
-	//Pairs_Second_Step_Whole_Call_GPU(pairs_array_single_step_gpu, pairs, Iter_Count);
-	dim3 block = get_compute_block();
-	dim3 grid = get_grid(pairs, block);
-	pairs_second_step_on_gpu_every_step << < 1,1 >> > (pairs_array_single_step_gpu, pairs, gpu_e1, gpu_e2, pairs_array_every_step_gpu);
+	
+	
+
+	Pairs_First_Step_Every_Step(pair_init_gpu[0],pairs_array_every_step_gpu,two_steps);
 	SavePairsWhichOnGPU(pairs_array_every_step_gpu, two_steps, "every_step.dat");
 }
